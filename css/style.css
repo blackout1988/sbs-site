@@ -1419,3 +1419,401 @@ body{
 .time .sep {
     margin: 0 2px !important;
 }
+
+/* PLAY button — chip style like duration badge */
+.card__playBtn {
+    padding: 5px 10px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(254,0,0,0.35) !important;
+    background: rgba(254,0,0,0.12) !important;
+    color: rgba(255,255,255,0.9) !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    box-shadow: none !important;
+}
+.card__playBtn:hover {
+    background: rgba(254,0,0,0.22) !important;
+    border-color: rgba(254,0,0,0.55) !important;
+    filter: none !important;
+}
+
+/* PLAY button — fix alignment and radius */
+.card__playBtn {
+    border-radius: 5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    line-height: 1 !important;
+}
+
+/* PLAY button icon vertical align fix */
+.card__playIco {
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle !important;
+    line-height: 1 !important;
+}
+
+.card__playIco svg {
+    display: block !important;
+    margin-bottom: 1px;
+}
+
+/* PLAY btn — square icon only */
+.card__playBtn {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.card__playIco {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Tag (genre) — same style as play btn, 5px radius */
+.tag {
+    border-radius: 5px !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    background: rgba(255,255,255,0.06) !important;
+    color: rgba(255,255,255,0.70) !important;
+    padding: 4px 10px !important;
+}
+
+/* Chip (duration) — match play btn color */
+.chip {
+    border-radius: 5px !important;
+    border: 1px solid rgba(254,0,0,0.35) !important;
+    background: rgba(254,0,0,0.12) !important;
+    color: rgba(255,255,255,0.9) !important;
+    font-size: 10px !important;
+    padding: 4px 7px !important;
+}
+
+/* Chip (duration) — same as tag style */
+.chip {
+    border-radius: 5px !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    background: rgba(255,255,255,0.06) !important;
+    color: rgba(255,255,255,0.70) !important;
+    font-size: 10px !important;
+    padding: 4px 7px !important;
+}
+
+/* Card kicker — 16px, no wrap */
+.card__kicker {
+    font-size: 16px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* kicker row — kicker shrinks, chip stays fixed */
+.card__kickerRow {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+}
+
+.card__kicker {
+    font-size: 16px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+}
+
+.chip {
+    flex: 0 0 auto !important;
+}
+
+/* kicker — smaller so it fits, allow 2 lines */
+.card__kicker {
+    font-size: 13px !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    line-height: 1.2 !important;
+}
+
+/* Card top — chip and play btn on same baseline */
+.card__top {
+    align-items: flex-start !important;
+}
+
+.card__meta {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+}
+
+.card__kickerRow {
+    align-items: flex-start !important;
+}
+
+.card__kicker {
+    font-size: 15px !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    line-height: 1.25 !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+}
+
+/* Chip — transparent background, keep border */
+.chip {
+    background: transparent !important;
+}
+
+/* Play icon — center vertically */
+.card__playIco svg {
+    display: block !important;
+    position: relative !important;
+    top: 1px !important;
+}
+
+/* ================================
+   FOOTER
+   ================================ */
+.footer {
+    margin-top: 60px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    background: rgba(0,0,0,0.25);
+    padding-bottom: 100px; /* player space */
+}
+
+.footer__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 48px 22px 32px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 48px;
+    align-items: start;
+}
+
+/* Brand + about */
+.footer__logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.footer__name {
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    color: var(--text);
+}
+
+.footer__about {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
+    max-width: 380px;
+}
+
+/* Social */
+.footer__social-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.40);
+    margin-bottom: 14px;
+}
+
+.footer__social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: rgba(255,255,255,0.65);
+    font-size: 12px;
+    letter-spacing: 0.6px;
+    padding: 9px 14px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    width: fit-content;
+}
+
+.footer__link:hover {
+    color: #fff;
+    border-color: rgba(254,0,0,0.35);
+    background: rgba(254,0,0,0.06);
+}
+
+/* Bottom bar */
+.footer__bottom {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 18px 22px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.30);
+    letter-spacing: 0.5px;
+}
+
+.footer__bottom-sub {
+    color: rgba(255,255,255,0.20);
+    font-size: 11px;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .footer__inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 36px 16px 24px;
+    }
+
+    .footer__bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 16px 16px;
+    }
+
+    .footer__about {
+        max-width: 100%;
+    }
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Offset for sticky header */
+#episodes {
+    scroll-margin-top: 80px;
+}
+
+#episodesAnchor {
+    scroll-margin-top: 0px;
+}
+
+#episodesAnchor {
+    scroll-margin-top: 57px !important;
+}
+
+#episodesAnchor {
+    scroll-margin-top: 62px !important;
+}
+
+/* ================================
+   UPCOMING EVENTS
+   ================================ */
+.upcoming {
+    max-width: 1120px;
+    margin: 60px auto 0;
+    padding: 0 22px;
+    scroll-margin-top: 80px;
+}
+
+.upcoming__title {
+    font-size: 40px;
+    margin: 0 0 28px;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .upcoming__title { font-size: 28px; }
+    .upcoming { padding: 0 14px; }
+}
+
+/* Upcoming title — same as LATEST EPISODES */
+.upcoming {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 44px 22px 0;
+    scroll-margin-top: 80px;
+}
+
+.upcoming__title {
+    font-size: 64px !important;
+    margin: 20px 0 10px !important;
+    text-align: center !important;
+}
+
+@media (max-width: 980px) {
+    .upcoming__title { font-size: 48px !important; }
+}
+@media (max-width: 640px) {
+    .upcoming__title { font-size: 40px !important; }
+    .upcoming { padding: 44px 14px 0; }
+}
+
+/* Upcoming inside wrap — same top spacing as LATEST EPISODES from slider */
+.upcoming {
+    margin-top: 44px !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+/* Fixed header */
+.topbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
+}
+
+body {
+    padding-top: 62px;
+}
+
+/* Fix body padding for fixed header — only push content, not slider */
+body {
+    padding-top: 0 !important;
+}
+
+.topbar + * {
+    margin-top: 62px;
+}
+
+.topSlider {
+    margin-top: 62px !important;
+}
+
+/* Upcoming section — more space from MORE button */
+.upcoming {
+    margin-top: 80px !important;
+}
+
+/* Nav menu — uppercase */
+.nav-menu__item,
+.mobile-menu__item {
+    text-transform: uppercase !important;
+}
+
+/* More space between fixed header and upcoming section on scroll */
+.upcoming {
+    scroll-margin-top: 100px !important;
+}
+
+.upcoming {
+    scroll-margin-top: 140px !important;
+}
