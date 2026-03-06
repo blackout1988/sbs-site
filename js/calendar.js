@@ -6,7 +6,7 @@ const SBS_EVENTS = [
   {
     year: 2026,
     month: 3,
-    day: 8,
+    day: 7,
     title: "NØCTURNE D",
     type: "SBS PODCAST 008",
     time: "22:00",

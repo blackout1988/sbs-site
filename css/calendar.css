@@ -94,7 +94,7 @@
 }
 .cal-picker__item:hover { color: rgba(255,255,255,0.55); }
 .cal-picker__item.is-selected { color: #fff; font-size: 13px; }
-.cal-picker__item.has-event { color: var(--brand-red) !important; }
+.cal-picker__item.has-event { color: rgba(255,255,255,0.45); }
 
 /* ================================
    RIGHT SIDE
@@ -515,6 +515,27 @@
 
 .cal-event-popup {
     padding: 17px !important;
+}
+
+.cal-picker__item.is-selected {
+    color: var(--brand-red) !important;
+}
+/* Selected month always red, overrides has-event */
+.cal-picker__item.is-selected {
+    color: var(--brand-red) !important;
+}
+
+.cal-picker__item.has-event:not(.is-selected) {
+    color: rgba(254,0,0,0.40) !important;
+}
+
+.cal-picker__item:not(.has-event):not(.is-selected) {
+    color: rgba(255,255,255,0.45) !important;
+}
+
+/* Only selected month is red — event months same as normal */
+.cal-picker__item.has-event:not(.is-selected) {
+    color: rgba(255,255,255,0.45) !important;
 }
 
 .cal-picker__item.is-selected {

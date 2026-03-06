@@ -10,6 +10,8 @@ const PLAYLIST_URL = "https://soundcloud.com/7thblocksociety/sets/sbs-2026";
 console.log("[SBS] using PLAYLIST_URL:", PLAYLIST_URL);
 
 const CACHE_KEY = "sbs_episodes_cache";
+const YT_CACHE_KEY = "sbs_yt_views_cache";
+const YT_CACHE_TTL = 30 * 60 * 1000; // 30 წუთი
 const CACHE_TTL = 60 * 60 * 1000; // 1 საათი
 
 function saveCache(list){
@@ -26,6 +28,127 @@ function loadCache(){
     if (Date.now() - ts > CACHE_TTL) return null;
     return data;
   } catch(e){ return null; }
+}
+
+
+// ================================
+// YouTube Views Integration
+// ================================
+const YT_API_KEY = "AIzaSyA3arnK5Ar-A2tCH7HxEJY_TQcKnCp6sPA";
+const YT_CHANNEL_ID = "UCcvJmv3UOYFmVG2_1tK8aNg";
+let ytViewsMap = {}; // title => viewCount
+
+function normalizeTitle(t) {
+  return (t || "").toLowerCase()
+      .replace(/[^a-z0-9]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+}
+
+function fuzzyMatch(scTitle, ytTitle) {
+  // Compare first word only (before any space, dash, pipe)
+  const firstWord = (t) => (t || "").trim().split(/[\s|\-–]/)[0].toLowerCase().trim();
+  const a = firstWord(scTitle);
+  const b = firstWord(ytTitle);
+  if (a.length >= 3 && a === b) return true;
+
+  // Fallback: check if key words match (min 4 chars)
+  const norm = (t) => (t || "").toLowerCase().replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+  const wordsA = norm(scTitle).split(" ").filter(w => w.length >= 4);
+  const wordsB = norm(ytTitle).split(" ").filter(w => w.length >= 4);
+  const matches = wordsA.filter(w => wordsB.includes(w));
+  return matches.length >= 2;
+}
+
+function applyYouTubeViews() {
+  if (!episodes.length || !Object.keys(ytViewsMap).length) return;
+  episodes.forEach(ep => {
+    const match = Object.entries(ytViewsMap).find(([ytTitle]) => fuzzyMatch(ep.title, ytTitle));
+    if (match) ep.views = match[1];
+  });
+  originalEpisodes.forEach(ep => {
+    const match = Object.entries(ytViewsMap).find(([ytTitle]) => fuzzyMatch(ep.title, ytTitle));
+    if (match) ep.views = match[1];
+  });
+  renderEpisodes();
+}
+
+async function fetchYouTubeViews() {
+  // Try cache first
+  try {
+    const raw = localStorage.getItem(YT_CACHE_KEY);
+    if (raw) {
+      const { ts, data } = JSON.parse(raw);
+      if (Date.now() - ts < YT_CACHE_TTL) {
+        ytViewsMap = data;
+        applyYouTubeViews();
+        return;
+      }
+    }
+  } catch(e){}
+  try {
+    // Get uploads playlist ID
+    const chRes = await fetch(
+        `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${YT_CHANNEL_ID}&key=${YT_API_KEY}`
+    );
+    const chData = await chRes.json();
+    const uploadsId = chData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+    if (!uploadsId) return;
+
+    // Get all videos from uploads playlist
+    let videos = [];
+    let pageToken = "";
+    do {
+      const plRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=50&pageToken=${pageToken}&key=${YT_API_KEY}`
+      );
+      const plData = await plRes.json();
+      videos = videos.concat(plData.items || []);
+      pageToken = plData.nextPageToken || "";
+    } while (pageToken);
+
+    // Get view counts (exclude Shorts — duration < 60s)
+    const ids = videos.map(v => v.snippet?.resourceId?.videoId).filter(Boolean);
+    if (!ids.length) return;
+
+    // Batch requests (max 50 per request)
+    for (let i = 0; i < ids.length; i += 50) {
+      const batch = ids.slice(i, i + 50).join(",");
+      const statsRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet,contentDetails&id=${batch}&key=${YT_API_KEY}`
+      );
+      const statsData = await statsRes.json();
+      (statsData.items || []).forEach(item => {
+        // Parse ISO 8601 duration — skip Shorts (< 60s)
+        const dur = item.contentDetails?.duration || "";
+        const match = dur.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+        const h = parseInt(match?.[1] || 0);
+        const m = parseInt(match?.[2] || 0);
+        const s = parseInt(match?.[3] || 0);
+        const totalSec = h * 3600 + m * 60 + s;
+        if (totalSec < 60) return; // skip Shorts
+        if (totalSec < 600) return; // skip videos under 10 min (likely not full sets)
+
+        const title = item.snippet?.title || "";
+        const views = parseInt(item.statistics?.viewCount || 0);
+        ytViewsMap[title] = views;
+      });
+    }
+
+    // Save to cache
+    try { localStorage.setItem(YT_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: ytViewsMap })); } catch(e){}
+
+    applyYouTubeViews();
+  } catch(e) {
+    console.warn("[SBS] YouTube fetch failed:", e);
+  }
+}
+
+function formatViews(n) {
+  if (!n) return null;
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
+  if (n >= 1000) return Math.round(n / 1000) + "K";
+  return String(n);
 }
 
 const FALLBACK_COVER = "https://i1.sndcdn.com/avatars-000000000000-000000-t500x500.jpg";
@@ -66,6 +189,7 @@ function setWidgetSrc(){
 const episodeGrid = document.getElementById("episodeGrid");
 const sortBar     = document.getElementById("sortBar");
 const moreBtn     = document.getElementById("moreBtn");
+let searchQuery = "";
 
 const playerEl = document.getElementById("player");
 const coverImg = document.getElementById("coverImg");
@@ -120,6 +244,15 @@ let visibleCount = PAGE_SIZE;
 
 let barEls = [];
 let currentDurationMs = 0;
+
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const months = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE",
+    "JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+  const [y, m, d] = dateStr.split("-").map(Number);
+  if (!m) return dateStr;
+  return months[m - 1] + " " + d + ", " + y;
+}
 
 function fmt(ms){
   const total = Math.max(0, Math.floor((ms || 0) / 1000));
@@ -204,15 +337,20 @@ function setNowPlaying(ep){
 
 function renderEpisodes(){
   if (!episodeGrid) return;
-  const list = episodes.slice(0, visibleCount);
+  const filtered = searchQuery
+      ? episodes.filter(e => e.title.toLowerCase().includes(searchQuery) || (e.artist||"").toLowerCase().includes(searchQuery))
+      : episodes;
+  const list = filtered.slice(0, visibleCount);
+  if (moreBtn) moreBtn.hidden = visibleCount >= filtered.length;
   episodeGrid.innerHTML = "";
 
   list.forEach((ep, idx)=>{
     const realIndex = idx;
     const card = document.createElement("div");
-    card.className = "card" + (realIndex === activeIndex ? " active" : "");
+    card.className = "card" + (ep.originalIndex === activeIndex ? " active" : "");
 
     const durChip = ep.durationMs ? `<div class="chip doto">${formatDuration(ep.durationMs)}</div>` : ``;
+    const viewsChip = ep.views ? `<div class="chip chip--views doto">👁 ${formatViews(ep.views)}</div>` : "";
     const tagsHtml = (ep.tags || DEFAULT_TAGS).slice(0,2).map(t=>`<span class="tag doto">${t}</span>`).join("");
 
     card.innerHTML = `
@@ -224,11 +362,11 @@ function renderEpisodes(){
             ${durChip}
           </div>
           <div class="card__title doto">${ep.title}</div>
-          <div class="card__sub">${ep.date || ""}</div>
+          <div class="card__sub">${formatDate(ep.date)}</div>
         </div>
       </div>
 
-      <div class="card__tags">${tagsHtml}</div>
+      <div class="card__tags">${tagsHtml}${viewsChip}</div>
       <button class="card__playBtn" type="button" ${ep.playable ? "" : "disabled"}><span class="card__playIco" aria-hidden="true"></span></button>
     `;
 
@@ -352,6 +490,9 @@ function initSortBar(){
       case "artist":
         next.sort((a,b)=> (a.artist||"").localeCompare(b.artist||"", undefined, { sensitivity:"base" })
             || (a.title||"").localeCompare(b.title||"", undefined, { sensitivity:"base" }));
+        break;
+      case "top":
+        next.sort((a,b)=> (b.views||0) - (a.views||0));
         break;
       case "plays":
         // not supported; keep current
@@ -518,6 +659,13 @@ function init(){
   if (playerEl) playerEl.classList.add("is-hidden");
   if (playBtn) playBtn.disabled = true;
 
+  const searchInput = document.getElementById("episodeSearch");
+  searchInput?.addEventListener("input", ()=>{
+    searchQuery = searchInput.value.toLowerCase().trim();
+    visibleCount = PAGE_SIZE;
+    renderEpisodes();
+  });
+
   moreBtn?.addEventListener("click", ()=>{
     visibleCount += PAGE_SIZE;
     renderEpisodes();
@@ -569,6 +717,7 @@ function init(){
       episodes = [...originalEpisodes];
       initSortBar();
       renderEpisodes();
+      fetchYouTubeViews();
     }
   });
 }

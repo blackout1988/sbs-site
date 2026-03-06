@@ -1817,3 +1817,128 @@ body {
 .upcoming {
     scroll-margin-top: 140px !important;
 }
+
+/* Episodes head right — search + sort */
+.episodes__head {
+    align-items: center !important;
+}
+
+.episodes__head-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+/* Search input */
+.episodes__search {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 5px;
+    padding: 8px 14px;
+    color: rgba(255,255,255,0.80);
+    font-size: 11px;
+    letter-spacing: 1px;
+    outline: none;
+    width: 220px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.episodes__search::placeholder {
+    color: rgba(255,255,255,0.25);
+}
+
+.episodes__search:focus {
+    border-color: rgba(254,0,0,0.40);
+    background: rgba(254,0,0,0.04);
+}
+
+@media (max-width: 640px) {
+    .episodes__head-right {
+        width: 100%;
+        align-items: stretch;
+    }
+    .episodes__search {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* Episodes head — title top, search middle, sort bottom */
+.episodes__head {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+}
+
+.episodes__head-right {
+    display: contents !important;
+}
+
+/* Episodes head — title left, controls right on same line */
+.episodes__head {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+}
+
+.episodes__controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+    .episodes__head {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .episodes__controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .episodes__search {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+.sort__btn {
+    border-radius: 5px !important;
+}
+
+/* Search stretches to fill space between title and sort */
+.episodes__search {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+/* Search same height as sort buttons */
+.episodes__search {
+    height: 32px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.topSlider__social-label {
+    color: #FFFFFF !important;
+}
+
+/* Views chip */
+.chip--views {
+    background: rgba(254,0,0,0.08) !important;
+    border-color: rgba(254,0,0,0.20) !important;
+    color: rgba(255,255,255,0.70) !important;
+}
+
+/* Views chip — same style as duration chip */
+.chip--views {
+    background: transparent !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    color: rgba(255,255,255,0.55) !important;
+}
