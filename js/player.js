@@ -8,6 +8,26 @@
 
 const PLAYLIST_URL = "https://soundcloud.com/7thblocksociety/sets/sbs-2026";
 console.log("[SBS] using PLAYLIST_URL:", PLAYLIST_URL);
+
+const CACHE_KEY = "sbs_episodes_cache";
+const CACHE_TTL = 60 * 60 * 1000; // 1 საათი
+
+function saveCache(list){
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: list }));
+  } catch(e){}
+}
+
+function loadCache(){
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL) return null;
+    return data;
+  } catch(e){ return null; }
+}
+
 const FALLBACK_COVER = "https://i1.sndcdn.com/avatars-000000000000-000000-t500x500.jpg";
 
 // Optional: if you want to hide specific tracks (login-wall / unavailable), add full permalink URLs here
@@ -62,8 +82,8 @@ const playIcon  = document.getElementById("playIcon");
 let isPlaying = false;
 
 // Card button icons (keeps PLAY text, adds icon on the right)
-const CARD_PLAY_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
-const CARD_PAUSE_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
+const CARD_PLAY_SVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+const CARD_PAUSE_SVG = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
 
 function updateCardButtons(){
   if (!episodeGrid) return;
@@ -93,8 +113,9 @@ let widgetReady = false;
 let episodes = [];
 let originalEpisodes = [];
 let activeIndex = -1;
+let userInitiated = false; // only highlight card after user clicks
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 6;
 let visibleCount = PAGE_SIZE;
 
 let barEls = [];
@@ -208,7 +229,7 @@ function renderEpisodes(){
       </div>
 
       <div class="card__tags">${tagsHtml}</div>
-      <button class="card__playBtn" type="button" ${ep.playable ? "" : "disabled"}>PLAY <span class="card__playIco" aria-hidden="true"></span></button>
+      <button class="card__playBtn" type="button" ${ep.playable ? "" : "disabled"}><span class="card__playIco" aria-hidden="true"></span></button>
     `;
 
     const playButton = card.querySelector(".card__playBtn");
@@ -225,12 +246,12 @@ function renderEpisodes(){
       }
 
       // Otherwise load and start playing
-      loadEpisode(realIndex, true);
+      loadEpisode(realIndex, true, true);
     });
 
     card.addEventListener("click", ()=>{
       if (!ep.playable) return;
-      loadEpisode(realIndex, false);
+      loadEpisode(realIndex, false, true);
     });
 
     episodeGrid.appendChild(card);
@@ -248,11 +269,13 @@ function setActiveCard(){
   updateCardButtons();
 }
 
-function loadEpisode(index, autoplay){
+function loadEpisode(index, autoplay, fromUser=false){
+  if (fromUser) userInitiated = true;
   if (!widgetReady) return;
   const ep = episodes[index];
   if (!ep) return;
 
+  if (!userInitiated) return;
   activeIndex = index;
   setActiveCard();
   setNowPlaying(ep);
@@ -277,11 +300,11 @@ function loadEpisode(index, autoplay){
 
 function goPrev(){
   if (!episodes.length) return;
-  loadEpisode(Math.max(0, activeIndex - 1), true);
+  loadEpisode(Math.max(0, activeIndex - 1), true, true);
 }
 function goNext(){
   if (!episodes.length) return;
-  loadEpisode(Math.min(episodes.length - 1, activeIndex + 1), true);
+  loadEpisode(Math.min(episodes.length - 1, activeIndex + 1), true, true);
 }
 
 function initSortBar(){
@@ -522,21 +545,31 @@ function init(){
   widget.bind(SC.Widget.Events.READY, async ()=>{
     widgetReady = true;
 
-    episodes = await buildEpisodesFromWidget();
-    originalEpisodes = [...episodes].sort((a,b)=> (a.originalIndex||0) - (b.originalIndex||0));
-    episodes = [...originalEpisodes];
-
-    initSortBar();
-    renderEpisodes();
-
-    const firstPlayable = episodes.findIndex(e=>e.playable);
-    if (firstPlayable >= 0) loadEpisode(firstPlayable, false);
+    // ჯერ cache-იდან ეგრევე გამოჩნდეს
+    const cached = loadCache();
+    if (cached && cached.length > 0){
+      episodes = cached;
+      originalEpisodes = [...episodes].sort((a,b)=> (a.originalIndex||0) - (b.originalIndex||0));
+      episodes = [...originalEpisodes];
+      initSortBar();
+      renderEpisodes();
+    }
 
     paintVolume();
     updateVolIcon();
     widget.setVolume(Number(vol?.value || 70));
-
     bindRuntimeEvents();
+
+    // ფონში განახლება
+    const fresh = await buildEpisodesFromWidget();
+    if (fresh && fresh.length > 0){
+      saveCache(fresh);
+      episodes = fresh;
+      originalEpisodes = [...episodes].sort((a,b)=> (a.originalIndex||0) - (b.originalIndex||0));
+      episodes = [...originalEpisodes];
+      initSortBar();
+      renderEpisodes();
+    }
   });
 }
 
