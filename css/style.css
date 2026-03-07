@@ -608,26 +608,22 @@ body{
 .topSlider__nav--next{ right: 14px; }
 
 .topSlider__dots{
-    position: absolute;
-    left: 50%;
-    bottom: 12px;
-    transform: translateX(-50%);
     display: flex;
+    justify-content: center;
     gap: 10px;
-    padding: 8px 10px;
-    border-radius: 999px;
-    background: rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(6px);
+    padding: 15px 0 0;
 }
 
 .topSlider__dot{
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(255,255,255,0.22);
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 1px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.18);
     cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
 }
 
 .topSlider__dot.is-active{
@@ -680,7 +676,7 @@ body{
     }
     .topSlider__nav--prev{ left: 10px; }
     .topSlider__nav--next{ right: 10px; }
-    .topSlider__dots{ bottom: 10px; }
+
 }
 
 /* ================================
@@ -770,7 +766,7 @@ body{
     }
     .topSlider__nav--prev{ left: 10px; }
     .topSlider__nav--next{ right: 10px; }
-    .topSlider__dots{ bottom: 10px; }
+
 }
 
 /* ============================
@@ -1126,8 +1122,9 @@ body{
 
     /* Hamburger in col 1 (left) */
     .hamburger {
-        display: flex;
+        display: flex !important;
         grid-column: 1;
+        justify-self: start;
     }
 
     /* Brand centered in col 2 */
@@ -1168,11 +1165,22 @@ body{
     .nav-menu { display: none; }
     .links { display: none; }
 
-    /* Right col = just the placeholder for grid balance (hamburger is left) */
+    /* Right col = radio button only on mobile */
     .topbar__right {
         grid-column: 3;
         justify-content: flex-end;
         gap: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Hide social links on mobile */
+    .topbar__right .links { display: none !important; }
+
+    /* Radio stays visible and right-aligned */
+    .radio-wrap {
+        display: flex;
+        justify-content: flex-end;
     }
 
     /* Show social bar below slider */
@@ -1349,31 +1357,28 @@ body{
 }
 
 /* ================================
-   SLIDER DOTS — Doto font style
+   SLIDER DOTS — square style
    ================================ */
 .topSlider__dot {
-    width: auto !important;
-    height: auto !important;
-    border-radius: 0 !important;
-    border: none !important;
-    background: none !important;
-    font-family: "Doto", system-ui, sans-serif !important;
-    font-size: 14px !important;
-    color: rgba(255,255,255,0.35) !important;
+    width: 10px !important;
+    height: 10px !important;
+    padding: 0 !important;
+    border-radius: 1px !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    background: rgba(255,255,255,0.18) !important;
     cursor: pointer;
-    transition: color 0.15s ease !important;
-    line-height: 1;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s !important;
+    font-size: 0 !important;
 }
 
 .topSlider__dot::after {
-    content: "●";
+    content: none;
 }
 
 .topSlider__dot.is-active {
-    color: #FE0000 !important;
-    box-shadow: none !important;
-    background: none !important;
-    border-color: transparent !important;
+    background: #FE0000 !important;
+    border-color: rgba(254,0,0,0.9) !important;
+    box-shadow: 0 0 0 4px rgba(254,0,0,0.15) !important;
 }
 
 /* Close button — same size as other btns */

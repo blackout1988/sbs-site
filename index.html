@@ -46,12 +46,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css?v=2" />
     <link rel="stylesheet" href="css/calendar.css" />
+    <link rel="stylesheet" href="css/radio.css?v=2" />
 </head>
 <body>
 
 <header class="topbar">
+    <!-- HAMBURGER (mobile col 1) -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+
     <!-- LEFT: Logo -->
     <div class="brand">
         <div class="sbs-logo" aria-label="SBS logo">
@@ -76,6 +82,32 @@
 
     <!-- RIGHT: Social icons + hamburger -->
     <div class="topbar__right">
+        <!-- RADIO BUTTON -->
+        <div class="radio-wrap" id="radioWrap">
+            <button class="radio-btn" id="radioBtnToggle" type="button" aria-label="Live Radio">
+                <span class="radio-btn__pulse" id="radioDot">
+                    <span class="radio-pulse__ring"></span>
+                    <span class="radio-pulse__ring"></span>
+                    <span class="radio-pulse__dot"></span>
+                </span>
+                <span class="radio-btn__label doto">LIVE RADIO</span>
+            </button>
+            <div class="radio-popup" id="radioPopup" aria-hidden="true">
+                <div class="radio-popup__header">
+                    <span class="radio-popup__live doto">● LIVE</span>
+                    <button class="radio-popup__close" id="radioClose" type="button">✕</button>
+                </div>
+                <div class="radio-popup__track doto" id="radioTrack">Loading...</div>
+                <div class="radio-popup__controls">
+                    <button class="radio-popup__play" id="radioPlayBtn" type="button">▶</button>
+                    <div class="radio-popup__vol">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 10v4c0 .55.45 1 1 1h3l4 3c.66.5 1.6.03 1.6-.8V6.8c0-.83-.94-1.3-1.6-.8L7 9H4c-.55 0-1 .45-1 1Zm14.5 2a3.5 3.5 0 0 0-2.04-3.18c-.5-.22-1.08.02-1.3.52-.22.5.02 1.08.52 1.3a1.5 1.5 0 0 1 0 2.72c-.5.22-.74.8-.52 1.3.16.36.51.58.91.58.13 0 .27-.03.39-.08A3.5 3.5 0 0 0 17.5 12Z"/></svg>
+                        <input class="radio-popup__volSlider" id="radioVol" type="range" min="0" max="100" value="70">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <nav class="links" aria-label="Social media">
             <!-- Instagram -->
             <a target="_blank" rel="noreferrer" href="https://www.instagram.com/7thblocksociety/" aria-label="Instagram">
@@ -97,10 +129,6 @@
             </a>
         </nav>
 
-        <!-- Hamburger (mobile only) -->
-        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
-            <span></span><span></span><span></span>
-        </button>
     </div>
 </header>
 
@@ -140,8 +168,8 @@
             </a>
         </div>
 
-        <div class="topSlider__dots" id="topSliderDots" aria-label="Slider pagination"></div>
     </div>
+    <div class="topSlider__dots" id="topSliderDots" aria-label="Slider pagination"></div>
     <div id="episodesAnchor"></div>
 </section>
 
@@ -236,10 +264,21 @@
         src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F7thblocksociety%2Fsets%2Fsbs-2026&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false">
 </iframe>
 
+<!-- Hidden Radio widget iframe -->
+<iframe
+        id="radioWidget"
+        class="sc-hidden"
+        allow="autoplay; encrypted-media"
+        scrolling="no"
+        frameborder="no"
+        src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fbulbulberlin%2Fsets%2Fbulbul-radio&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false">
+</iframe>
+
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script src="js/slider.js"></script>
 <script src="js/calendar.js"></script>
 <script src="js/player.js?v=1"></script>
+<script src="js/radio.js"></script>
 
 <script>
     // Hamburger menu toggle
