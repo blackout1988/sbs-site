@@ -2,19 +2,83 @@
    SBS CALENDAR — calendar.js
    ================================ */
 
-const SBS_EVENTS = [
-  {
-    year: 2026,
-    month: 3,
-    day: 7,
-    title: "NØCTURNE D",
-    type: "SBS PODCAST 008",
-    time: "22:00",
-    desc: "Saturday Evening Session",
-    image: "assets/tk.jpg",
-    youtube: "https://www.youtube.com/watch?v=xylNIY-e1FI"
+const GCAL_API_KEY   = "AIzaSyDMVgrni1f9a9-BURQhTH1YGKlOMMElvyA";
+const GCAL_ID        = "gogadididze1988@gmail.com";
+
+let SBS_EVENTS = [];
+
+async function fetchGoogleCalendarEvents() {
+  const now = new Date();
+  const timeMin = new Date(now.getFullYear(), 0, 1).toISOString();
+  const timeMax = new Date(now.getFullYear() + 1, 11, 31).toISOString();
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL_ID)}/events?key=${GCAL_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=50`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (!data.items) return;
+
+    SBS_EVENTS = data.items
+        .filter(e => e.start && (e.start.dateTime || e.start.date))
+        .map(e => {
+          const start = new Date(e.start.dateTime || e.start.date);
+          const rawDesc = e.description || "";
+
+          // Strip HTML — extract href URLs (handles escaped quotes too)
+          const plainDesc = rawDesc
+              .replace(/\\"/g, '"')
+              .replace(/<a\s+href="([^"]+)"[^>]*>[^<]*<\/a>/gi, "$1")
+              .replace(/<br\s*\/?>/gi, "\n")
+              .replace(/<\/p>/gi, "\n")
+              .replace(/<[^>]+>/g, "")
+              .replace(/&nbsp;/g, " ")
+              .replace(/&amp;/g, "&")
+              .trim();
+
+          // Parse structured fields (TYPE:, EVENT:, IMAGE:, YOUTUBE:)
+          const getField = (key) => {
+            const match = plainDesc.match(new RegExp("^\\s*" + key + ":\\s*(.+)$", "mi"));
+            return match ? match[1].trim() : "";
+          };
+
+          console.log("PLAIN desc:", JSON.stringify(plainDesc));
+          const typeField    = getField("TYPE");
+          const artistField  = getField("ARTIST");
+          const eventField   = getField("EVENT");
+          const imageField   = getField("IMAGE");
+          const youtubeField = getField("YOUTUBE");
+
+          // Clean description — remove structured lines (with optional leading spaces)
+          const cleanDesc = plainDesc
+              .replace(/^\s*(TYPE|ARTIST|EVENT|IMAGE|YOUTUBE):.+$/gmi, "")
+              .replace(/\n{2,}/g, "\n")
+              .trim();
+
+          return {
+            year:    start.getFullYear(),
+            month:   start.getMonth() + 1,
+            day:     start.getDate(),
+            title:   e.summary || "EVENT",
+            type:    typeField || e.location || "SBS EVENT",
+            artist:  artistField,
+            event:   eventField,
+            time:    e.start.dateTime
+                ? `${String(start.getHours()).padStart(2,"0")}:${String(start.getMinutes()).padStart(2,"0")}`
+                : "00:00",
+            desc:    cleanDesc,
+            image:   imageField || "assets/tk.jpg",
+            youtube: youtubeField || plainDesc.match(/https?:\/\/(?:www\.)?youtube\.com\S+|https?:\/\/youtu\.be\S+/)?.[0] || ""
+          };
+        });
+    // DEBUG — remove after fixing
+    if (data.items && data.items[0]) {
+      console.log("RAW description:", JSON.stringify(data.items[0].description));
+      console.log("FULL item:", JSON.stringify(data.items[0], null, 2));
+    }
+  } catch(err) {
+    console.warn("[SBS] Google Calendar fetch failed:", err);
   }
-];
+}
 
 const MONTHS = [
   "JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE",
@@ -38,16 +102,13 @@ function isSaturday(year, month, day) {
 }
 
 
-// Countdown / released logic
-const countdownTimers = {};
-
 function getEventDateTime(event) {
   const [h, m] = event.time.split(":").map(Number);
   return new Date(event.year, event.month - 1, event.day, h, m, 0);
 }
 
 function formatCountdown(ms) {
-  if (ms <= 0) return null;
+  if (ms <= 0) return "";
   const totalSec = Math.floor(ms / 1000);
   const days = Math.floor(totalSec / 86400);
   const hours = Math.floor((totalSec % 86400) / 3600);
@@ -61,74 +122,49 @@ function formatCountdown(ms) {
   return String(hours).padStart(2,"0") + ":" + String(mins).padStart(2,"0") + ":" + String(secs).padStart(2,"0");
 }
 
-function startCellCountdown(cell, event) {
-  const id = event.year + "-" + event.month + "-" + event.day;
-  if (countdownTimers[id]) clearInterval(countdownTimers[id]);
 
-  const eventTime = getEventDateTime(event);
-
-  function tick() {
-    const now = new Date();
-    const diff = eventTime - now;
-
-    // Clear old countdown content
-    let badge = cell.querySelector(".cal-countdown");
-    if (!badge) {
-      badge = document.createElement("div");
-      badge.className = "cal-countdown";
-      cell.appendChild(badge);
-    }
-
-    if (diff > 0) {
-      badge.textContent = formatCountdown(diff);
-      badge.classList.remove("is-released");
-    } else {
-      badge.textContent = "RELEASED";
-      badge.classList.add("is-released");
-      if (event.youtube) {
-        badge.style.cursor = "pointer";
-        badge.onclick = (e) => {
-          e.stopPropagation();
-          window.open(event.youtube, "_blank");
-        };
-      }
-      clearInterval(countdownTimers[id]);
-    }
-  }
-
-  tick();
-  countdownTimers[id] = setInterval(tick, 1000);
-}
-
-function initCalendar() {
+async function initCalendar() {
   const container = document.getElementById("upcomingCalendar");
   if (!container) return;
+
+  await fetchGoogleCalendarEvents();
 
   const now = new Date();
   let selectedYear = now.getFullYear();
   let selectedMonth = now.getMonth() + 1;
+  let selectedDay = now.getDate();
+
+  const isMobile = () => window.innerWidth <= 640;
 
   container.innerHTML = `
     <div class="cal-wrap">
-      <div class="cal-picker">
-        <div class="cal-picker__header">
-          <span class="cal-picker__year doto">${selectedYear}</span>
+      <div class="cal-grid" id="calDayGrid"></div>
+      <div class="cal-bottom-row">
+        <div class="cal-pickers-row">
+          <div class="cal-picker" id="calMonthPicker">
+            <div class="cal-picker__body">
+              <div class="cal-picker__highlight"></div>
+              <div class="cal-picker__scroll" id="calMonthScroll"></div>
+            </div>
+          </div>
+          <div class="cal-picker cal-picker--day" id="calDayPicker">
+            <div class="cal-picker__body">
+              <div class="cal-picker__highlight"></div>
+              <div class="cal-picker__scroll" id="calDayScroll"></div>
+            </div>
+          </div>
         </div>
-        <div class="cal-picker__body">
-          <div class="cal-picker__highlight"></div>
-          <div class="cal-picker__scroll" id="calMonthScroll"></div>
+        <div class="cal-right">
+          <div class="cal-event-popup" id="calEventPopup"></div>
         </div>
-      </div>
-      <div class="cal-right">
-        <div class="cal-grid" id="calDayGrid"></div>
-        <div class="cal-event-popup" id="calEventPopup"></div>
       </div>
     </div>
   `;
 
   const monthScroll = document.getElementById("calMonthScroll");
-  const dayGrid = document.getElementById("calDayGrid");
-  const popup = document.getElementById("calEventPopup");
+  const dayScroll   = document.getElementById("calDayScroll");
+  const dayGrid     = document.getElementById("calDayGrid");
+  const popup       = document.getElementById("calEventPopup");
 
   function buildMonthPicker() {
     monthScroll.innerHTML = "";
@@ -144,6 +180,53 @@ function initCalendar() {
       monthScroll.appendChild(div);
     });
     monthScroll.scrollTop = (selectedMonth - 1) * 44;
+  }
+
+  function buildDayPicker() {
+    if (!isMobile()) return;
+    dayScroll.innerHTML = "";
+    const days = getDaysInMonth(selectedYear, selectedMonth);
+    for (let d = 1; d <= days; d++) {
+      const hasEvent = !!getEventForDay(selectedYear, selectedMonth, d);
+      const sat = isSaturday(selectedYear, selectedMonth, d);
+      const div = document.createElement("div");
+      div.className = "cal-picker__item doto" +
+          (d === selectedDay ? " is-selected" : "") +
+          (hasEvent ? " has-event" : "") +
+          (sat ? " is-saturday" : "");
+      const dayNames = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+      const dayName = dayNames[new Date(selectedYear, selectedMonth - 1, d).getDay()];
+      div.innerHTML = `<span class="cal-day-num">${String(d).padStart(2, "0")}</span><span class="cal-day-name">${dayName}</span>`;
+      div.dataset.day = d;
+      dayScroll.appendChild(div);
+    }
+    dayScroll.scrollTop = (selectedDay - 1) * 56;
+  }
+
+  function applyMobileLayout() {
+    const dayPicker = document.getElementById("calDayPicker");
+    if (isMobile()) {
+      dayGrid.style.display = "none";
+      dayPicker.style.display = "flex";
+      buildDayPicker();
+      // auto-show event for selected day
+      const event = getEventForDay(selectedYear, selectedMonth, selectedDay);
+      if (event) showPopup(event, null);
+      else {
+        const firstEvent = getEventsForMonth(selectedYear, selectedMonth)[0];
+        if (firstEvent) {
+          selectedDay = firstEvent.day;
+          buildDayPicker();
+          showPopup(firstEvent, null);
+        } else {
+          popup.classList.remove("is-visible");
+        }
+      }
+    } else {
+      dayGrid.style.display = "";
+      dayPicker.style.display = "none";
+      buildDayGrid();
+    }
   }
 
   function buildDayGrid() {
@@ -183,7 +266,28 @@ function initCalendar() {
     }
   }
 
+  function buildGoogleCalLink(event) {
+    const pad = (n) => String(n).padStart(2, "0");
+    const [h, m] = event.time.split(":").map(Number);
+    const start = `${event.year}${pad(event.month)}${pad(event.day)}T${pad(h)}${pad(m)}00`;
+    // end = 2 hours later
+    const endH = h + 2;
+    const end = `${event.year}${pad(event.month)}${pad(event.day)}T${pad(endH)}${pad(m)}00`;
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: event.title,
+      dates: `${start}/${end}`,
+      details: event.desc + (event.youtube ? `\n${event.youtube}` : ""),
+    });
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  }
+
+  let popupCountdownTimer = null;
+
   function showPopup(event, cell) {
+    // Clear any running popup countdown
+    if (popupCountdownTimer) { clearInterval(popupCountdownTimer); popupCountdownTimer = null; }
+
     const eventTime = getEventDateTime(event);
     const now = new Date();
     const diff = eventTime - now;
@@ -193,15 +297,18 @@ function initCalendar() {
       <div class="cal-popup__inner">
         <div class="cal-popup__info">
           <div class="cal-popup__date doto">${String(event.day).padStart(2, "0")} ${MONTHS[event.month - 1]}</div>
-          <div class="cal-popup__tag doto">${event.type}</div>
-          <div class="cal-popup__title doto">${event.title}</div>
-          <div class="cal-popup__sub">${event.desc}</div>
+          ${event.type ? `<div class="cal-popup__tag doto">${event.type}</div>` : ""}
+          <div class="cal-popup__title doto">${event.artist || event.title}</div>
+          ${event.event ? `<div class="cal-popup__sub">${event.event}</div>` : ""}
           <div class="cal-popup__time doto">
             <span class="cal-popup__dot"></span>
             ${MONTHS[event.month - 1]} ${event.day}, ${event.year} — ${event.time}
           </div>
           <div class="cal-popup__countdown doto" id="popupCountdown"></div>
-          ${isReleased && event.youtube ? `<a class="cal-popup__released doto" href="${event.youtube}" target="_blank">▶ WATCH ON YOUTUBE</a>` : ""}
+          ${isReleased && event.youtube
+        ? `<a class="cal-popup__released doto" href="${event.youtube}" target="_blank">▶ WATCH ON YOUTUBE</a>`
+        : ""
+    }
         </div>
         ${event.image ? `<div class="cal-popup__img"><img src="${event.image}" alt="" /></div>` : ""}
       </div>
@@ -219,6 +326,7 @@ function initCalendar() {
           if (remaining <= 0) {
             cdEl.textContent = "";
             clearInterval(timerId);
+            popupCountdownTimer = null;
             // Show released link
             const rel = popup.querySelector(".cal-popup__released");
             if (!rel && event.youtube) {
@@ -233,16 +341,16 @@ function initCalendar() {
             cdEl.textContent = formatCountdown(remaining);
           }
         }, 1000);
+        popupCountdownTimer = timerId;
         cdEl.textContent = formatCountdown(diff);
       }
     }
     dayGrid.querySelectorAll(".cal-cell").forEach(c => { c.classList.remove("is-active"); c.classList.remove("is-active-empty"); });
-    cell.classList.add("is-active");
+    if (cell) cell.classList.add("is-active");
   }
 
   function showEmpty(day, cell) {
-    // If already active-empty, toggle off
-    if (cell.classList.contains("is-active-empty")) {
+    if (cell && cell.classList.contains("is-active-empty")) {
       cell.classList.remove("is-active-empty");
       popup.classList.remove("is-visible");
       return;
@@ -256,11 +364,13 @@ function initCalendar() {
       </div>
     `;
     popup.classList.add("is-visible");
-    dayGrid.querySelectorAll(".cal-cell").forEach(c => {
-      c.classList.remove("is-active");
-      c.classList.remove("is-active-empty");
-    });
-    cell.classList.add("is-active-empty");
+    if (cell) {
+      dayGrid.querySelectorAll(".cal-cell").forEach(c => {
+        c.classList.remove("is-active");
+        c.classList.remove("is-active-empty");
+      });
+      cell.classList.add("is-active-empty");
+    }
   }
 
   let monthTimer;
@@ -269,8 +379,10 @@ function initCalendar() {
     monthTimer = setTimeout(() => {
       const idx = Math.round(monthScroll.scrollTop / 44);
       selectedMonth = Math.max(1, Math.min(12, idx + 1));
+      selectedDay = 1;
       buildMonthPicker();
-      buildDayGrid();
+      if (isMobile()) applyMobileLayout();
+      else buildDayGrid();
     }, 80);
   });
 
@@ -278,13 +390,48 @@ function initCalendar() {
     const item = e.target.closest(".cal-picker__item");
     if (!item) return;
     selectedMonth = Number(item.dataset.month);
+    selectedDay = 1;
     monthScroll.scrollTo({ top: (selectedMonth - 1) * 44, behavior: "smooth" });
     buildMonthPicker();
-    buildDayGrid();
+    if (isMobile()) applyMobileLayout();
+    else buildDayGrid();
+  });
+
+  // Day picker listeners (mobile)
+  let dayTimer;
+  dayScroll.addEventListener("scroll", () => {
+    clearTimeout(dayTimer);
+    dayTimer = setTimeout(() => {
+      const idx = Math.round(dayScroll.scrollTop / 56);
+      const days = getDaysInMonth(selectedYear, selectedMonth);
+      selectedDay = Math.max(1, Math.min(days, idx + 1));
+      buildDayPicker();
+      const event = getEventForDay(selectedYear, selectedMonth, selectedDay);
+      if (event) showPopup(event, null);
+      else showEmpty(selectedDay, null);
+    }, 80);
+  });
+
+  dayScroll.addEventListener("click", e => {
+    const item = e.target.closest(".cal-picker__item");
+    if (!item) return;
+    selectedDay = Number(item.dataset.day);
+    dayScroll.scrollTo({ top: (selectedDay - 1) * 56, behavior: "smooth" });
+    buildDayPicker();
+    const event = getEventForDay(selectedYear, selectedMonth, selectedDay);
+    if (event) showPopup(event, null);
+    else showEmpty(selectedDay, null);
+  });
+
+  // Resize handler — debounced
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => applyMobileLayout(), 150);
   });
 
   buildMonthPicker();
-  buildDayGrid();
+  applyMobileLayout();
 }
 
 if (document.readyState === "loading") {

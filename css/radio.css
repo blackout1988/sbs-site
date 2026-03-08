@@ -1,5 +1,5 @@
 /* ================================
-   SBS RADIO — Styles (Pulse Circle)
+   SBS RADIO — Styles
    ================================ */
 
 .radio-wrap {
@@ -7,7 +7,6 @@
     flex: 0 0 auto;
 }
 
-/* ---- Main Button ---- */
 .radio-btn {
     display: flex;
     align-items: center;
@@ -35,32 +34,43 @@
     line-height: 1;
 }
 
-/* ---- Pulse Icon ---- */
+/* ---- Pulse container ---- */
 .radio-btn__pulse {
     position: relative;
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Inner solid dot */
+/* Inner solid dot — flex container too */
 .radio-pulse__dot {
     position: absolute;
-    width: 7px;
-    height: 7px;
+    top: 50%;
+    left: 50%;
+    margin-top: -6px;
+    margin-left: -6px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #FE0000;
     z-index: 1;
-    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Two pulsing rings */
+/* Two pulsing rings — also explicitly centered */
 .radio-pulse__ring {
     position: absolute;
-    width: 7px;
-    height: 7px;
+    top: 50%;
+    left: 50%;
+    margin-top: -6px;
+    margin-left: -6px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     border: 1.5px solid #FE0000;
     opacity: 0;
@@ -75,7 +85,33 @@
     100% { transform: scale(3.2); opacity: 0;   }
 }
 
-/* Playing state — dot turns bright, rings speed up */
+/* ---- SVG icons — inside the dot, centered via flex ---- */
+.radio-pulse__icon {
+    position: absolute;
+    z-index: 2;
+    width: 7px;
+    height: 7px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+    display: none;
+}
+
+/* default — play visible */
+.radio-pulse__icon--play  { display: block; }
+.radio-pulse__icon--pause { display: none;  }
+
+/* playing — pause visible */
+.radio-btn__pulse.is-playing .radio-pulse__icon--play  { display: none;  }
+.radio-btn__pulse.is-playing .radio-pulse__icon--pause { display: block; }
+
+/* hover / touch — reveal */
+.radio-btn:hover .radio-pulse__icon,
+.radio-btn.touched .radio-pulse__icon {
+    opacity: 1;
+}
+
+/* Playing state */
 .radio-btn__pulse.is-playing .radio-pulse__dot {
     background: #ff4444;
     box-shadow: 0 0 6px rgba(254, 0, 0, 0.8);
@@ -87,120 +123,72 @@
 }
 
 /* ================================
-   POPUP
-   ================================ */
-.radio-popup {
-    display: none;
-    position: absolute;
-    top: calc(100% + 12px);
-    right: 0;
-    width: 260px;
-    background: rgba(10, 10, 14, 0.97);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 14px;
-    padding: 14px 16px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(16px);
-    z-index: 100;
-}
-
-.radio-popup.is-open {
-    display: block;
-}
-
-.radio-popup__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.radio-popup__live {
-    font-size: 11px;
-    color: #FE0000;
-    letter-spacing: 1px;
-}
-
-.radio-popup__close {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 2px 4px;
-    line-height: 1;
-}
-
-.radio-popup__close:hover { color: var(--text); }
-
-.radio-popup__track {
-    font-size: 12px;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 12px;
-    opacity: 0.85;
-}
-
-.radio-popup__controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.radio-popup__play {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid rgba(254, 0, 0, 0.4);
-    background: rgba(254, 0, 0, 0.12);
-    color: var(--text);
-    font-size: 13px;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    transition: background 0.2s;
-}
-
-.radio-popup__play:hover {
-    background: rgba(254, 0, 0, 0.25);
-}
-
-.radio-popup__vol {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    flex: 1;
-    color: var(--muted);
-}
-
-.radio-popup__volSlider {
-    flex: 1;
-    height: 3px;
-    border-radius: 999px;
-    appearance: none;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    background: linear-gradient(90deg, var(--brand-red) 70%, rgba(255, 255, 255, 0.15) 70%);
-}
-
-.radio-popup__volSlider::-webkit-slider-thumb {
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #fff;
-    cursor: pointer;
-}
-
-/* ================================
    MOBILE
    ================================ */
 @media (max-width: 740px) {
-    .radio-btn__label { display: none; }
-    .radio-btn { padding: 7px 9px; gap: 0; }
-    .radio-popup { right: 0; width: 230px; }
+    .radio-btn__label { font-size: 10px; letter-spacing: 1px; }
+    .radio-btn { padding: 6px 10px 6px 8px; gap: 7px; }
+    .radio-label--full { display: none; }
+    .radio-btn__label-wrap { min-width: 35px; }
+}
+
+/* ================================
+   LABEL ANIMATION
+   ================================ */
+.radio-btn__label-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    min-width: 95px;
+}
+
+@media (max-width: 740px) {
+    .radio-btn__label-wrap {
+        min-width: 35px;
+    }
+}
+
+.radio-btn__label,
+.radio-btn__track {
+    position: absolute;
+    white-space: nowrap;
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #fff;
+    line-height: 1;
+}
+
+/* slide out down */
+@keyframes slideOutDown {
+    0%   { transform: translateY(0);    opacity: 1; }
+    100% { transform: translateY(16px); opacity: 0; }
+}
+
+/* slide in from left — marquee, stops at center */
+@keyframes marqueeIn {
+    0%   { transform: translateX(120%); opacity: 1; }
+    100% { transform: translateX(0);    opacity: 1; }
+}
+
+/* slide in from top */
+@keyframes slideInTop {
+    0%   { transform: translateY(-16px); opacity: 0; }
+    100% { transform: translateY(0);     opacity: 1; }
+}
+
+.radio-btn__label.anim-out,
+.radio-btn__track.anim-out {
+    animation: slideOutDown 0.3s ease forwards;
+}
+
+.radio-btn__track.anim-marquee {
+    animation: marqueeIn 4s linear forwards;
+}
+
+.radio-btn__label.anim-in {
+    animation: slideInTop 0.3s ease forwards;
 }

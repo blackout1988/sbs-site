@@ -88,24 +88,37 @@
                 <span class="radio-btn__pulse" id="radioDot">
                     <span class="radio-pulse__ring"></span>
                     <span class="radio-pulse__ring"></span>
-                    <span class="radio-pulse__dot"></span>
+                    <span class="radio-pulse__dot">
+                        <svg class="radio-pulse__icon radio-pulse__icon--play" id="radioPulseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 8">
+                            <rect x="0" y="0" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="1.6" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="1.6" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.2" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="1.6" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="6.4" width="1.2" height="1.2" fill="white"/>
+                        </svg>
+                        <svg class="radio-pulse__icon radio-pulse__icon--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 8">
+                            <rect x="0" y="0" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="6.4" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="0" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="6.4" width="1.2" height="1.2" fill="white"/>
+                        </svg>
+                    </span>
                 </span>
-                <span class="radio-btn__label doto">LIVE RADIO</span>
+                <span class="radio-btn__label-wrap">
+                    <span class="radio-btn__label doto" id="radioLabel">LIVE<span class="radio-label--full"> RADIO</span></span>
+                    <span class="radio-btn__track doto" id="radioTrackLabel"></span>
+                </span>
             </button>
-            <div class="radio-popup" id="radioPopup" aria-hidden="true">
-                <div class="radio-popup__header">
-                    <span class="radio-popup__live doto">● LIVE</span>
-                    <button class="radio-popup__close" id="radioClose" type="button">✕</button>
-                </div>
-                <div class="radio-popup__track doto" id="radioTrack">Loading...</div>
-                <div class="radio-popup__controls">
-                    <button class="radio-popup__play" id="radioPlayBtn" type="button">▶</button>
-                    <div class="radio-popup__vol">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 10v4c0 .55.45 1 1 1h3l4 3c.66.5 1.6.03 1.6-.8V6.8c0-.83-.94-1.3-1.6-.8L7 9H4c-.55 0-1 .45-1 1Zm14.5 2a3.5 3.5 0 0 0-2.04-3.18c-.5-.22-1.08.02-1.3.52-.22.5.02 1.08.52 1.3a1.5 1.5 0 0 1 0 2.72c-.5.22-.74.8-.52 1.3.16.36.51.58.91.58.13 0 .27-.03.39-.08A3.5 3.5 0 0 0 17.5 12Z"/></svg>
-                        <input class="radio-popup__volSlider" id="radioVol" type="range" min="0" max="100" value="70">
-                    </div>
-                </div>
-            </div>
         </div>
 
         <nav class="links" aria-label="Social media">
