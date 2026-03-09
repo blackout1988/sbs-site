@@ -503,23 +503,20 @@
         }
     };
 
-    window.doLogin = doLogin;
-    window.doLogout = doLogout;
-
-    document.getElementById("loginBtn").addEventListener("click", doLogin);
-    document.getElementById("logoutBtn").addEventListener("click", doLogout);
-    document.addEventListener("keydown", e => {
-        if (e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none") {
-            doLogin();
-        }
-    });
-
     window.doLogout = function() {
         document.getElementById("adminScreen").style.display = "none";
         document.getElementById("loginScreen").style.display = "flex";
         document.getElementById("loginUser").value = "";
         document.getElementById("loginPass").value = "";
     };
+
+    document.getElementById("loginBtn").addEventListener("click", window.doLogin);
+    document.getElementById("logoutBtn").addEventListener("click", window.doLogout);
+    document.addEventListener("keydown", e => {
+        if (e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none") {
+            window.doLogin();
+        }
+    });
 
     window.setFilter = function(filter, btn) {
         currentFilter = filter;
