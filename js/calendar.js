@@ -258,15 +258,16 @@ async function initCalendar() {
 
     const dots = document.createElement("div");
     dots.className = "cal-carousel__dots";
-    allEvents.forEach((_, i) => {
-      const dot = document.createElement("span");
+    allEvents.forEach((ev, i) => {
+      const dot = document.createElement("div");
       dot.className = "cal-carousel__dot" + (i === 0 ? " is-active" : "");
       dot.dataset.idx = i;
+      dot.innerHTML = `<span class="cal-dot__day doto">${String(ev.day).padStart(2,"0")}</span><span class="cal-dot__month doto">${MONTHS[ev.month-1].slice(0,3)}</span>`;
       dots.appendChild(dot);
     });
 
-    carousel.appendChild(track);
     carousel.appendChild(dots);
+    carousel.appendChild(track);
     calWrap.appendChild(carousel);
 
     function goTo(idx) {
