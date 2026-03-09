@@ -7,7 +7,7 @@
     <!-- ====== SEO ====== -->
     <title>7TH BLOCK SOCIETY — Music • Space • Talk</title>
     <meta name="description" content="7TH BLOCK SOCIETY — Georgian music collective. House, Deep House and more. Listen to our latest episodes and mixes. / ქართული მუსიკალური კოლექტივი — მოუსმინე ბოლო ეპიზოდებს." />
-    <meta name="keywords" content="7th block society, SBS, Georgian music, house music, deep house, podcast, mix, ქართული მუსიკა, ჰაუს მუსიკა, მიქსი, ეპიზოდი" />
+    <meta name="keywords" content="7th block society, SBS, Georgian music, house music, deep house, techno, minimal techno, organic house, melodic techno, ambient, electronic music, podcast, DJ mix, Tbilisi, Georgia, collective, ქართული მუსიკა, ჰაუს მუსიკა, ტექნო, მიქსი, ეპიზოდი, პოდქასთი" />
     <meta name="author" content="7TH BLOCK SOCIETY" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#FE0000" />
@@ -44,11 +44,12 @@
     <!-- Doto font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100;400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css?v=2" />
     <link rel="stylesheet" href="css/calendar.css" />
     <link rel="stylesheet" href="css/radio.css?v=2" />
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -73,10 +74,11 @@
 
     <!-- CENTER: Nav menu (desktop) -->
     <nav class="nav-menu" id="navMenu">
+        <a href="#" class="nav-menu__item doto" id="homeBtn">Home</a>
         <a href="#episodesAnchor" class="nav-menu__item doto">Episodes</a>
         <a href="#upcoming" class="nav-menu__item doto">Upcoming Events</a>
-        <a href="#" class="nav-menu__item doto">Mixes</a>
-        <a href="#" class="nav-menu__item doto">About</a>
+        <a href="#" class="nav-menu__item doto" id="mixesBtn">Mixes</a>
+        <a href="#about" class="nav-menu__item doto">About</a>
         <a href="#" class="nav-menu__item doto">Contact</a>
     </nav>
 
@@ -147,10 +149,11 @@
 
 <!-- Mobile dropdown menu -->
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="#" class="mobile-menu__item doto" id="homeBtnMobile">Home</a>
     <a href="#episodesAnchor" class="mobile-menu__item doto">Episodes</a>
     <a href="#upcoming" class="mobile-menu__item doto">Upcoming Events</a>
-    <a href="#" class="mobile-menu__item doto">Mixes</a>
-    <a href="#" class="mobile-menu__item doto">About</a>
+    <a href="#" class="mobile-menu__item doto" id="mixesBtnMobile">Mixes</a>
+    <a href="#about" class="mobile-menu__item doto">About</a>
     <a href="#" class="mobile-menu__item doto">Contact</a>
 </div>
 
@@ -219,6 +222,7 @@
         <div class="upcoming__calendar" id="upcomingCalendar">
             <!-- Calendar injected by JS -->
         </div>
+
     </section>
 </main>
 
@@ -384,6 +388,277 @@
         <span class="footer__bottom-sub">Music • Space • Talk</span>
     </div>
 </footer>
+
+<!-- ===== ABOUT MODAL ===== -->
+<div class="about-modal" id="aboutModal">
+    <div class="about-modal__overlay" id="aboutOverlay"></div>
+    <div class="about-modal__box">
+        <button class="about-modal__close doto" id="aboutClose">✕</button>
+        <div class="about-grid">
+            <div class="about-left">
+                <div class="about-logo">
+                    <div class="sbs-logo" aria-label="SBS logo">
+                        <div class="sbs-box" style="width:56px;height:56px;font-size:28px;border-radius:12px;">S</div>
+                        <div class="sbs-box" style="width:56px;height:56px;font-size:28px;border-radius:12px;">B</div>
+                        <div class="sbs-box" style="width:56px;height:56px;font-size:28px;border-radius:12px;">S</div>
+                    </div>
+                </div>
+                <div class="about-brand-text" style="text-align:center;">
+                    <div class="about-brand-title doto">7TH BLOCK SOCIETY</div>
+                    <div class="about-brand-sub">Music • Space • Talk</div>
+                </div>
+                <div class="about-socials">
+                    <a href="https://www.instagram.com/7thblocksociety/" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--ig">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+                        INSTAGRAM
+                    </a>
+                    <a href="https://soundcloud.com/7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--sc">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg>
+                        SOUNDCLOUD
+                    </a>
+                    <a href="https://www.youtube.com/@7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--yt">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+                        YOUTUBE
+                    </a>
+                    <a href="https://www.tiktok.com/@7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--tt">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>
+                        TIKTOK
+                    </a>
+                </div>
+            </div>
+            <div class="about-right">
+                <div class="about-kicker doto">ABOUT US</div>
+                <div class="about-divider"></div>
+                <div class="about-text">
+                    <p class="doto"><strong>7TH BLOCK SOCIETY</strong> is a Georgian music collective — electronic music beyond clubs, integrated into life, spaces and mindset.</p>
+                    <p class="doto">We don't stick to one sound. Our space is open to every rhythm, every mood, every frequency that moves people — House, Deep House, Techno, Minimal, Organic, Melodic and everything in between.</p>
+                    <p class="doto">Music • Space • Talk — three words that define everything we do. We create sounds, explore spaces and speak the language of music.</p>
+                </div>
+                <div class="about-tags">
+                    <span class="about-tag doto">HOUSE</span>
+                    <span class="about-tag doto">DEEP HOUSE</span>
+                    <span class="about-tag doto">TECHNO</span>
+                    <span class="about-tag doto">MINIMAL</span>
+                    <span class="about-tag doto">ORGANIC HOUSE</span>
+                    <span class="about-tag doto">MELODIC TECHNO</span>
+                    <span class="about-tag doto">ELECTRONIC</span>
+                    <span class="about-tag doto">AMBIENT</span>
+                    <span class="about-tag doto">TBILISI</span>
+                    <span class="about-tag doto">COLLECTIVE</span>
+                    <span class="about-tag doto">PODCAST</span>
+                    <span class="about-tag doto">DJ MIX</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const aboutModal   = document.getElementById("aboutModal");
+    const aboutClose   = document.getElementById("aboutClose");
+    const aboutOverlay = document.getElementById("aboutOverlay");
+
+    document.querySelectorAll("a[href='#about'], a[href='about.html']").forEach(el => {
+        el.addEventListener("click", e => {
+            e.preventDefault();
+            aboutModal.classList.add("is-open");
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    function closeAbout() {
+        aboutModal.classList.remove("is-open");
+        document.body.style.overflow = "";
+    }
+
+    aboutClose.addEventListener("click", closeAbout);
+    aboutOverlay.addEventListener("click", closeAbout);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeAbout(); });
+</script>
+
+<!-- ===== MIXES MODAL ===== -->
+<div class="about-modal" id="mixesModal">
+    <div class="about-modal__overlay" id="mixesOverlay"></div>
+    <div class="about-modal__box">
+        <button class="about-modal__close doto" id="mixesClose">✕</button>
+        <div class="mixes-modal__header">
+            <div class="about-kicker doto">SUBMIT YOUR MIX</div>
+            <div class="about-divider"></div>
+            <p class="mixes-modal__sub doto">ARE YOU AN ARTIST? SEND US YOUR MIX AND WE'LL CONSIDER IT FOR OUR PODCAST.</p>
+        </div>
+        <form class="mixes-form" id="mixesForm" novalidate>
+            <div class="mixes-form__row">
+                <div class="mixes-form__field">
+                    <label class="mixes-form__label doto">ARTIST NAME *</label>
+                    <input class="mixes-form__input doto" type="text" name="artist" placeholder="YOUR STAGE NAME" />
+                    <span class="mixes-form__error doto" data-field="artist"></span>
+                </div>
+                <div class="mixes-form__field">
+                    <label class="mixes-form__label doto">EMAIL *</label>
+                    <input class="mixes-form__input doto" type="text" name="email" placeholder="YOUR@EMAIL.COM" />
+                    <span class="mixes-form__error doto" data-field="email"></span>
+                </div>
+            </div>
+            <div class="mixes-form__row">
+                <div class="mixes-form__field">
+                    <label class="mixes-form__label doto">PHONE NUMBER *</label>
+                    <input class="mixes-form__input doto" type="text" name="phone" placeholder="+995 555 000 000" />
+                    <span class="mixes-form__error doto" data-field="phone"></span>
+                </div>
+                <div class="mixes-form__field">
+                    <label class="mixes-form__label doto">GENRE *</label>
+                    <select class="mixes-form__input mixes-form__select doto" name="genre">
+                        <option value="" disabled selected>SELECT GENRE</option>
+                        <option>HOUSE</option>
+                        <option>DEEP HOUSE</option>
+                        <option>TECHNO</option>
+                        <option>MINIMAL TECHNO</option>
+                        <option>ORGANIC HOUSE</option>
+                        <option>MELODIC TECHNO</option>
+                        <option>AMBIENT</option>
+                        <option>OTHER</option>
+                    </select>
+                    <span class="mixes-form__error doto" data-field="genre"></span>
+                </div>
+            </div>
+            <div class="mixes-form__field">
+                <label class="mixes-form__label doto">MIX LINK * <span style="opacity:0.4;font-size:10px;">(SOUNDCLOUD / MIXCLOUD / DROPBOX)</span></label>
+                <input class="mixes-form__input doto" type="text" name="mix_link" placeholder="HTTPS://SOUNDCLOUD.COM/..." />
+                <span class="mixes-form__error doto" data-field="mix_link"></span>
+            </div>
+            <div class="mixes-form__field">
+                <label class="mixes-form__label doto">SOCIAL LINK * <span style="opacity:0.4;font-size:10px;">(INSTAGRAM / SOUNDCLOUD / FACEBOOK)</span></label>
+                <input class="mixes-form__input doto" type="text" name="instagram" placeholder="HTTPS://INSTAGRAM.COM/  OR  SOUNDCLOUD.COM/  OR  FACEBOOK.COM/" />
+                <span class="mixes-form__error doto" data-field="socials"></span>
+            </div>
+            <div class="mixes-form__field">
+                <label class="mixes-form__label doto">MESSAGE *</label>
+                <textarea class="mixes-form__input mixes-form__textarea doto" name="message" placeholder="TELL US ABOUT YOURSELF AND YOUR MUSIC..."></textarea>
+                <span class="mixes-form__error doto" data-field="message"></span>
+            </div>
+            <button class="mixes-form__submit doto" type="submit">SEND APPLICATION →</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // HOME
+    ["homeBtn","homeBtnMobile"].forEach(id => {
+        document.getElementById(id)?.addEventListener("click", e => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    });
+
+    // MIXES MODAL
+    const mixesModal   = document.getElementById("mixesModal");
+    const mixesClose   = document.getElementById("mixesClose");
+    const mixesOverlay = document.getElementById("mixesOverlay");
+
+    ["mixesBtn","mixesBtnMobile"].forEach(id => {
+        document.getElementById(id)?.addEventListener("click", e => {
+            e.preventDefault();
+            mixesModal.classList.add("is-open");
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    function closeMixes() {
+        mixesModal.classList.remove("is-open");
+        document.body.style.overflow = "";
+    }
+    mixesClose.addEventListener("click", closeMixes);
+    mixesOverlay.addEventListener("click", closeMixes);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") { closeMixes(); } });
+
+    document.getElementById("mixesForm")?.addEventListener("submit", e => {
+        e.preventDefault();
+        const form = e.target;
+        let valid = true;
+
+        function err(field, msg) {
+            const el = form.querySelector(`[data-field="${field}"]`);
+            const input = form.querySelector(`[name="${field}"]`);
+            if (el) el.textContent = msg;
+            if (input) input.classList.add("is-error");
+            valid = false;
+        }
+        function ok(field) {
+            const el = form.querySelector(`[data-field="${field}"]`);
+            const input = form.querySelector(`[name="${field}"]`);
+            if (el) el.textContent = "";
+            if (input) input.classList.remove("is-error");
+        }
+
+        const v = name => form.querySelector(`[name="${name}"]`)?.value.trim() || "";
+
+        // Artist
+        v("artist") ? ok("artist") : err("artist", "REQUIRED");
+
+        // Email — must contain @ and domain
+        const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        emailRx.test(v("email")) ? ok("email") : err("email", "ENTER A VALID EMAIL ADDRESS");
+
+        // Phone — only digits, +, spaces, dashes, min 7 digits
+        const phoneDigits = v("phone").replace(/\D/g, "");
+        phoneDigits.length >= 7 ? ok("phone") : err("phone", "ENTER A VALID PHONE NUMBER (DIGITS ONLY)");
+
+        // Genre
+        v("genre") ? ok("genre") : err("genre", "SELECT A GENRE");
+
+        // Mix link — must start with http
+        /^https?:\/\//i.test(v("mix_link")) ? ok("mix_link") : err("mix_link", "ENTER A VALID URL (HTTPS://...)");
+
+        // Social — one link, must match instagram/soundcloud/facebook
+        const social = v("instagram");
+        const socialOk = /^https?:\/\/(www\.)?(instagram\.com|soundcloud\.com|facebook\.com)\//i.test(social);
+        if (!social) {
+            err("socials", "ENTER YOUR SOCIAL LINK");
+        } else if (!socialOk) {
+            err("socials", "LINK MUST BE INSTAGRAM, SOUNDCLOUD OR FACEBOOK");
+        } else {
+            ok("socials");
+        }
+
+        // Message
+        v("message").length >= 10 ? ok("message") : err("message", "PLEASE WRITE SOMETHING ABOUT YOURSELF");
+
+        if (!valid) return;
+
+        const btn = form.querySelector(".mixes-form__submit");
+        btn.textContent = "SENDING...";
+        btn.disabled = true;
+
+        // EmailJS
+        emailjs.init("LpkCg8CzswqSAUs4Y");
+
+        const templateParams = {
+            artist:    v("artist"),
+            email:     v("email"),
+            phone:     v("phone"),
+            genre:     v("genre"),
+            mix_link:  v("mix_link"),
+            social:    v("instagram"),
+            message:   v("message"),
+            to_email:  v("email"),
+            to_name:   v("artist"),
+            name:      v("artist"),
+            reply_to:  v("email"),
+        };
+
+        emailjs.send("service_ssyvzwa", "template_k47rh2b", templateParams)
+            .then(() => {
+                btn.textContent = "SENT! WE'LL BE IN TOUCH ✓";
+                btn.style.background = "rgba(255,255,255,0.08)";
+                btn.style.borderColor = "rgba(255,255,255,0.20)";
+            })
+            .catch(() => {
+                btn.textContent = "ERROR — TRY AGAIN";
+                btn.style.borderColor = "rgba(254,0,0,0.50)";
+                btn.disabled = false;
+            });
+    });
+</script>
 
 </body>
 </html>
