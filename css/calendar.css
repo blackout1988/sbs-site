@@ -441,3 +441,69 @@
     .cal-popup__date  { font-size: 28px; }
     .cal-popup__title { font-size: 15px; }
 }
+/* ================================
+   MOBILE CAROUSEL
+   ================================ */
+.cal-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.cal-carousel__track {
+    display: flex;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.cal-carousel__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    background: rgba(254,0,0,0.08);
+    border: 1px solid rgba(254,0,0,0.35);
+    border-radius: 5px;
+    padding: 17px;
+    box-sizing: border-box;
+}
+
+.cal-carousel__btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+.cal-carousel__btn:hover { background: rgba(254,0,0,0.5); }
+.cal-carousel__btn--prev { left: 6px; }
+.cal-carousel__btn--next { right: 6px; }
+
+.cal-carousel__dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.cal-carousel__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.cal-carousel__dot.is-active {
+    background: var(--brand-red);
+}

@@ -203,28 +203,126 @@ async function initCalendar() {
     dayScroll.scrollTop = (selectedDay - 1) * 56;
   }
 
+  function buildMobileCarousel() {
+    const calWrap = container.querySelector(".cal-wrap");
+    const existing = container.querySelector(".cal-carousel");
+    if (existing) existing.remove();
+
+    const allEvents = SBS_EVENTS.slice().sort((a, b) => {
+      return new Date(a.year, a.month - 1, a.day) - new Date(b.year, b.month - 1, b.day);
+    });
+
+    if (!allEvents.length) return;
+
+    let currentSlide = 0;
+
+    const carousel = document.createElement("div");
+    carousel.className = "cal-carousel";
+
+    const track = document.createElement("div");
+    track.className = "cal-carousel__track";
+
+    allEvents.forEach((event, i) => {
+      const slide = document.createElement("div");
+      slide.className = "cal-carousel__slide";
+      const eventTime = getEventDateTime(event);
+      const diff = eventTime - new Date();
+      const isReleased = diff <= 0;
+      slide.innerHTML = `
+        <div class="cal-popup__inner">
+          <div class="cal-popup__info">
+            <div class="cal-popup__date doto">${String(event.day).padStart(2,"0")} ${MONTHS[event.month-1]}</div>
+            ${event.type ? `<div class="cal-popup__tag doto">${event.type}</div>` : ""}
+            <div class="cal-popup__title doto">${event.artist || event.title}</div>
+            ${event.event ? `<div class="cal-popup__sub">${event.event}</div>` : ""}
+            <div class="cal-popup__time doto">
+              <span class="cal-popup__dot"></span>
+              ${MONTHS[event.month-1]} ${event.day}, ${event.year} — ${event.time}
+            </div>
+            <div class="cal-popup__countdown doto" data-eventidx="${i}"></div>
+            ${isReleased && event.youtube ? `<a class="cal-popup__released doto" href="${event.youtube}" target="_blank">▶ WATCH ON YOUTUBE</a>` : ""}
+          </div>
+          ${event.image ? `<div class="cal-popup__img"><img src="${event.image}" alt="" /></div>` : ""}
+        </div>
+      `;
+      track.appendChild(slide);
+    });
+
+    const prev = document.createElement("button");
+    prev.className = "cal-carousel__btn cal-carousel__btn--prev doto";
+    prev.textContent = "←";
+
+    const next = document.createElement("button");
+    next.className = "cal-carousel__btn cal-carousel__btn--next doto";
+    next.textContent = "→";
+
+    const dots = document.createElement("div");
+    dots.className = "cal-carousel__dots";
+    allEvents.forEach((_, i) => {
+      const dot = document.createElement("span");
+      dot.className = "cal-carousel__dot" + (i === 0 ? " is-active" : "");
+      dot.dataset.idx = i;
+      dots.appendChild(dot);
+    });
+
+    carousel.appendChild(track);
+    carousel.appendChild(dots);
+    calWrap.appendChild(carousel);
+
+    function goTo(idx) {
+      currentSlide = Math.max(0, Math.min(allEvents.length - 1, idx));
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.querySelectorAll(".cal-carousel__dot").forEach((d, i) => {
+        d.classList.toggle("is-active", i === currentSlide);
+      });
+    }
+
+    prev.addEventListener("click", () => goTo(currentSlide - 1));
+    next.addEventListener("click", () => goTo(currentSlide + 1));
+    dots.addEventListener("click", e => {
+      const dot = e.target.closest(".cal-carousel__dot");
+      if (dot) goTo(Number(dot.dataset.idx));
+    });
+
+    let touchStartX = 0;
+    track.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener("touchend", e => {
+      const d = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(d) > 40) goTo(d > 0 ? currentSlide + 1 : currentSlide - 1);
+    });
+
+    allEvents.forEach((event, i) => {
+      const cdEl = track.querySelector(`[data-eventidx="${i}"]`);
+      if (!cdEl) return;
+      const remaining = getEventDateTime(event) - new Date();
+      if (remaining <= 0) { cdEl.textContent = ""; return; }
+      cdEl.textContent = formatCountdown(remaining);
+      const timer = setInterval(() => {
+        const r = getEventDateTime(event) - new Date();
+        if (r <= 0) { cdEl.textContent = ""; clearInterval(timer); }
+        else { cdEl.textContent = formatCountdown(r); }
+      }, 1000);
+    });
+
+    goTo(0);
+  }
+
   function applyMobileLayout() {
     const dayPicker = document.getElementById("calDayPicker");
     if (isMobile()) {
       dayGrid.style.display = "none";
-      dayPicker.style.display = "flex";
-      buildDayPicker();
-      // auto-show event for selected day
-      const event = getEventForDay(selectedYear, selectedMonth, selectedDay);
-      if (event) showPopup(event, null);
-      else {
-        const firstEvent = getEventsForMonth(selectedYear, selectedMonth)[0];
-        if (firstEvent) {
-          selectedDay = firstEvent.day;
-          buildDayPicker();
-          showPopup(firstEvent, null);
-        } else {
-          popup.classList.remove("is-visible");
-        }
-      }
+      if (dayPicker) dayPicker.style.display = "none";
+      const pickers = container.querySelector(".cal-pickers-row");
+      if (pickers) pickers.style.display = "none";
+      popup.classList.remove("is-visible");
+      buildMobileCarousel();
     } else {
       dayGrid.style.display = "";
-      dayPicker.style.display = "none";
+      if (dayPicker) dayPicker.style.display = "none";
+      const pickers = container.querySelector(".cal-pickers-row");
+      if (pickers) pickers.style.display = "";
+      const carousel = container.querySelector(".cal-carousel");
+      if (carousel) carousel.remove();
       buildDayGrid();
     }
   }

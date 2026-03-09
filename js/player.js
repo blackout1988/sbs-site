@@ -240,7 +240,11 @@ let activeIndex = -1;
 let userInitiated = false; // only highlight card after user clicks
 
 const PAGE_SIZE = 6;
-let visibleCount = PAGE_SIZE;
+const MOBILE_PAGE_SIZE = 3;
+function getPageSize() {
+  return window.innerWidth <= 640 ? MOBILE_PAGE_SIZE : PAGE_SIZE;
+}
+let visibleCount = getPageSize();
 
 let barEls = [];
 let currentDurationMs = 0;
@@ -662,12 +666,12 @@ function init(){
   const searchInput = document.getElementById("episodeSearch");
   searchInput?.addEventListener("input", ()=>{
     searchQuery = searchInput.value.toLowerCase().trim();
-    visibleCount = PAGE_SIZE;
+    visibleCount = getPageSize();
     renderEpisodes();
   });
 
   moreBtn?.addEventListener("click", ()=>{
-    visibleCount += PAGE_SIZE;
+    visibleCount += getPageSize();
     renderEpisodes();
   });
 

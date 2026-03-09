@@ -112,21 +112,42 @@ body{
 .episodes{ margin-top: 34px; }
 
 .episodes__head{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
     margin-bottom: 14px;
+    align-items: center;
 }
-.episodes__title h2{ margin:0; font-size:22px; }
+.episodes__title h2{ margin:0; font-size:22px; white-space:nowrap; }
+
+.episodes__search{
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 5px;
+    padding: 0 14px;
+    height: 36px;
+    width: 100%;
+    color: rgba(255,255,255,0.80);
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s, background 0.15s;
+}
+.episodes__search::placeholder{ color: rgba(255,255,255,0.25); }
+.episodes__search:focus{
+    border-color: rgba(254,0,0,0.40);
+    background: rgba(254,0,0,0.04);
+}
 
 .muted{ color:var(--muted); font-size: 13px; margin-top:6px; }
 
 .sort{
     display:flex;
     flex-wrap:nowrap;
-    gap:10px;
-    justify-content:flex-end;
+    gap:6px;
+    height: 36px;
 }
 
 .sort__btn{
@@ -134,14 +155,16 @@ body{
     background: rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.92);
     border-radius: 5px;
-    padding: 10px 14px;
+    padding: 0 14px;
+    height: 100%;
+    flex: 1;
     cursor:pointer;
     transition: 0.12s ease;
-
     font-family: "Doto", system-ui, sans-serif;
     letter-spacing: 0.6px;
     font-size: 12px;
     line-height: 1;
+    white-space: nowrap;
 }
 
 .sort__btn:hover{ background: rgba(255,255,255,0.10); }
@@ -159,11 +182,13 @@ body{
 }
 @media (max-width: 980px){
     .grid{ grid-template-columns: repeat(2, 1fr);}
+    .episodes__head{ grid-template-columns: repeat(2, 1fr); }
+    .episodes__title{ grid-column: 1 / -1; }
     .hero h1{ font-size: 48px; }
-    .episodes__head{ align-items:flex-start; }
 }
 @media (max-width: 640px){
     .grid{ grid-template-columns: 1fr;}
+    .episodes__head{ grid-template-columns: 1fr; }
     .hero h1{ font-size: 40px; }
 }
 
@@ -772,24 +797,15 @@ body{
 /* ============================
    EPISODES HEAD + SORT BAR
    ============================ */
-@media (max-width: 720px){
-    .episodes__head{
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
+@media (max-width: 720px) and (min-width: 641px){
     .sort{
-        width: 100%;
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         padding-bottom: 4px;
-        justify-content: flex-start;
     }
     .sort::-webkit-scrollbar{ display: none; }
-
     .sort__btn{
         white-space: nowrap;
         flex: 0 0 auto;
@@ -1823,91 +1839,10 @@ body {
     scroll-margin-top: 140px !important;
 }
 
-/* ============================
-   EPISODES HEAD — search + sort
-   ============================ */
-.episodes__head {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 14px;
-}
 
-.episodes__head-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-}
 
-/* Search input */
-.episodes__search {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 5px;
-    padding: 0 14px;
-    height: 36px;
-    color: rgba(255,255,255,0.80);
-    font-family: "Doto", system-ui, sans-serif;
-    font-size: 11px;
-    letter-spacing: 1px;
-    outline: none;
-    width: 220px;
-    box-sizing: border-box;
-    transition: border-color 0.15s, background 0.15s;
-}
 
-.episodes__search::placeholder {
-    color: rgba(255,255,255,0.25);
-}
 
-.episodes__search:focus {
-    border-color: rgba(254,0,0,0.40);
-    background: rgba(254,0,0,0.04);
-}
-
-/* Mobile */
-@media (max-width: 640px) {
-    .episodes__head {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .episodes__head-right {
-        display: contents;
-    }
-
-    .episodes__search {
-        width: 100%;
-        height: 42px;
-        font-size: 13px;
-        padding: 0 16px;
-    }
-
-    .sort {
-        width: 100%;
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 8px;
-        justify-content: stretch;
-    }
-
-    .sort::-webkit-scrollbar { display: none; }
-
-    .sort__btn {
-        flex: 1;
-        height: 42px;
-        font-size: 12px;
-        text-align: center;
-        white-space: nowrap;
-    }
-}
 
 .topSlider__social-label {
     color: #FFFFFF !important;
