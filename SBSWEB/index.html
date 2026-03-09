@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ====== SEO ====== -->
+    <title>7TH BLOCK SOCIETY — Music • Space • Talk</title>
+    <meta name="description" content="7TH BLOCK SOCIETY — Georgian music collective. House, Deep House and more. Listen to our latest episodes and mixes. / ქართული მუსიკალური კოლექტივი — მოუსმინე ბოლო ეპიზოდებს." />
+    <meta name="keywords" content="7th block society, SBS, Georgian music, house music, deep house, techno, minimal techno, organic house, melodic techno, ambient, electronic music, podcast, DJ mix, Tbilisi, Georgia, collective, ქართული მუსიკა, ჰაუს მუსიკა, ტექნო, მიქსი, ეპიზოდი, პოდქასთი" />
+    <meta name="author" content="7TH BLOCK SOCIETY" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#FE0000" />
+    <link rel="canonical" href="https://YOUR-DOMAIN.COM/" />
+
+    <!-- ====== Open Graph (Facebook / WhatsApp / Telegram preview) ====== -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="7TH BLOCK SOCIETY" />
+    <meta property="og:title" content="7TH BLOCK SOCIETY — Music • Space • Talk" />
+    <meta property="og:description" content="Georgian music collective. House, Deep House and more. Listen to our latest episodes and mixes." />
+    <meta property="og:url" content="https://YOUR-DOMAIN.COM/" />
+    <meta property="og:image" content="https://YOUR-DOMAIN.COM/assets/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="ka_GE" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- ====== Twitter / X Card ====== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="7TH BLOCK SOCIETY — Music • Space • Talk" />
+    <meta name="twitter:description" content="Georgian music collective. House, Deep House and more." />
+    <meta name="twitter:image" content="https://YOUR-DOMAIN.COM/assets/og-image.jpg" />
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'>
+              <rect x='8' y='8' width='112' height='112' rx='26' fill='%23FE0000'/>
+              <text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle'
+              font-family='Doto, system-ui, sans-serif'
+              font-size='72'
+              font-weight='700'
+              fill='white'>7</text>
+              </svg>">
+
+    <!-- Doto font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css?v=2" />
+    <link rel="stylesheet" href="css/calendar.css" />
+    <link rel="stylesheet" href="css/radio.css?v=2" />
+</head>
+<body>
+
+<header class="topbar">
+    <!-- HAMBURGER (mobile col 1) -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- LEFT: Logo -->
+    <div class="brand">
+        <div class="sbs-logo" aria-label="SBS logo">
+            <div class="sbs-box">S</div>
+            <div class="sbs-box">B</div>
+            <div class="sbs-box">S</div>
+        </div>
+        <div class="brand__text">
+            <div class="brand__title doto">7TH BLOCK SOCIETY</div>
+            <div class="brand__sub">Music • Space • Talk</div>
+        </div>
+    </div>
+
+    <!-- CENTER: Nav menu (desktop) -->
+    <nav class="nav-menu" id="navMenu">
+        <a href="#episodesAnchor" class="nav-menu__item doto">Episodes</a>
+        <a href="#upcoming" class="nav-menu__item doto">Upcoming Events</a>
+        <a href="#" class="nav-menu__item doto">Mixes</a>
+        <a href="#about" class="nav-menu__item doto">About</a>
+        <a href="#" class="nav-menu__item doto">Contact</a>
+    </nav>
+
+    <!-- RIGHT: Social icons + hamburger -->
+    <div class="topbar__right">
+        <!-- RADIO BUTTON -->
+        <div class="radio-wrap" id="radioWrap">
+            <button class="radio-btn" id="radioBtnToggle" type="button" aria-label="Live Radio">
+                <span class="radio-btn__pulse" id="radioDot">
+                    <span class="radio-pulse__ring"></span>
+                    <span class="radio-pulse__ring"></span>
+                    <span class="radio-pulse__dot">
+                        <svg class="radio-pulse__icon radio-pulse__icon--play" id="radioPulseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 8">
+                            <rect x="0" y="0" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="1.6" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="1.6" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.2" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="1.6" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="6.4" width="1.2" height="1.2" fill="white"/>
+                        </svg>
+                        <svg class="radio-pulse__icon radio-pulse__icon--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 8">
+                            <rect x="0" y="0" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="0" y="6.4" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="0" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="1.6" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="3.2" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="4.8" width="1.2" height="1.2" fill="white"/>
+                            <rect x="3.6" y="6.4" width="1.2" height="1.2" fill="white"/>
+                        </svg>
+                    </span>
+                </span>
+                <span class="radio-btn__label-wrap">
+                    <span class="radio-btn__label doto" id="radioLabel">LIVE<span class="radio-label--full"> RADIO</span></span>
+                    <span class="radio-btn__track doto" id="radioTrackLabel"></span>
+                </span>
+            </button>
+        </div>
+
+        <nav class="links" aria-label="Social media">
+            <!-- Instagram -->
+            <a target="_blank" rel="noreferrer" href="https://www.instagram.com/7thblocksociety/" aria-label="Instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                </svg>
+            </a>
+            <!-- SoundCloud -->
+            <a target="_blank" rel="noreferrer" href="https://soundcloud.com/7thblocksociety" aria-label="SoundCloud">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/>
+                </svg>
+            </a>
+            <!-- YouTube -->
+            <a target="_blank" rel="noreferrer" href="https://www.youtube.com/@7thblocksociety" aria-label="YouTube">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/>
+                </svg>
+            </a>
+        </nav>
+
+    </div>
+</header>
+
+<!-- Mobile dropdown menu -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="#episodesAnchor" class="mobile-menu__item doto">Episodes</a>
+    <a href="#upcoming" class="mobile-menu__item doto">Upcoming Events</a>
+    <a href="#" class="mobile-menu__item doto">Mixes</a>
+    <a href="#about" class="mobile-menu__item doto">About</a>
+    <a href="#" class="mobile-menu__item doto">Contact</a>
+</div>
+
+
+<!-- ===== Top Slider ===== -->
+<section class="topSlider" aria-label="Featured images slider">
+    <div class="topSlider__viewport" id="topSliderViewport">
+        <div class="topSlider__track" id="topSliderTrack">
+            <!-- Slides are injected by js/slider.js -->
+        </div>
+
+        <button class="topSlider__nav topSlider__nav--prev" id="topSliderPrev" type="button" aria-label="Previous slide">‹</button>
+        <button class="topSlider__nav topSlider__nav--next" id="topSliderNext" type="button" aria-label="Next slide">›</button>
+
+        <div class="topSlider__social">
+            <span class="topSlider__social-label doto">Follow us:</span>
+            <a target="_blank" rel="noreferrer" href="https://www.instagram.com/7thblocksociety/" aria-label="Instagram" class="topSlider__social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+            </a>
+            <a target="_blank" rel="noreferrer" href="https://soundcloud.com/7thblocksociety" aria-label="SoundCloud" class="topSlider__social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg>
+            </a>
+            <a target="_blank" rel="noreferrer" href="https://www.youtube.com/@7thblocksociety" aria-label="YouTube" class="topSlider__social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+            </a>
+            <a target="_blank" rel="noreferrer" href="https://www.tiktok.com/@7thblocksociety" aria-label="TikTok" class="topSlider__social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>
+            </a>
+        </div>
+
+    </div>
+    <div class="topSlider__dots" id="topSliderDots" aria-label="Slider pagination"></div>
+    <div id="episodesAnchor"></div>
+</section>
+
+<main class="wrap">
+    <section class="hero">
+        <center><h1 class="doto">LATEST EPISODES</h1></center>
+    </section>
+
+    <section class="episodes" id="episodes">
+        <div class="episodes__head">
+            <div class="episodes__title">
+                <h2 class="doto">EPISODES</h2>
+            </div>
+
+            <input class="episodes__search doto" id="episodeSearch" type="text" placeholder="SEARCH..." autocomplete="off" />
+            <div class="sort" id="sortBar">
+                <button class="sort__btn active" data-sort="newest" type="button">Newest</button>
+                <button class="sort__btn" data-sort="oldest" type="button">Oldest</button>
+                <button class="sort__btn" data-sort="artist" type="button">Artist A–Z</button>
+                <button class="sort__btn" data-sort="top" type="button">Top</button>
+            </div>
+        </div>
+
+        <div class="grid" id="episodeGrid"></div>
+    </section>
+
+    <div class="moreWrap">
+        <button id="moreBtn" class="moreBtn doto" type="button">MORE</button>
+    </div>
+
+    <!-- ===== UPCOMING EVENTS ===== -->
+    <section class="upcoming" id="upcoming">
+        <center><h2 class="doto upcoming__title">UPCOMING EVENTS</h2></center>
+        <div class="upcoming__calendar" id="upcomingCalendar">
+            <!-- Calendar injected by JS -->
+        </div>
+
+    </section>
+</main>
+
+<!-- Bottom Player (hidden until first play) -->
+<section class="player is-hidden" id="player">
+    <div class="player__inner">
+        <div class="player__meta">
+            <div class="cover">
+                <img id="coverImg" alt="cover" />
+            </div>
+            <div class="meta">
+                <div class="meta__kicker doto" id="metaKicker">7TH BLOCK SOCIETY</div>
+                <div class="meta__title doto" id="metaTitle">Select an episode</div>
+                <div class="meta__tags" id="metaTags"></div>
+            </div>
+        </div>
+
+        <div class="player__controls">
+            <button class="btn" id="prevBtn" title="Prev">←</button>
+            <button class="btn pill" id="back10Btn" title="-10s">↺ 10</button>
+            <button class="btn big" id="playBtn" title="Play/Pause"><span id="playIcon">▶</span></button>
+            <button class="btn pill" id="fwd10Btn" title="+10s">10 ↻</button>
+            <button class="btn" id="nextBtn" title="Next">→</button>
+        </div>
+
+        <div class="player__wave">
+            <div class="bars" id="bars"></div>
+            <input id="seek" class="seek" type="range" min="0" max="1000" value="0" />
+        </div>
+
+        <div class="player__right">
+            <div class="time">
+                <span id="curTime">00:00</span>
+                <span class="sep">/</span>
+                <span id="durTime">00:00</span>
+            </div>
+
+            <div class="volume">
+                <span class="volIcon" id="volIcon" aria-hidden="true"></span>
+                <input id="vol" type="range" min="0" max="100" value="70" />
+            </div>
+
+            <!-- ✅ Close (appears with player) -->
+            <button class="btn closeBtn" id="closePlayerBtn" title="Close">✕</button>
+        </div>
+    </div>
+</section>
+
+<!-- Hidden SoundCloud widget iframe -->
+<iframe
+        id="scWidget"
+        class="sc-hidden"
+        allow="autoplay; encrypted-media"
+        scrolling="no"
+        frameborder="no"
+        src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F7thblocksociety%2Fsets%2Fsbs-2026&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false">
+</iframe>
+
+<!-- Hidden Radio widget iframe -->
+<iframe
+        id="radioWidget"
+        class="sc-hidden"
+        allow="autoplay; encrypted-media"
+        scrolling="no"
+        frameborder="no"
+        src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fbulbulberlin%2Fsets%2Fbulbul-radio&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false">
+</iframe>
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script src="js/slider.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/player.js?v=1"></script>
+<script src="js/radio.js"></script>
+
+<script>
+    // Hamburger menu toggle
+    (function(){
+        var btn = document.getElementById('hamburgerBtn');
+        var menu = document.getElementById('mobileMenu');
+        if (!btn || !menu) return;
+
+        btn.addEventListener('click', function(){
+            var isOpen = menu.classList.contains('is-open');
+            if (isOpen) {
+                menu.classList.remove('is-open');
+                btn.classList.remove('is-open');
+                btn.setAttribute('aria-expanded', 'false');
+                menu.setAttribute('aria-hidden', 'true');
+            } else {
+                menu.classList.add('is-open');
+                btn.classList.add('is-open');
+                btn.setAttribute('aria-expanded', 'true');
+                menu.setAttribute('aria-hidden', 'false');
+            }
+        });
+
+        // Close menu on nav link click
+        menu.querySelectorAll('.mobile-menu__item, .nav-menu__item').forEach(item => {
+            item.addEventListener('click', function(){
+                menu.classList.remove('is-open');
+                btn.classList.remove('is-open');
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Close on outside click
+        document.addEventListener('click', function(e){
+            if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('is-open');
+                btn.classList.remove('is-open');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    })();
+</script>
+
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer__inner">
+
+        <!-- Logo + About -->
+        <div class="footer__brand">
+            <div class="footer__logo">
+                <div class="sbs-logo" aria-label="SBS logo">
+                    <div class="sbs-box">S</div>
+                    <div class="sbs-box">B</div>
+                    <div class="sbs-box">S</div>
+                </div>
+                <div class="footer__name doto">7TH BLOCK SOCIETY</div>
+            </div>
+            <p class="footer__about">Electronic music beyond clubs — integrated into life, spaces and mindset.</p>
+        </div>
+
+        <!-- Social -->
+        <div class="footer__social">
+            <div class="footer__social-label doto">Follow us</div>
+            <div class="footer__social-links">
+                <a target="_blank" rel="noreferrer" href="https://www.instagram.com/7thblocksociety/" aria-label="Instagram" class="footer__link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+                    <span class="doto">Instagram</span>
+                </a>
+                <a target="_blank" rel="noreferrer" href="https://soundcloud.com/7thblocksociety" aria-label="SoundCloud" class="footer__link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg>
+                    <span class="doto">SoundCloud</span>
+                </a>
+                <a target="_blank" rel="noreferrer" href="https://www.youtube.com/@7thblocksociety" aria-label="YouTube" class="footer__link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+                    <span class="doto">YouTube</span>
+                </a>
+                <a target="_blank" rel="noreferrer" href="https://www.tiktok.com/@7thblocksociety" aria-label="TikTok" class="footer__link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>
+                    <span class="doto">TikTok</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer__bottom">
+        <span class="doto">© 2026 7TH BLOCK SOCIETY</span>
+        <span class="footer__bottom-sub">Music • Space • Talk</span>
+    </div>
+</footer>
+
+<!-- ===== ABOUT MODAL ===== -->
+<div class="about-modal" id="aboutModal">
+    <div class="about-modal__overlay" id="aboutOverlay"></div>
+    <div class="about-modal__box">
+        <button class="about-modal__close doto" id="aboutClose">✕</button>
+        <div class="about-grid">
+            <div class="about-left">
+                <div class="about-logo">
+                    <div class="sbs-logo" aria-label="SBS logo">
+                        <div class="sbs-box" style="width:56px;height:56px;font-size:28px;border-radius:12px;">S</div>
+                        <div class="sbs-box" style="width:56px;height:56px;font-size:28px;border-radius:12px;">B</div>
+                        <div class="sbs-box" style="width:56px;height:56px;font-size:28px;border-radius:12px;">S</div>
+                    </div>
+                </div>
+                <div class="about-brand-text" style="text-align:center;">
+                    <div class="about-brand-title doto">7TH BLOCK SOCIETY</div>
+                    <div class="about-brand-sub">Music • Space • Talk</div>
+                </div>
+                <div class="about-socials">
+                    <a href="https://www.instagram.com/7thblocksociety/" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--ig">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+                        INSTAGRAM
+                    </a>
+                    <a href="https://soundcloud.com/7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--sc">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg>
+                        SOUNDCLOUD
+                    </a>
+                    <a href="https://www.youtube.com/@7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--yt">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+                        YOUTUBE
+                    </a>
+                    <a href="https://www.tiktok.com/@7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--tt">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>
+                        TIKTOK
+                    </a>
+                </div>
+            </div>
+            <div class="about-right">
+                <div class="about-kicker doto">ABOUT US</div>
+                <div class="about-divider"></div>
+                <div class="about-text">
+                    <p class="doto"><strong>7TH BLOCK SOCIETY</strong> is a Georgian music collective — electronic music beyond clubs, integrated into life, spaces and mindset.</p>
+                    <p class="doto">We don't stick to one sound. Our space is open to every rhythm, every mood, every frequency that moves people — House, Deep House, Techno, Minimal, Organic, Melodic and everything in between.</p>
+                    <p class="doto">Music • Space • Talk — three words that define everything we do. We create sounds, explore spaces and speak the language of music.</p>
+                </div>
+                <div class="about-tags">
+                    <span class="about-tag doto">HOUSE</span>
+                    <span class="about-tag doto">DEEP HOUSE</span>
+                    <span class="about-tag doto">TECHNO</span>
+                    <span class="about-tag doto">MINIMAL</span>
+                    <span class="about-tag doto">ORGANIC HOUSE</span>
+                    <span class="about-tag doto">MELODIC TECHNO</span>
+                    <span class="about-tag doto">ELECTRONIC</span>
+                    <span class="about-tag doto">AMBIENT</span>
+                    <span class="about-tag doto">TBILISI</span>
+                    <span class="about-tag doto">COLLECTIVE</span>
+                    <span class="about-tag doto">PODCAST</span>
+                    <span class="about-tag doto">DJ MIX</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const aboutModal   = document.getElementById("aboutModal");
+    const aboutClose   = document.getElementById("aboutClose");
+    const aboutOverlay = document.getElementById("aboutOverlay");
+
+    document.querySelectorAll("a[href='#about'], a[href='about.html']").forEach(el => {
+        el.addEventListener("click", e => {
+            e.preventDefault();
+            aboutModal.classList.add("is-open");
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    function closeAbout() {
+        aboutModal.classList.remove("is-open");
+        document.body.style.overflow = "";
+    }
+
+    aboutClose.addEventListener("click", closeAbout);
+    aboutOverlay.addEventListener("click", closeAbout);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeAbout(); });
+</script>
+
+</body>
+</html>
