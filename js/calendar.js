@@ -41,7 +41,7 @@ async function fetchGoogleCalendarEvents() {
             return match ? match[1].trim() : "";
           };
 
-          console.log("PLAIN desc:", JSON.stringify(plainDesc));
+
           const typeField    = getField("TYPE");
           const artistField  = getField("ARTIST");
           const eventField   = getField("EVENT");
@@ -72,8 +72,8 @@ async function fetchGoogleCalendarEvents() {
         });
     // DEBUG — remove after fixing
     if (data.items && data.items[0]) {
-      console.log("RAW description:", JSON.stringify(data.items[0].description));
-      console.log("FULL item:", JSON.stringify(data.items[0], null, 2));
+
+
     }
   } catch(err) {
     console.warn("[SBS] Google Calendar fetch failed:", err);

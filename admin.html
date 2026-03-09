@@ -623,6 +623,45 @@
         sub.status = status;
         sub.read = true;
         await updateDoc(doc(db, "submissions", id), { status, read: true });
+
+        const isApproved = status === "approved";
+        const htmlContent = `
+<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;">
+  <div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;">
+    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
+    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">B</div>
+    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
+  </div>
+  <div style="text-align:center;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div>
+  <div style="font-size:22px;letter-spacing:3px;color:${isApproved ? '#00c864' : '#FE0000'};margin-bottom:8px;">${isApproved ? '✓ ACCEPTED' : '✕ NOT SELECTED'}</div>
+  <div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div>
+  <div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div>
+  <div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">
+    ${isApproved
+            ? `YOUR MIX SUBMISSION HAS BEEN ACCEPTED.<br><br>OUR REPRESENTATIVE WILL CONTACT YOU ON YOUR PROVIDED PHONE NUMBER — <span style="color:#ffffff;">${sub.phone}</span> — TO DISCUSS FURTHER DETAILS.`
+            : `THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.`
+        }
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;">7BS.GE — TBILISI, GEORGIA</div>
+</div>`;
+
+        try {
+            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
+                    to: [{ email: sub.email, name: sub.artist }],
+                    subject: isApproved ? "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY" : "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY",
+                    htmlContent
+                })
+            });
+        } catch(e) {
+            console.error("Brevo error:", e);
+        }
+
         updateStats();
         renderSubmissions();
     };

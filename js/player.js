@@ -7,7 +7,7 @@
 */
 
 const PLAYLIST_URL = "https://soundcloud.com/7thblocksociety/sets/sbs-2026";
-console.log("[SBS] using PLAYLIST_URL:", PLAYLIST_URL);
+
 
 const CACHE_KEY = "sbs_episodes_cache";
 const YT_CACHE_KEY = "sbs_yt_views_cache";
@@ -541,10 +541,10 @@ async function buildEpisodesFromWidget(){
 
     function tryFetch(){
       attempts++;
-      console.log(`[SBS] getSounds attempt ${attempts}...`);
+
 
       widget.getSounds((sounds)=>{
-        console.log(`[SBS] getSounds returned ${sounds?.length ?? 0} tracks`);
+
 
         const list = (sounds || [])
             .filter(s => s && s.permalink_url && !BLOCKLIST.has(s.permalink_url))
@@ -570,7 +570,7 @@ async function buildEpisodesFromWidget(){
         window.__sbsPrevCount = list.length;
 
         if (attempts >= MAX_ATTEMPTS || (attempts > 1 && !grew)){
-          console.log(`[SBS] Final track count: ${list.length}`);
+
           resolve(list);
         } else {
           // კიდევ სცადე ცოტა ხნის შემდეგ
