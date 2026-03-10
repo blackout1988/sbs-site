@@ -1,87 +1,70 @@
 /* ================================
    SBS RADIO — radio.js
+   Live Radio with Firebase sync
    ================================ */
 
 const RADIO_PLAYLIST = "https://soundcloud.com/bulbulberlin/sets/bulbul-radio";
-const RADIO_STORAGE_KEY = "sbs_radio_state";
-
-function saveRadioState(trackUrl, positionMs) {
-  try {
-    localStorage.setItem(RADIO_STORAGE_KEY, JSON.stringify({ url: trackUrl, pos: positionMs }));
-  } catch(e) {}
-}
-
-function loadRadioState() {
-  try {
-    const raw = localStorage.getItem(RADIO_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch(e) { return null; }
-}
 
 function parseTrackTitle(title) {
   if (!title) return "SBS Radio";
-  const idx = title.indexOf(" - ");
+  var idx = title.indexOf(" - ");
   if (idx !== -1) return title.slice(idx + 3).trim();
   return title.trim();
 }
 
-function shuffleArray(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 function initRadio() {
-  const radioIframe    = document.getElementById("radioWidget");
-  const radioBtnToggle = document.getElementById("radioBtnToggle");
-  const radioDot       = document.getElementById("radioDot");
-
+  var radioIframe     = document.getElementById("radioWidget");
+  var radioBtnToggle  = document.getElementById("radioBtnToggle");
+  var radioDot        = document.getElementById("radioDot");
+  var radioLabel      = document.getElementById("radioLabel");
+  var radioTrackLabel = document.getElementById("radioTrackLabel");
 
   if (!radioIframe || !radioBtnToggle) return;
   if (typeof SC === "undefined" || !SC.Widget) return;
 
-  let radioReady   = false;
-  let radioPlaying = false;
-  let radioLoaded  = false;
-  let currentRadioUrl = "";
-  let shuffledTracks = [];
-  let shuffleIndex   = 0;
+  var radioReady   = false;
+  var radioPlaying = false;
+  var radioLoaded  = false;
+  var totalTracks  = 0;
+  var playHistory  = [];
+  var HISTORY_SIZE = 6;
+  var currentTrackIndex = -1;
 
-  const radioWidget = SC.Widget(radioIframe);
+  var radioWidget = SC.Widget(radioIframe);
 
   // ================================
-  // Widget Events
+  // Firebase (ჩაიტვირთება index.html-იდან)
   // ================================
-  radioWidget.bind(SC.Widget.Events.READY, function () {
-    radioReady = true;
-    radioWidget.setVolume(100);
+  var db = null;
+  var fbApp = null;
 
-    radioWidget.getSounds(function (sounds) {
-      if (!sounds || !sounds.length) return;
-      const urls = sounds
-          .filter(s => s && s.permalink_url)
-          .map(s => ({ url: s.permalink_url, title: parseTrackTitle(s.title) }));
-      shuffledTracks = shuffleArray(urls);
-      shuffleIndex = 0;
-    });
-  });
+  function waitForFirebase(cb) {
+    if (window.__sbsFirebaseDb) {
+      cb(window.__sbsFirebaseDb);
+      return;
+    }
+    var tries = 0;
+    var t = setInterval(function() {
+      if (window.__sbsFirebaseDb) {
+        clearInterval(t);
+        cb(window.__sbsFirebaseDb);
+      } else if (++tries > 20) {
+        clearInterval(t);
+        cb(null);
+      }
+    }, 200);
+  }
 
-  const radioLabel     = document.getElementById("radioLabel");
-  const radioTrackLabel = document.getElementById("radioTrackLabel");
-
-  let animLoop = null;
+  // ================================
+  // Animations
+  // ================================
+  var animLoop = null;
 
   function animateTrackName(title) {
     if (!radioLabel || !radioTrackLabel) return;
-
-    // გავასუფთავოთ წინა loop
     if (animLoop) { clearTimeout(animLoop); animLoop = null; }
 
     function runCycle() {
-      // reset
       radioLabel.style.animation = "none";
       radioTrackLabel.style.animation = "none";
       radioLabel.style.opacity = "1";
@@ -89,160 +72,235 @@ function initRadio() {
       radioTrackLabel.style.opacity = "0";
       radioTrackLabel.style.transform = "translateX(100%)";
       radioTrackLabel.textContent = title;
-
       void radioLabel.offsetWidth;
 
-      // 1. LIVE RADIO ქვევით გადის
       radioLabel.style.animation = "slideOutDown 0.3s ease forwards";
-
       animLoop = setTimeout(function() {
-        // 2. ტრეკი მარცხნიდან გადარბის
         radioLabel.style.opacity = "0";
         radioLabel.style.animation = "none";
         radioTrackLabel.style.animation = "marqueeIn 4s linear forwards";
-
         animLoop = setTimeout(function() {
-          // 3. 2.5 წამი ჩერდება
           radioTrackLabel.style.animation = "none";
           radioTrackLabel.style.transform = "translateX(0)";
           radioTrackLabel.style.opacity = "1";
-
           animLoop = setTimeout(function() {
-            // 4. ტრეკი ქვევით ქრება
             radioTrackLabel.style.animation = "slideOutDown 0.3s ease forwards";
-
-            // 5. LIVE RADIO ზემოდან ჩამოდის
             radioLabel.style.animation = "slideInTop 0.3s ease forwards";
-
-            animLoop = setTimeout(function() {
-              // 6. ხელახლა იწყება
-              runCycle();
-            }, 5000); // 5 წამი LIVE RADIO-ს ჩვენება, მერე ისევ
-
+            animLoop = setTimeout(function() { runCycle(); }, 5000);
           }, 2500);
         }, 4000);
       }, 300);
     }
-
     runCycle();
   }
 
-  radioWidget.bind(SC.Widget.Events.PLAY, function () {
-    radioPlaying = true;
-    if (radioDot) radioDot.classList.add("is-playing");
-
-    radioWidget.getCurrentSound(function (sound) {
-      if (sound) {
-        currentRadioUrl = sound.permalink_url || "";
-        animateTrackName(parseTrackTitle(sound.title));
+  // ================================
+  // Smart Shuffle
+  // ================================
+  function pickRandomIndex() {
+    if (!totalTracks) return 0;
+    var available = [];
+    for (var i = 0; i < totalTracks; i++) {
+      if (!playHistory.includes(i)) available.push(i);
+    }
+    if (!available.length) {
+      var last = playHistory[playHistory.length - 1];
+      for (var j = 0; j < totalTracks; j++) {
+        if (j !== last) available.push(j);
       }
-    });
-  });
-
-  setInterval(function () {
-    if (!radioPlaying || !currentRadioUrl) return;
-    radioWidget.getPosition(function (pos) {
-      saveRadioState(currentRadioUrl, Number(pos || 0));
-    });
-  }, 5000);
-
-  radioWidget.bind(SC.Widget.Events.PAUSE, function () {
-    radioPlaying = false;
-    if (radioDot) radioDot.classList.remove("is-playing");
-  });
-
-  radioWidget.bind(SC.Widget.Events.FINISH, function () {
-    radioPlaying = false;
-    if (radioDot) radioDot.classList.remove("is-playing");
-    playNextShuffled();
-  });
-
-  // ================================
-  // Smart Shuffle — ბოლო N ტრეკი არ მეორდება
-  // ================================
-  // საშ. ტრეკი ~45 წთ, 6 საათი = ~8 ტრეკი — history = 6 (7 ტრეკზე max 6)
-  const HISTORY_SIZE = 6;
-  let playHistory = []; // ბოლოს დაკრული URL-ები
-
-  function pickNextTrack() {
-    if (!shuffledTracks.length) return null;
-
-    // ისეთი ტრეკები რომლებიც ბოლო HISTORY_SIZE-ში არ იყო
-    const available = shuffledTracks.filter(t => !playHistory.includes(t.url));
-
-    // თუ ყველა ისტორიაშია (ძალიან მცირე playlist) — ყველაზე ძველი ამოვიღოთ
-    const pool = available.length > 0 ? available : shuffledTracks.filter(
-        t => t.url !== playHistory[playHistory.length - 1]
-    );
-
-    if (!pool.length) return shuffledTracks[0];
-
-    // რანდომი pool-იდან
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-
-    // ისტორიაში დავამატოთ
-    playHistory.push(pick.url);
+    }
+    if (!available.length) return 0;
+    var pick = available[Math.floor(Math.random() * available.length)];
+    playHistory.push(pick);
     if (playHistory.length > HISTORY_SIZE) playHistory.shift();
-
     return pick;
   }
 
-  function playNextShuffled() {
-    if (!shuffledTracks.length) return;
-    const next = pickNextTrack();
-    if (!next) return;
-    radioWidget.load(next.url, { auto_play: true });
+  // ================================
+  // Firebase — state წაკითხვა / ჩაწერა
+  // ================================
+  function writeRadioState(trackIndex, startedAt) {
+    waitForFirebase(function(fdb) {
+      if (!fdb) return;
+      var { doc, setDoc } = window.__sbsFirebaseFns;
+      setDoc(doc(fdb, "radio", "state"), {
+        trackIndex: trackIndex,
+        startedAt: startedAt
+      }).catch(function(e) {
+        console.warn("[SBS Radio] Firebase write error:", e);
+      });
+    });
+  }
+
+  function readRadioState(cb) {
+    waitForFirebase(function(fdb) {
+      if (!fdb) { cb(null); return; }
+      var { doc, getDoc } = window.__sbsFirebaseFns;
+      getDoc(doc(fdb, "radio", "state")).then(function(snap) {
+        cb(snap.exists() ? snap.data() : null);
+      }).catch(function() { cb(null); });
+    });
   }
 
   // ================================
-  // Click — Play / Pause
+  // ტრეკის დაკვრა — index + seekMs
   // ================================
-  radioBtnToggle.addEventListener("click", function () {
+  function playTrackAt(index, seekMs) {
+    currentTrackIndex = index;
+    radioWidget.skip(index);
+    radioWidget.play();
+    if (seekMs > 0) {
+      setTimeout(function() {
+        radioWidget.seekTo(seekMs);
+      }, 600);
+    }
+  }
+
+  // ================================
+  // ტრეკის დასრულება → შემდეგი
+  // ================================
+  function playNextTrack() {
+    var idx = pickRandomIndex();
+    var now = Date.now();
+    writeRadioState(idx, now);
+    playTrackAt(idx, 0);
+  }
+
+  // ================================
+  // Widget Events
+  // ================================
+  radioWidget.bind(SC.Widget.Events.READY, function() {
+    radioReady = true;
+    radioWidget.setVolume(100);
+    radioWidget.getSounds(function(sounds) {
+      if (sounds && sounds.length) totalTracks = sounds.length;
+    });
+  });
+
+  radioWidget.bind(SC.Widget.Events.PLAY, function() {
+    radioPlaying = true;
+    if (radioDot) radioDot.classList.add("is-playing");
+    radioWidget.getCurrentSound(function(sound) {
+      if (sound) animateTrackName(parseTrackTitle(sound.title));
+    });
+  });
+
+  radioWidget.bind(SC.Widget.Events.PAUSE, function() {
+    radioPlaying = false;
+    if (radioDot) radioDot.classList.remove("is-playing");
+  });
+
+  radioWidget.bind(SC.Widget.Events.FINISH, function() {
+    radioPlaying = false;
+    if (radioDot) radioDot.classList.remove("is-playing");
+    playNextTrack();
+  });
+
+  // ================================
+  // პირველი დაჭერა — Firebase-ს კითხულობს
+  // ================================
+  function startRadio() {
+    // ჯერ Firebase-ს ვკითხავთ — არის სტეიტი?
+    readRadioState(function(state) {
+      if (state && state.trackIndex != null && state.startedAt) {
+        // სხვა visitor-ი უსმენდა — ვუერთდებით
+        var elapsed = Date.now() - state.startedAt;
+        var idx = state.trackIndex;
+        playHistory.push(idx);
+
+        // duration-ს ვიღებთ skip-ის შემდეგ
+        radioWidget.skip(idx);
+        radioWidget.play();
+        setTimeout(function() {
+          radioWidget.getDuration(function(dur) {
+            var duration = Number(dur || 0);
+            if (duration > 0 && elapsed >= duration) {
+              // ტრეკი დამთავრდებოდა — შემდეგი
+              playNextTrack();
+            } else {
+              var seekMs = Math.max(0, elapsed);
+              if (seekMs > 0) radioWidget.seekTo(seekMs);
+            }
+          });
+        }, 600);
+
+      } else {
+        // პირველი visitor — ახალი ტრეკი 10%-იდან
+        var idx = pickRandomIndex();
+        radioWidget.skip(idx);
+        radioWidget.play();
+        setTimeout(function() {
+          radioWidget.getDuration(function(dur) {
+            var duration = Number(dur || 0);
+            var seekMs = Math.floor(duration * 0.10);
+            var startedAt = Date.now() - seekMs;
+            writeRadioState(idx, startedAt);
+            if (seekMs > 0) radioWidget.seekTo(seekMs);
+          });
+        }, 600);
+      }
+    });
+  }
+
+  // ================================
+  // Click
+  // ================================
+  radioBtnToggle.addEventListener("click", function() {
     if (!radioReady) return;
 
     if (!radioLoaded) {
       radioLoaded = true;
-
-      const saved = loadRadioState();
-
-      if (saved && saved.url && saved.pos > 0) {
-        currentRadioUrl = saved.url;
-        radioWidget.load(saved.url, { auto_play: true });
-        radioWidget.bind(SC.Widget.Events.PLAY_PROGRESS, function onResume() {
-          radioWidget.unbind(SC.Widget.Events.PLAY_PROGRESS);
-          radioWidget.seekTo(saved.pos);
-        });
-      } else if (shuffledTracks.length) {
-        const first = pickNextTrack();
-        radioWidget.load(first.url, { auto_play: true });
-        radioWidget.bind(SC.Widget.Events.PLAY_PROGRESS, function onFirstSeek() {
-          radioWidget.unbind(SC.Widget.Events.PLAY_PROGRESS);
-          radioWidget.getDuration(function (dur) {
-            const seekTo = Math.floor(Number(dur || 0) * 0.25);
-            if (seekTo > 0) radioWidget.seekTo(seekTo);
-          });
-        });
+      if (totalTracks > 0) {
+        startRadio();
       } else {
-        radioWidget.load(RADIO_PLAYLIST, { auto_play: true });
+        setTimeout(function() {
+          radioWidget.getSounds(function(sounds) {
+            totalTracks = sounds ? sounds.length : 0;
+            startRadio();
+          });
+        }, 1000);
       }
       return;
     }
 
-    radioWidget.toggle();
+    // პაუზა/ფლეი — ლაივ რადიოში პაუზა არ არსებობს!
+    // ღილაკი მხოლოდ აჩვენებს/მალავს — ტრეკი გრძელდება
+    if (radioPlaying) {
+      radioWidget.pause();
+    } else {
+      // resume — Firebase-ს ვკითხავთ სად ვართ ახლა
+      readRadioState(function(state) {
+        if (state && state.trackIndex != null && state.startedAt) {
+          var elapsed = Date.now() - state.startedAt;
+          radioWidget.getDuration(function(dur) {
+            var duration = Number(dur || 0);
+            if (duration > 0 && elapsed >= duration) {
+              playNextTrack();
+            } else {
+              radioWidget.play();
+              setTimeout(function() {
+                radioWidget.seekTo(Math.max(0, elapsed));
+              }, 300);
+            }
+          });
+        } else {
+          radioWidget.play();
+        }
+      });
+    }
   });
 
   // ================================
-  // Mobile — touch class for hover effect
+  // Mobile touch
   // ================================
-  radioBtnToggle.addEventListener("touchstart", function () {
+  radioBtnToggle.addEventListener("touchstart", function() {
     radioBtnToggle.classList.add("touched");
   }, { passive: true });
 
-  radioBtnToggle.addEventListener("touchend", function () {
-    setTimeout(() => radioBtnToggle.classList.remove("touched"), 300);
+  radioBtnToggle.addEventListener("touchend", function() {
+    setTimeout(function() { radioBtnToggle.classList.remove("touched"); }, 300);
   }, { passive: true });
 
-  // ავტომატურად დაიწყოს გვერდის ჩატვირთვისთანავე
   animateTrackName("LIVE RADIO");
 }
 

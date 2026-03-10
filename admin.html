@@ -46,20 +46,35 @@
         .login-logo {
             display: flex;
             gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .login-brand-title {
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .login-brand-sub {
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--muted);
             margin-bottom: 32px;
         }
 
         .sbs-box {
             width: 40px;
             height: 40px;
-            border: 2px solid var(--red);
+            background: var(--red);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 16px;
             font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--red);
+            border-radius: 6px;
         }
 
         .login-title {
@@ -151,7 +166,8 @@
         .admin-logo .sbs-box {
             width: 28px;
             height: 28px;
-            font-size: 9px;
+            font-size: 11px;
+            border-radius: 4px;
         }
 
         .admin-title {
@@ -179,7 +195,7 @@
 
         .admin-stats {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 16px;
             margin-bottom: 32px;
         }
@@ -340,6 +356,19 @@
             background: rgba(254,0,0,0.14);
         }
 
+        .sub-btn--delete {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.35);
+            margin-left: auto;
+        }
+
+        .sub-btn--delete:hover {
+            background: rgba(254,0,0,0.08);
+            border-color: rgba(254,0,0,0.30);
+            color: var(--red);
+        }
+
         .sub-btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
@@ -409,6 +438,8 @@
             <div class="sbs-box">B</div>
             <div class="sbs-box">S</div>
         </div>
+        <div class="login-brand-title">7TH BLOCK SOCIETY</div>
+        <div class="login-brand-sub">Music • Space • Talk</div>
         <div class="login-title">ADMIN PANEL</div>
         <div class="login-field">
             <label class="login-label">USERNAME</label>
@@ -446,16 +477,12 @@
                 <div class="stat-label">UNREAD</div>
                 <div class="stat-value red" id="statUnread">—</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">PENDING</div>
-                <div class="stat-value" id="statPending">—</div>
-            </div>
+
         </div>
 
         <div class="admin-filters">
             <button class="filter-btn active" onclick="setFilter('all', this)">ALL</button>
             <button class="filter-btn" onclick="setFilter('unread', this)">UNREAD</button>
-            <button class="filter-btn" onclick="setFilter('pending', this)">PENDING</button>
             <button class="filter-btn" onclick="setFilter('approved', this)">APPROVED</button>
             <button class="filter-btn" onclick="setFilter('rejected', this)">REJECTED</button>
         </div>
@@ -468,7 +495,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBXRWLVHI3hNM5hv7w6uZyUovN9mdrThrU",
@@ -489,14 +516,23 @@
     let allSubs = [];
     let currentFilter = "all";
 
+    function showAdmin() {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminScreen").style.display = "block";
+        loadSubmissions();
+    }
+
+    if (sessionStorage.getItem("sbs_admin") === "1") {
+        showAdmin();
+    }
+
     window.doLogin = function() {
         const u = document.getElementById("loginUser").value.trim();
         const p = document.getElementById("loginPass").value;
         const err = document.getElementById("loginError");
         if (u === ADMIN_USER && p === ADMIN_PASS) {
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("adminScreen").style.display = "block";
-            loadSubmissions();
+            sessionStorage.setItem("sbs_admin", "1");
+            showAdmin();
         } else {
             err.textContent = "INCORRECT USERNAME OR PASSWORD";
             document.getElementById("loginPass").value = "";
@@ -504,6 +540,7 @@
     };
 
     window.doLogout = function() {
+        sessionStorage.removeItem("sbs_admin");
         document.getElementById("adminScreen").style.display = "none";
         document.getElementById("loginScreen").style.display = "flex";
         document.getElementById("loginUser").value = "";
@@ -540,7 +577,6 @@
     function updateStats() {
         document.getElementById("statTotal").textContent = allSubs.length;
         document.getElementById("statUnread").textContent = allSubs.filter(s => !s.read).length;
-        document.getElementById("statPending").textContent = allSubs.filter(s => s.status === "pending").length;
     }
 
     function renderSubmissions() {
@@ -559,17 +595,16 @@
         list.innerHTML = filtered.map(s => {
             const date = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) : "—";
             const isUnread = !s.read;
-            const isPending = s.status === "pending";
 
             let actionsHtml = "";
-            if (isPending) {
-                actionsHtml = `
-                <button class="sub-btn sub-btn--approve" onclick="updateStatus('${s.id}', 'approved')">✓ APPROVE</button>
-                <button class="sub-btn sub-btn--reject" onclick="updateStatus('${s.id}', 'rejected')">✕ REJECT</button>`;
+            if (s.status === "approved") {
+                actionsHtml = `<span class="sub-status sub-status--approved">✓ APPROVED</span>`;
+            } else if (s.status === "rejected") {
+                actionsHtml = `<span class="sub-status sub-status--rejected">✕ REJECTED</span>`;
             } else {
-                const cls = s.status === "approved" ? "sub-status--approved" : "sub-status--rejected";
-                const label = s.status === "approved" ? "✓ APPROVED" : "✕ REJECTED";
-                actionsHtml = `<span class="sub-status ${cls}">${label}</span>`;
+                actionsHtml = `
+                <button class="sub-btn sub-btn--approve" onclick="event.stopPropagation();updateStatus('${s.id}', 'approved')">✓ APPROVE</button>
+                <button class="sub-btn sub-btn--reject" onclick="event.stopPropagation();updateStatus('${s.id}', 'rejected')">✕ REJECT</button>`;
             }
 
             return `
@@ -603,7 +638,10 @@
                 </div>
             </div>
             <div class="sub-message">${s.message || "—"}</div>
-            <div class="sub-actions">${actionsHtml}</div>
+            <div class="sub-actions">
+                ${actionsHtml}
+                <button class="sub-btn sub-btn--delete" onclick="event.stopPropagation();deleteSubmission('${s.id}')">🗑 DELETE</button>
+            </div>
         </div>`;
         }).join("");
     }
@@ -613,6 +651,14 @@
         if (!sub || sub.read) return;
         sub.read = true;
         await updateDoc(doc(db, "submissions", id), { read: true });
+        updateStats();
+        renderSubmissions();
+    };
+
+    window.deleteSubmission = async function(id) {
+        if (!confirm("წაშლა დარწმუნებული ხარ?")) return;
+        await deleteDoc(doc(db, "submissions", id));
+        allSubs = allSubs.filter(s => s.id !== id);
         updateStats();
         renderSubmissions();
     };
@@ -646,11 +692,10 @@
 </div>`;
 
         try {
+            // Email გაგზავნა
             await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
                     to: [{ email: sub.email, name: sub.artist }],
@@ -658,8 +703,23 @@
                     htmlContent
                 })
             });
+
+            // SMS გაგზავნა
+            const smsText = isApproved
+                ? `DEAR ${sub.artist}\nYOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.`
+                : `DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.`;
+
+            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sms: true,
+                    phone: sub.phone,
+                    smsText
+                })
+            });
         } catch(e) {
-            console.error("Brevo error:", e);
+            console.error("Error:", e);
         }
 
         updateStats();

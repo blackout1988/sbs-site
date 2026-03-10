@@ -45,7 +45,7 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBXRWLVHI3hNM5hv7w6uZyUovN9mdrThrU",
@@ -58,6 +58,10 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // radio.js-ისთვის გლობალურად
+        window.__sbsFirebaseDb = db;
+        window.__sbsFirebaseFns = { doc, setDoc, getDoc };
 
         // Listen for form submit from within module to ensure Firebase is ready
         document.addEventListener("DOMContentLoaded", () => {
@@ -799,29 +803,13 @@
         };
 
         try {
-            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+            const res = await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
-                    to: [{ email: "gogadididze1988@gmail.com", name: "7BS Admin" }],
-                    subject: "NEW MIX SUBMISSION — " + data.artist,
-                    htmlContent: `
-<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;">
-  <div style="text-align:center;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">NEW MIX SUBMISSION</div>
-  <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;width:120px;">ARTIST</td><td style="color:#fff;font-size:12px;">${data.artist}</td></tr>
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;">EMAIL</td><td style="color:#fff;font-size:12px;">${data.email}</td></tr>
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;">PHONE</td><td style="color:#fff;font-size:12px;">${data.phone}</td></tr>
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;">GENRE</td><td style="color:#FE0000;font-size:12px;">${data.genre}</td></tr>
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;">MIX LINK</td><td style="font-size:12px;"><a href="${data.mix_link}" style="color:#fff;">${data.mix_link}</a></td></tr>
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;">SOCIAL</td><td style="font-size:12px;"><a href="${data.social}" style="color:#fff;">${data.social}</a></td></tr>
-    <tr><td style="padding:8px 0;color:rgba(255,255,255,0.40);font-size:10px;letter-spacing:2px;vertical-align:top;">MESSAGE</td><td style="color:rgba(255,255,255,0.70);font-size:12px;line-height:1.8;">${data.message}</td></tr>
-  </table>
-  <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;margin-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;">7BS.GE — TBILISI, GEORGIA</div>
-</div>`
-                })
+                body: JSON.stringify(data)
             });
+            const resJson = await res.json();
+            console.log("[SBS] Worker response:", resJson);
 
             // Save to Firebase
             const fbEvent = new CustomEvent("sbsFirebaseSave", { detail: data });
