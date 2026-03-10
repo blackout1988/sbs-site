@@ -391,7 +391,8 @@ function renderEpisodes(){
       loadEpisode(realIndex, true, true);
     });
 
-    card.addEventListener("click", ()=>{
+    card.addEventListener("click", (e)=>{
+      if (e.target.closest(".card__playBtn")) return;
       if (!ep.playable) return;
       loadEpisode(realIndex, false, true);
     });
