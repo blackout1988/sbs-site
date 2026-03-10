@@ -1,7 +1,6 @@
 /* ================================
    SBS RADIO — radio.js
-   Live Radio with Firebase sync
-   Pre-fetch state before user interaction
+   Simple version — no Firebase, just play
    ================================ */
 
 const RADIO_PLAYLIST = "https://soundcloud.com/bulbulberlin/sets/bulbul-radio";
@@ -23,55 +22,14 @@ function initRadio() {
   if (!radioIframe || !radioBtnToggle) return;
   if (typeof SC === "undefined" || !SC.Widget) return;
 
-  var radioReady    = false;
-  var radioPlaying  = false;
-  var radioLoaded   = false;
-  var totalTracks   = 0;
-  var playHistory   = [];
-  var HISTORY_SIZE  = 6;
-  var pendingSeekMs = 0;
-
-  // წინასწარ წაკითხული state
-  var cachedState   = undefined; // undefined = ჯერ არ წაკითხულა, null = ცარიელია
+  var radioReady   = false;
+  var radioPlaying = false;
+  var radioLoaded  = false;
+  var totalTracks  = 0;
+  var playHistory  = [];
+  var HISTORY_SIZE = 6;
 
   var radioWidget = SC.Widget(radioIframe);
-
-  // ================================
-  // Firebase
-  // ================================
-  function waitForFirebase(cb) {
-    if (window.__sbsFirebaseDb) { cb(window.__sbsFirebaseDb); return; }
-    var tries = 0;
-    var t = setInterval(function() {
-      if (window.__sbsFirebaseDb) { clearInterval(t); cb(window.__sbsFirebaseDb); }
-      else if (++tries > 20) { clearInterval(t); cb(null); }
-    }, 200);
-  }
-
-  function writeRadioState(trackIndex, startedAt) {
-    waitForFirebase(function(fdb) {
-      if (!fdb) return;
-      var fns = window.__sbsFirebaseFns;
-      fns.setDoc(fns.doc(fdb, "radio", "state"), {
-        trackIndex: trackIndex,
-        startedAt: startedAt
-      }).catch(function(e) { console.warn("[SBS Radio] write:", e); });
-    });
-  }
-
-  // გვერდის ჩატვირთვისას წინასწარ წავიკითხოთ
-  function prefetchState() {
-    waitForFirebase(function(fdb) {
-      if (!fdb) { cachedState = null; return; }
-      var fns = window.__sbsFirebaseFns;
-      fns.getDoc(fns.doc(fdb, "radio", "state")).then(function(snap) {
-        cachedState = snap.exists() ? snap.data() : null;
-      }).catch(function() { cachedState = null; });
-    });
-  }
-
-  // გვერდის ჩატვირთვისთანავე
-  prefetchState();
 
   // ================================
   // Animations
@@ -151,11 +109,6 @@ function initRadio() {
     radioWidget.getCurrentSound(function(sound) {
       if (sound) animateTrackName(parseTrackTitle(sound.title));
     });
-    if (pendingSeekMs > 0) {
-      var ms = pendingSeekMs;
-      pendingSeekMs = 0;
-      setTimeout(function() { radioWidget.seekTo(ms); }, 400);
-    }
   });
 
   radioWidget.bind(SC.Widget.Events.PAUSE, function() {
@@ -167,86 +120,28 @@ function initRadio() {
     radioPlaying = false;
     if (radioDot) radioDot.classList.remove("is-playing");
     var idx = pickRandomIndex();
-    writeRadioState(idx, Date.now());
     radioWidget.skip(idx);
     radioWidget.play();
   });
 
   // ================================
-  // Click — ყველა async გარეთ!
+  // Click
   // ================================
   radioBtnToggle.addEventListener("click", function() {
     if (!radioReady) return;
 
-    // პაუზა
-    if (radioLoaded && radioPlaying) {
-      radioWidget.pause();
-      return;
-    }
-
-    // resume პაუზიდან
-    if (radioLoaded && !radioPlaying) {
+    if (!radioLoaded) {
+      radioLoaded = true;
+      var idx = pickRandomIndex();
+      radioWidget.skip(idx);
       radioWidget.play();
-      // seek async — iOS-ზე play() უკვე გასრულდა gesture-ში
-      waitForFirebase(function(fdb) {
-        if (!fdb) return;
-        var fns = window.__sbsFirebaseFns;
-        fns.getDoc(fns.doc(fdb, "radio", "state")).then(function(snap) {
-          var state = snap.exists() ? snap.data() : null;
-          if (state && state.startedAt) {
-            var elapsed = Date.now() - state.startedAt;
-            radioWidget.getDuration(function(dur) {
-              var duration = Number(dur || 0);
-              if (duration > 0 && elapsed >= duration) {
-                var idx = pickRandomIndex();
-                writeRadioState(idx, Date.now());
-                radioWidget.skip(idx);
-              } else {
-                pendingSeekMs = Math.max(0, elapsed);
-              }
-            });
-          }
-        });
-      });
       return;
     }
 
-    // პირველი დაჭერა
-    radioLoaded = true;
-
-    // play() პირდაპირ — gesture context
-    radioWidget.play();
-
-    // cachedState უკვე მზადაა (async წინასწარ წავიკითხეთ)
-    var state = cachedState;
-
-    if (state && state.trackIndex != null && state.startedAt) {
-      // სხვა visitor-ი უსმენდა
-      var elapsed = Date.now() - state.startedAt;
-      playHistory.push(state.trackIndex);
-      radioWidget.skip(state.trackIndex);
-      radioWidget.getDuration(function(dur) {
-        var duration = Number(dur || 0);
-        if (duration > 0 && elapsed >= duration) {
-          var idx = pickRandomIndex();
-          writeRadioState(idx, Date.now());
-          radioWidget.skip(idx);
-        } else {
-          pendingSeekMs = Math.max(0, elapsed);
-        }
-      });
+    if (radioPlaying) {
+      radioWidget.pause();
     } else {
-      // პირველი visitor
-      if (totalTracks > 0) {
-        var idx = pickRandomIndex();
-        radioWidget.skip(idx);
-        radioWidget.getDuration(function(dur) {
-          var duration = Number(dur || 0);
-          var seekMs = Math.floor(duration * 0.10);
-          writeRadioState(idx, Date.now() - seekMs);
-          pendingSeekMs = seekMs;
-        });
-      }
+      radioWidget.play();
     }
   });
 
