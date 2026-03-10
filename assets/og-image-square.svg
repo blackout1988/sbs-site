@@ -1,0 +1,31 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Doto:wght@400;700&amp;display=swap');
+      .title { font-family: 'Doto', monospace; font-weight: 700; }
+      .sub { font-family: 'Doto', monospace; font-weight: 400; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="1200" fill="#07070a"/>
+
+  <!-- Red bottom line -->
+  <rect x="0" y="1196" width="1200" height="4" fill="#FE0000"/>
+
+  <!-- SBS boxes -->
+  <rect x="220" y="380" width="220" height="220" rx="10" fill="#FE0000"/>
+  <rect x="490" y="380" width="220" height="220" rx="10" fill="#FE0000"/>
+  <rect x="760" y="380" width="220" height="220" rx="10" fill="#FE0000"/>
+
+  <!-- Letters -->
+  <text x="330" y="490" text-anchor="middle" dominant-baseline="middle" class="title" font-size="160" fill="white">S</text>
+  <text x="600" y="490" text-anchor="middle" dominant-baseline="middle" class="title" font-size="160" fill="white">B</text>
+  <text x="870" y="490" text-anchor="middle" dominant-baseline="middle" class="title" font-size="160" fill="white">S</text>
+
+  <!-- 7TH BLOCK SOCIETY -->
+  <text x="600" y="680" text-anchor="middle" class="title" font-size="52" fill="white" letter-spacing="8">7TH BLOCK SOCIETY</text>
+
+  <!-- Music Space Talk -->
+  <text x="600" y="750" text-anchor="middle" class="sub" font-size="28" fill="rgba(255,255,255,0.5)" letter-spacing="6">Music  •  Space  •  Talk</text>
+</svg>
