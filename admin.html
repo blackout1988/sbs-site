@@ -495,7 +495,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBXRWLVHI3hNM5hv7w6uZyUovN9mdrThrU",
@@ -509,9 +509,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ── CREDENTIALS ──
-    const ADMIN_USER = "sbsadmin";
-    const ADMIN_PASS = "Qwe123$5";
 
     let allSubs = [];
     let currentFilter = "all";
@@ -526,16 +523,24 @@
         showAdmin();
     }
 
-    window.doLogin = function() {
+    window.doLogin = async function() {
         const u = document.getElementById("loginUser").value.trim();
         const p = document.getElementById("loginPass").value;
         const err = document.getElementById("loginError");
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            sessionStorage.setItem("sbs_admin", "1");
-            showAdmin();
-        } else {
-            err.textContent = "INCORRECT USERNAME OR PASSWORD";
-            document.getElementById("loginPass").value = "";
+        err.textContent = "";
+        try {
+            const snap = await getDoc(doc(db, "config", "admin"));
+            if (!snap.exists()) { err.textContent = "CONFIG ERROR"; return; }
+            const data = snap.data();
+            if (u === data.user && p === data.pass) {
+                sessionStorage.setItem("sbs_admin", "1");
+                showAdmin();
+            } else {
+                err.textContent = "INCORRECT USERNAME OR PASSWORD";
+                document.getElementById("loginPass").value = "";
+            }
+        } catch(e) {
+            err.textContent = "CONNECTION ERROR";
         }
     };
 
