@@ -34,7 +34,7 @@ function loadCache(){
 // ================================
 // YouTube Views Integration
 // ================================
-const YT_API_KEY = "AIzaSyA3arnK5Ar-A2tCH7HxEJY_TQcKnCp6sPA";
+const YT_WORKER = "https://calm-term-88ec.gogadididze1988.workers.dev";
 const YT_CHANNEL_ID = "UCcvJmv3UOYFmVG2_1tK8aNg";
 let ytViewsMap = {}; // title => viewCount
 
@@ -89,7 +89,7 @@ async function fetchYouTubeViews() {
   try {
     // Get uploads playlist ID
     const chRes = await fetch(
-        `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${YT_CHANNEL_ID}&key=${YT_API_KEY}`
+        `${YT_WORKER}/yt/channel?part=contentDetails&id=${YT_CHANNEL_ID}`
     );
     const chData = await chRes.json();
     const uploadsId = chData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
@@ -100,7 +100,7 @@ async function fetchYouTubeViews() {
     let pageToken = "";
     do {
       const plRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=50&pageToken=${pageToken}&key=${YT_API_KEY}`
+          `${YT_WORKER}/yt/playlist?part=snippet&playlistId=${uploadsId}&maxResults=50&pageToken=${pageToken}`
       );
       const plData = await plRes.json();
       videos = videos.concat(plData.items || []);
@@ -115,7 +115,7 @@ async function fetchYouTubeViews() {
     for (let i = 0; i < ids.length; i += 50) {
       const batch = ids.slice(i, i + 50).join(",");
       const statsRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet,contentDetails&id=${batch}&key=${YT_API_KEY}`
+          `${YT_WORKER}/yt/videos?part=statistics,snippet,contentDetails&id=${batch}`
       );
       const statsData = await statsRes.json();
       (statsData.items || []).forEach(item => {
