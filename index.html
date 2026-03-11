@@ -598,7 +598,7 @@
                 <span class="mixes-form__error doto" data-field="socials"></span>
             </div>
             <div class="mixes-form__field">
-                <label class="mixes-form__label doto">MESSAGE <span>*</span></label>
+                <label class="mixes-form__label doto">SHORT BIO <span>*</span></label>
                 <textarea class="mixes-form__input mixes-form__textarea doto" name="message" placeholder="TELL US ABOUT YOURSELF AND YOUR MUSIC..."></textarea>
                 <span class="mixes-form__error doto" data-field="message"></span>
             </div>
@@ -655,6 +655,61 @@
                 By checking the agreement box and submitting the form, you confirm that you have read, understood, and agree to these terms.</p>
         </div>
         <button class="mixes-form__submit doto" id="termsAcceptBtn" style="margin-top:24px;">I AGREE →</button>
+    </div>
+</div>
+
+<!-- ===== SUCCESS MODAL ===== -->
+<div class="about-modal" id="successModal">
+    <div class="about-modal__overlay" id="successOverlay"></div>
+    <div class="about-modal__box" style="max-width:520px;text-align:center;">
+        <button class="about-modal__close doto" id="successClose">✕</button>
+
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:28px;">
+            <div class="sbs-box" style="width:44px;height:44px;font-size:18px;border-radius:8px;">S</div>
+            <div class="sbs-box" style="width:44px;height:44px;font-size:18px;border-radius:8px;">B</div>
+            <div class="sbs-box" style="width:44px;height:44px;font-size:18px;border-radius:8px;">S</div>
+        </div>
+
+        <div class="doto" style="font-size:22px;font-weight:700;letter-spacing:3px;color:#00c864;margin-bottom:8px;">✓ SUBMITTED</div>
+        <div style="width:40px;height:2px;background:#FE0000;margin:0 auto 28px;"></div>
+
+        <div class="doto" style="font-size:13px;letter-spacing:2px;color:#fff;margin-bottom:20px;">
+            THANK YOU, <span id="successArtistName" style="color:#FE0000;"></span>
+        </div>
+
+        <p class="doto" style="font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,0.60);line-height:2.2;margin-bottom:28px;">
+            YOUR APPLICATION HAS BEEN RECEIVED AND IS<br>
+            CURRENTLY BEING PROCESSED BY OUR TEAM.<br><br>
+            YOU WILL RECEIVE A RESPONSE VIA<br>
+            <span style="color:#fff;">EMAIL AND PHONE NUMBER</span><br>
+            REGARDLESS OF THE OUTCOME.
+        </p>
+
+        <div style="background:rgba(254,0,0,0.06);border:1px solid rgba(254,0,0,0.25);border-radius:8px;padding:18px 20px;margin-bottom:28px;">
+            <div class="doto" style="font-size:9px;letter-spacing:2px;color:#FE0000;margin-bottom:10px;">⚠ IMPORTANT</div>
+            <p class="doto" style="font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.65);line-height:2;">
+                FOLLOWING OUR SOCIAL MEDIA PAGES IS <span style="color:#fff;font-weight:700;">MANDATORY</span>.<br>
+                DURING THE REVIEW PROCESS, WE WILL CHECK WHETHER<br>
+                THE APPLICANT FOLLOWS OUR PAGES.<br>
+                <span style="color:rgba(255,255,255,0.40);font-size:9px;">THIS WILL BE TAKEN INTO CONSIDERATION.</span>
+            </p>
+            <div style="display:flex;justify-content:center;gap:12px;margin-top:16px;">
+                <a href="https://www.instagram.com/7thblocksociety/" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--ig" style="text-decoration:none;font-size:9px;padding:8px 14px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>
+                    INSTAGRAM
+                </a>
+                <a href="https://soundcloud.com/7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--sc" style="text-decoration:none;font-size:9px;padding:8px 14px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg>
+                    SOUNDCLOUD
+                </a>
+                <a href="https://www.youtube.com/@7thblocksociety" target="_blank" rel="noreferrer" class="about-social-btn about-social-btn--yt" style="text-decoration:none;font-size:9px;padding:8px 14px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+                    YOUTUBE
+                </a>
+            </div>
+        </div>
+
+        <button class="mixes-form__submit doto" id="successCloseBtn">CLOSE →</button>
     </div>
 </div>
 
@@ -937,11 +992,26 @@
             const fbEvent = new CustomEvent("sbsFirebaseSave", { detail: data });
             document.getElementById("mixesForm").dispatchEvent(fbEvent);
 
-            btn.textContent = "SENT! WE'LL BE IN TOUCH ✓";
+            // დახურე ფორმის modal, გახსენი success modal
+            closeMixes();
+            document.getElementById("successArtistName").textContent = data.artist;
+            document.getElementById("successModal").classList.add("is-open");
+            document.body.style.overflow = "hidden";
+
+            // reset form
+            form.reset();
+            document.getElementById("genreValue").value = "";
+            document.getElementById("genreLabel").textContent = "SELECT GENRE";
+            document.getElementById("genreTrigger").classList.remove("has-value");
+            document.querySelectorAll(".custom-select__item").forEach(i => i.classList.remove("is-selected"));
             generateCaptcha();
-            if (captchaInput) { captchaInput.value = ""; captchaInput.classList.remove("is-error"); }
-            btn.style.background = "rgba(255,255,255,0.08)";
-            btn.style.borderColor = "rgba(255,255,255,0.20)";
+            btn.textContent = "SEND APPLICATION →";
+            btn.disabled = false;
+            btn.style.background = "";
+            btn.style.borderColor = "";
+            const termsChkReset = document.getElementById("termsCheckbox");
+            if (termsChkReset) termsChkReset.checked = false;
+
         } catch(e) {
             btn.textContent = "ERROR — TRY AGAIN";
             btn.style.borderColor = "rgba(254,0,0,0.50)";
@@ -1011,6 +1081,20 @@
                 dropdown.classList.remove("is-open");
             }
         });
+
+        // Success modal
+        var successModal   = document.getElementById("successModal");
+        var successOverlay = document.getElementById("successOverlay");
+        var successClose   = document.getElementById("successClose");
+        var successCloseBtn = document.getElementById("successCloseBtn");
+
+        function closeSuccess() {
+            successModal.classList.remove("is-open");
+            document.body.style.overflow = "";
+        }
+        if (successClose)   successClose.addEventListener("click", closeSuccess);
+        if (successOverlay) successOverlay.addEventListener("click", closeSuccess);
+        if (successCloseBtn) successCloseBtn.addEventListener("click", closeSuccess);
 
         // Terms modal
         var termsModal    = document.getElementById("termsModal");
