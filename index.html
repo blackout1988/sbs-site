@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="assets/favicon.ico">
 
     <!-- ====== SEO ====== -->
     <title>7TH BLOCK SOCIETY — Music • Space • Talk</title>
@@ -107,8 +108,8 @@
     <nav class="nav-menu" id="navMenu">
         <a href="#" class="nav-menu__item doto" id="homeBtn">Home</a>
         <a href="#episodesAnchor" class="nav-menu__item doto">Episodes</a>
-        <a href="#upcoming" class="nav-menu__item doto">Upcoming Events</a>
-        <a href="#" class="nav-menu__item doto" id="mixesBtn">Mixes</a>
+        <a href="#upcoming" class="nav-menu__item doto">Events</a>
+        <a href="#" class="nav-menu__item doto" id="mixesBtn">Record Mix</a>
         <a href="#about" class="nav-menu__item doto">About</a>
         <a href="#contact" class="nav-menu__item doto">Contact</a>
     </nav>
@@ -182,8 +183,8 @@
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <a href="#" class="mobile-menu__item doto" id="homeBtnMobile">Home</a>
     <a href="#episodesAnchor" class="mobile-menu__item doto">Episodes</a>
-    <a href="#upcoming" class="mobile-menu__item doto">Upcoming Events</a>
-    <a href="#" class="mobile-menu__item doto" id="mixesBtnMobile">Mixes</a>
+    <a href="#upcoming" class="mobile-menu__item doto">Events</a>
+    <a href="#" class="mobile-menu__item doto" id="mixesBtnMobile">Record Mix</a>
     <a href="#about" class="mobile-menu__item doto">About</a>
     <a href="#contact" class="mobile-menu__item doto">Contact</a>
 </div>
@@ -249,7 +250,7 @@
 
     <!-- ===== UPCOMING EVENTS ===== -->
     <section class="upcoming" id="upcoming">
-        <center><h2 class="doto upcoming__title">UPCOMING EVENTS</h2></center>
+        <center><h2 class="doto upcoming__title">EVENTS</h2></center>
         <div class="upcoming__calendar" id="upcomingCalendar">
             <!-- Calendar injected by JS -->
         </div>
@@ -538,27 +539,61 @@
                 </div>
                 <div class="mixes-form__field">
                     <label class="mixes-form__label doto">GENRE <span>*</span></label>
-                    <select class="mixes-form__input mixes-form__select doto" name="genre">
-                        <option value="" disabled selected>SELECT GENRE</option>
-                        <option>HOUSE</option>
-                        <option>DEEP HOUSE</option>
-                        <option>TECHNO</option>
-                        <option>MINIMAL TECHNO</option>
-                        <option>ORGANIC HOUSE</option>
-                        <option>MELODIC TECHNO</option>
-                        <option>AMBIENT</option>
-                        <option>OTHER</option>
-                    </select>
+                    <input type="hidden" name="genre" id="genreValue" />
+                    <div class="custom-select" id="genreDropdown">
+                        <button type="button" class="custom-select__trigger doto" id="genreTrigger">
+                            <span id="genreLabel">SELECT GENRE</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
+                        </button>
+                        <div class="custom-select__menu" id="genreMenu">
+                            <div class="custom-select__list">
+                                <div class="custom-select__item doto" data-value="ALTERNATIVE ROCK">ALTERNATIVE ROCK</div>
+                                <div class="custom-select__item doto" data-value="AMBIENT">AMBIENT</div>
+                                <div class="custom-select__item doto" data-value="CLASSICAL">CLASSICAL</div>
+                                <div class="custom-select__item doto" data-value="COUNTRY">COUNTRY</div>
+                                <div class="custom-select__item doto" data-value="DANCE & EDM">DANCE & EDM</div>
+                                <div class="custom-select__item doto" data-value="DANCEHALL">DANCEHALL</div>
+                                <div class="custom-select__item doto" data-value="DEEP HOUSE">DEEP HOUSE</div>
+                                <div class="custom-select__item doto" data-value="DISCO">DISCO</div>
+                                <div class="custom-select__item doto" data-value="DRUM & BASS">DRUM & BASS</div>
+                                <div class="custom-select__item doto" data-value="DUBSTEP">DUBSTEP</div>
+                                <div class="custom-select__item doto" data-value="ELECTRONIC">ELECTRONIC</div>
+                                <div class="custom-select__item doto" data-value="FOLK & SINGER-SONGWRITER">FOLK & SINGER-SONGWRITER</div>
+                                <div class="custom-select__item doto" data-value="HIP-HOP & RAP">HIP-HOP & RAP</div>
+                                <div class="custom-select__item doto" data-value="HOUSE">HOUSE</div>
+                                <div class="custom-select__item doto" data-value="INDIE">INDIE</div>
+                                <div class="custom-select__item doto" data-value="JAZZ & BLUES">JAZZ & BLUES</div>
+                                <div class="custom-select__item doto" data-value="LATIN">LATIN</div>
+                                <div class="custom-select__item doto" data-value="MELODIC TECHNO">MELODIC TECHNO</div>
+                                <div class="custom-select__item doto" data-value="METAL">METAL</div>
+                                <div class="custom-select__item doto" data-value="MINIMAL TECHNO">MINIMAL TECHNO</div>
+                                <div class="custom-select__item doto" data-value="ORGANIC HOUSE">ORGANIC HOUSE</div>
+                                <div class="custom-select__item doto" data-value="PIANO">PIANO</div>
+                                <div class="custom-select__item doto" data-value="POP">POP</div>
+                                <div class="custom-select__item doto" data-value="R&B & SOUL">R&B & SOUL</div>
+                                <div class="custom-select__item doto" data-value="REGGAE">REGGAE</div>
+                                <div class="custom-select__item doto" data-value="REGGAETON">REGGAETON</div>
+                                <div class="custom-select__item doto" data-value="ROCK">ROCK</div>
+                                <div class="custom-select__item doto" data-value="SOUNDTRACK">SOUNDTRACK</div>
+                                <div class="custom-select__item doto" data-value="TECHNO">TECHNO</div>
+                                <div class="custom-select__item doto" data-value="TRANCE">TRANCE</div>
+                                <div class="custom-select__item doto" data-value="TRAP">TRAP</div>
+                                <div class="custom-select__item doto" data-value="TRIPHOP">TRIPHOP</div>
+                                <div class="custom-select__item doto" data-value="WORLD">WORLD</div>
+                                <div class="custom-select__item doto" data-value="OTHER">OTHER</div>
+                            </div>
+                        </div>
+                    </div>
                     <span class="mixes-form__error doto" data-field="genre"></span>
                 </div>
             </div>
             <div class="mixes-form__field">
-                <label class="mixes-form__label doto">MIX LINK <span>*</span> <span style="opacity:0.4;font-size:10px;">(SOUNDCLOUD / MIXCLOUD / DROPBOX)</span></label>
+                <label class="mixes-form__label doto">MIX LINK <span>*</span> <span style="opacity:0.65;font-size:10px;color:#fff;">(SOUNDCLOUD / MIXCLOUD / DROPBOX)</span></label>
                 <input class="mixes-form__input doto" type="text" name="mix_link" placeholder="HTTPS://SOUNDCLOUD.COM/..." />
                 <span class="mixes-form__error doto" data-field="mix_link"></span>
             </div>
             <div class="mixes-form__field">
-                <label class="mixes-form__label doto">SOCIAL LINK <span>*</span> <span style="opacity:0.4;font-size:10px;">(INSTAGRAM / SOUNDCLOUD / FACEBOOK)</span></label>
+                <label class="mixes-form__label doto">SOCIAL LINK <span>*</span> <span style="opacity:0.65;font-size:10px;color:#fff;">(INSTAGRAM / SOUNDCLOUD / FACEBOOK)</span></label>
                 <input class="mixes-form__input doto" type="text" name="instagram" placeholder="HTTPS://INSTAGRAM.COM/  OR  SOUNDCLOUD.COM/  OR  FACEBOOK.COM/" />
                 <span class="mixes-form__error doto" data-field="socials"></span>
             </div>
@@ -567,8 +602,59 @@
                 <textarea class="mixes-form__input mixes-form__textarea doto" name="message" placeholder="TELL US ABOUT YOURSELF AND YOUR MUSIC..."></textarea>
                 <span class="mixes-form__error doto" data-field="message"></span>
             </div>
+            <div class="mixes-form__field mixes-form__captcha" id="captchaField">
+                <label class="mixes-form__label doto">PROVE YOU'RE HUMAN <span>*</span></label>
+                <div class="captcha-row">
+                    <span class="captcha-question doto" id="captchaQuestion"></span>
+                    <input class="mixes-form__input doto captcha-input" type="text" id="captchaInput" placeholder="?" autocomplete="off" maxlength="3" />
+                </div>
+                <span class="mixes-form__error doto" data-field="captcha"></span>
+            </div>
+            <!-- Terms & Conditions -->
+            <div class="mixes-form__field mixes-form__terms-wrap">
+                <label class="mixes-form__terms-label doto">
+                    <input type="checkbox" id="termsCheckbox" class="mixes-form__terms-checkbox" />
+                    <span>I AGREE TO THE <button type="button" class="terms-link doto" id="openTermsBtn">TERMS & CONDITIONS</button></span>
+                </label>
+                <span class="mixes-form__error doto" data-field="terms"></span>
+            </div>
             <button class="mixes-form__submit doto" type="submit">SEND APPLICATION →</button>
         </form>
+    </div>
+</div>
+
+<!-- ===== TERMS MODAL ===== -->
+<div class="about-modal" id="termsModal">
+    <div class="about-modal__overlay" id="termsOverlay"></div>
+    <div class="about-modal__box" style="max-width:640px;">
+        <button class="about-modal__close doto" id="termsClose">✕</button>
+        <div class="about-kicker doto" style="margin-bottom:16px;">TERMS & CONDITIONS</div>
+        <div class="about-divider" style="margin-bottom:24px;"></div>
+        <div style="font-family:'Doto',monospace;font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.70);line-height:2;max-height:60vh;overflow-y:auto;padding-right:8px;">
+            <p style="margin-bottom:16px;color:#fff;font-size:12px;letter-spacing:2px;">SUBMISSION TERMS — 7TH BLOCK SOCIETY</p>
+
+            <p style="margin-bottom:14px;"><span style="color:#FE0000;">1. ORIGINALITY</span><br>
+                By submitting your mix, you confirm that the content is your own original work and you hold all necessary rights to share it.</p>
+
+            <p style="margin-bottom:14px;"><span style="color:#FE0000;">2. USAGE RIGHTS</span><br>
+                7TH BLOCK SOCIETY reserves the right to use, publish, and promote the submitted mix on its platforms (website, social media, podcast) if selected, with full credit given to the artist.</p>
+
+            <p style="margin-bottom:14px;"><span style="color:#FE0000;">3. NO GUARANTEE</span><br>
+                Submitting a mix does not guarantee selection or publication. All submissions are reviewed at the discretion of the 7TH BLOCK SOCIETY team.</p>
+
+            <p style="margin-bottom:14px;"><span style="color:#FE0000;">4. PERSONAL DATA</span><br>
+                Your contact information (name, email, phone) will be used solely for communication regarding your submission and will not be shared with third parties.</p>
+
+            <p style="margin-bottom:14px;"><span style="color:#FE0000;">5. CONDUCT</span><br>
+                Submissions containing offensive, discriminatory, or illegal content will be immediately rejected and removed.</p>
+
+            <p style="margin-bottom:14px;"><span style="color:#FE0000;">6. NOTIFICATION</span><br>
+                Artists will be notified of the outcome via email or phone. Response time may vary — we appreciate your patience.</p>
+
+            <p style="margin-bottom:0;"><span style="color:#FE0000;">7. ACCEPTANCE</span><br>
+                By checking the agreement box and submitting the form, you confirm that you have read, understood, and agree to these terms.</p>
+        </div>
+        <button class="mixes-form__submit doto" id="termsAcceptBtn" style="margin-top:24px;">I AGREE →</button>
     </div>
 </div>
 
@@ -767,7 +853,17 @@
         phoneDigits.length >= 7 ? ok("phone") : err("phone", "ENTER A VALID PHONE NUMBER (DIGITS ONLY)");
 
         // Genre
-        v("genre") ? ok("genre") : err("genre", "SELECT A GENRE");
+        const genreVal = document.getElementById("genreValue")?.value.trim() || "";
+        if (!genreVal) {
+            const el = document.querySelector('[data-field="genre"]');
+            if (el) el.textContent = "SELECT A GENRE";
+            document.getElementById("genreDropdown")?.classList.add("is-error");
+            valid = false;
+        } else {
+            const el = document.querySelector('[data-field="genre"]');
+            if (el) el.textContent = "";
+            document.getElementById("genreDropdown")?.classList.remove("is-error");
+        }
 
         // Mix link — must start with http
         /^https?:\/\//i.test(v("mix_link")) ? ok("mix_link") : err("mix_link", "ENTER A VALID URL (HTTPS://...)");
@@ -786,6 +882,32 @@
         // Message
         v("message").length >= 10 ? ok("message") : err("message", "PLEASE WRITE SOMETHING ABOUT YOURSELF");
 
+        // Terms
+        const termsChk = document.getElementById("termsCheckbox");
+        if (!termsChk || !termsChk.checked) {
+            const el = form.querySelector('[data-field="terms"]');
+            if (el) el.textContent = "YOU MUST AGREE TO THE TERMS & CONDITIONS";
+            valid = false;
+        } else {
+            const el = form.querySelector('[data-field="terms"]');
+            if (el) el.textContent = "";
+        }
+
+        // Captcha
+        const captchaInput = document.getElementById("captchaInput");
+        const captchaAnswer = parseInt(window.__sbsCaptchaAnswer || 0);
+        const userAnswer = parseInt((captchaInput?.value || "").trim());
+        if (isNaN(userAnswer) || userAnswer !== captchaAnswer) {
+            const el = form.querySelector('[data-field="captcha"]');
+            if (el) el.textContent = "INCORRECT ANSWER";
+            if (captchaInput) captchaInput.classList.add("is-error");
+            valid = false;
+        } else {
+            const el = form.querySelector('[data-field="captcha"]');
+            if (el) el.textContent = "";
+            if (captchaInput) captchaInput.classList.remove("is-error");
+        }
+
         if (!valid) return;
 
         const btn = form.querySelector(".mixes-form__submit");
@@ -796,7 +918,7 @@
             artist:   v("artist"),
             email:    v("email"),
             phone:    v("phone"),
-            genre:    v("genre"),
+            genre:    document.getElementById("genreValue")?.value.trim() || "",
             mix_link: v("mix_link"),
             social:   v("instagram"),
             message:  v("message"),
@@ -816,6 +938,8 @@
             document.getElementById("mixesForm").dispatchEvent(fbEvent);
 
             btn.textContent = "SENT! WE'LL BE IN TOUCH ✓";
+            generateCaptcha();
+            if (captchaInput) { captchaInput.value = ""; captchaInput.classList.remove("is-error"); }
             btn.style.background = "rgba(255,255,255,0.08)";
             btn.style.borderColor = "rgba(255,255,255,0.20)";
         } catch(e) {
@@ -826,5 +950,94 @@
     });
 </script>
 
+
+<script>
+    function generateCaptcha() {
+        var a = Math.floor(Math.random() * 9) + 1;
+        var b = Math.floor(Math.random() * 9) + 1;
+        window.__sbsCaptchaAnswer = a + b;
+        var q = document.getElementById("captchaQuestion");
+        if (q) q.textContent = a + " + " + b + " =";
+    }
+
+    function resetCaptcha() {
+        generateCaptcha();
+        var inp = document.getElementById("captchaInput");
+        if (inp) { inp.value = ""; inp.classList.remove("is-error"); }
+        var err = document.querySelector('[data-field="captcha"]');
+        if (err) err.textContent = "";
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        generateCaptcha();
+        ["mixesBtn", "mixesBtnMobile"].forEach(function(id) {
+            var btn = document.getElementById(id);
+            if (btn) btn.addEventListener("click", function() {
+                setTimeout(resetCaptcha, 50);
+            });
+        });
+
+        // ── Custom Genre Dropdown ──
+        var dropdown = document.getElementById("genreDropdown");
+        var trigger  = document.getElementById("genreTrigger");
+        var menu     = document.getElementById("genreMenu");
+        var labelEl  = document.getElementById("genreLabel");
+        var hiddenInput = document.getElementById("genreValue");
+
+        if (trigger) {
+            trigger.addEventListener("click", function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle("is-open");
+            });
+        }
+
+        document.querySelectorAll(".custom-select__item").forEach(function(item) {
+            item.addEventListener("click", function() {
+                var val = this.getAttribute("data-value");
+                hiddenInput.value = val;
+                labelEl.textContent = val;
+                trigger.classList.add("has-value");
+                dropdown.classList.remove("is-open", "is-error");
+                document.querySelectorAll(".custom-select__item").forEach(function(i) { i.classList.remove("is-selected"); });
+                this.classList.add("is-selected");
+                // clear error
+                var errEl = document.querySelector('[data-field="genre"]');
+                if (errEl) errEl.textContent = "";
+            });
+        });
+
+        document.addEventListener("click", function(e) {
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("is-open");
+            }
+        });
+
+        // Terms modal
+        var termsModal    = document.getElementById("termsModal");
+        var termsOverlay  = document.getElementById("termsOverlay");
+        var termsClose    = document.getElementById("termsClose");
+        var termsAccept   = document.getElementById("termsAcceptBtn");
+        var openTermsBtn  = document.getElementById("openTermsBtn");
+        var termsCheckbox = document.getElementById("termsCheckbox");
+
+        function openTerms(e) {
+            if (e) e.preventDefault();
+            termsModal.classList.add("is-open");
+        }
+        function closeTerms() {
+            termsModal.classList.remove("is-open");
+        }
+
+        if (openTermsBtn) openTermsBtn.addEventListener("click", openTerms);
+        if (termsClose)   termsClose.addEventListener("click", closeTerms);
+        if (termsOverlay) termsOverlay.addEventListener("click", closeTerms);
+        if (termsAccept)  termsAccept.addEventListener("click", function() {
+            if (termsCheckbox) termsCheckbox.checked = true;
+            var el = document.querySelector('[data-field="terms"]');
+            if (el) el.textContent = "";
+            closeTerms();
+        });
+    });
+</script>
 </body>
 </html>

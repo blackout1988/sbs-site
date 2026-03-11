@@ -529,7 +529,7 @@ function initSortBar(){
   });
 
   // Default active state
-  setActive("default");
+  applySort("newest");
 }
 
 // ✅ FIX: რამდენჯერმე ცდის getSounds()-ს სანამ ყველა ტრეკი არ ჩამოიტვირთება
