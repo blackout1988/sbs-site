@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SBS ADMIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100;400;700&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #FE0000;
+            --bg: #07070a;
+            --panel: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.10);
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.40);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Doto', monospace;
+            min-height: 100vh;
+        }
+
+        /* ── LOGIN ── */
+        #loginScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 48px 40px;
+            background: rgba(12,12,16,0.97);
+        }
+
+        .login-logo {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .login-brand-title {
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .login-brand-sub {
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .sbs-box {
+            width: 40px;
+            height: 40px;
+            background: var(--red);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 6px;
+        }
+
+        .login-title {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .login-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .login-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+
+        .login-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 14px;
+            color: var(--text);
+            font-family: 'Doto', monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus { border-color: var(--red); }
+
+        .login-error {
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--red);
+            min-height: 14px;
+            margin-bottom: 8px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--red);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Doto', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .login-btn:hover { opacity: 0.85; }
+
+        /* ── ADMIN DASHBOARD ── */
+        #adminScreen { display: none; }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 10;
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-logo {
+            display: flex;
+            gap: 4px;
+        }
+
+        .admin-logo .sbs-box {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+
+        .admin-title {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--muted);
+        }
+
+        .admin-logout {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-logout:hover { border-color: var(--red); color: var(--red); }
+
+        .admin-body { padding: 32px; max-width: 1100px; margin: 0 auto; }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-value.red { color: var(--red); }
+
+        /* filters */
+        .admin-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .filter-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            border-color: var(--red);
+            color: var(--text);
+        }
+
+        /* submissions list */
+        .submissions-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .sub-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .sub-card.unread { border-color: rgba(254,0,0,0.35); }
+        .sub-card:hover { border-color: rgba(255,255,255,0.25); }
+
+        .sub-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .sub-artist {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .unread-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--red);
+            flex-shrink: 0;
+        }
+
+        .sub-genre {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--red);
+            border: 1px solid rgba(254,0,0,0.35);
+            border-radius: 4px;
+            padding: 4px 10px;
+        }
+
+        .sub-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .sub-meta-item { display: flex; flex-direction: column; gap: 3px; }
+        .sub-meta-label { font-size: 8px; letter-spacing: 1.5px; color: var(--muted); }
+        .sub-meta-value { font-size: 11px; letter-spacing: 0.5px; color: var(--text); word-break: break-all; }
+        .sub-meta-value a { color: var(--text); text-decoration: none; }
+        .sub-meta-value a:hover { color: var(--red); }
+
+        .sub-message {
+            font-size: 10px;
+            letter-spacing: 0.3px;
+            color: rgba(255,255,255,0.60);
+            line-height: 1.8;
+            margin-bottom: 16px;
+            font-weight: 100;
+            border-left: 2px solid var(--border);
+            padding-left: 12px;
+        }
+
+        .sub-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sub-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Doto', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid;
+        }
+
+        .sub-btn--approve {
+            background: rgba(0,200,100,0.08);
+            border-color: rgba(0,200,100,0.35);
+            color: #00c864;
+        }
+
+        .sub-btn--approve:hover {
+            background: rgba(0,200,100,0.18);
+        }
+
+        .sub-btn--reject {
+            background: rgba(254,0,0,0.06);
+            border-color: rgba(254,0,0,0.35);
+            color: var(--red);
+        }
+
+        .sub-btn--reject:hover {
+            background: rgba(254,0,0,0.14);
+        }
+
+        .sub-btn--delete {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.35);
+            margin-left: auto;
+        }
+
+        .sub-btn--delete:hover {
+            background: rgba(254,0,0,0.08);
+            border-color: rgba(254,0,0,0.30);
+            color: var(--red);
+        }
+
+        .sub-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .sub-status {
+            font-size: 9px;
+            letter-spacing: 2px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid;
+        }
+
+        .sub-status--approved {
+            color: #00c864;
+            border-color: rgba(0,200,100,0.35);
+            background: rgba(0,200,100,0.08);
+        }
+
+        .sub-status--rejected {
+            color: var(--red);
+            border-color: rgba(254,0,0,0.35);
+            background: rgba(254,0,0,0.06);
+        }
+
+        .sub-date {
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-left: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 3px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+        @media (max-width: 640px) {
+            .admin-body { padding: 16px; }
+            .admin-stats { grid-template-columns: 1fr 1fr; }
+            .sub-meta { grid-template-columns: 1fr 1fr; }
+            .admin-header { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-box">
+        <div class="login-logo">
+            <div class="sbs-box">S</div>
+            <div class="sbs-box">B</div>
+            <div class="sbs-box">S</div>
+        </div>
+        <div class="login-brand-title">7TH BLOCK SOCIETY</div>
+        <div class="login-brand-sub">Music • Space • Talk</div>
+        <div class="login-title">ADMIN PANEL</div>
+        <div class="login-field">
+            <label class="login-label">USERNAME</label>
+            <input class="login-input" type="text" id="loginUser" placeholder="ENTER USERNAME" autocomplete="off" />
+        </div>
+        <div class="login-field">
+            <label class="login-label">PASSWORD</label>
+            <input class="login-input" type="password" id="loginPass" placeholder="ENTER PASSWORD" />
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <button class="login-btn" id="loginBtn">ENTER →</button>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="adminScreen">
+    <div class="admin-header">
+        <div class="admin-header-left">
+            <div class="admin-logo">
+                <div class="sbs-box">S</div>
+                <div class="sbs-box">B</div>
+                <div class="sbs-box">S</div>
+            </div>
+            <div class="admin-title">SUBMISSIONS</div>
+        </div>
+        <button class="admin-logout" id="logoutBtn">LOG OUT</button>
+    </div>
+    <div class="admin-body">
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-label">TOTAL</div>
+                <div class="stat-value" id="statTotal">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">UNREAD</div>
+                <div class="stat-value red" id="statUnread">—</div>
+            </div>
+
+        </div>
+
+        <div class="admin-filters">
+            <button class="filter-btn active" onclick="setFilter('all', this)">ALL</button>
+            <button class="filter-btn" onclick="setFilter('unread', this)">UNREAD</button>
+            <button class="filter-btn" onclick="setFilter('approved', this)">APPROVED</button>
+            <button class="filter-btn" onclick="setFilter('rejected', this)">REJECTED</button>
+        </div>
+
+        <div class="submissions-list" id="submissionsList">
+            <div class="loading">LOADING...</div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBXRWLVHI3hNM5hv7w6uZyUovN9mdrThrU",
+        authDomain: "sevenblocksociety.firebaseapp.com",
+        projectId: "sevenblocksociety",
+        storageBucket: "sevenblocksociety.firebasestorage.app",
+        messagingSenderId: "723547199340",
+        appId: "1:723547199340:web:5198b8d9e431237c1f4549"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+
+    let allSubs = [];
+    let currentFilter = "all";
+
+    function showAdmin() {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminScreen").style.display = "block";
+        loadSubmissions();
+    }
+
+    if (sessionStorage.getItem("sbs_admin") === "1") {
+        showAdmin();
+    }
+
+    window.doLogin = async function() {
+        const u = document.getElementById("loginUser").value.trim();
+        const p = document.getElementById("loginPass").value;
+        const err = document.getElementById("loginError");
+        err.textContent = "";
+        try {
+            const snap = await getDoc(doc(db, "config", "admin"));
+            if (!snap.exists()) { err.textContent = "CONFIG ERROR"; return; }
+            const data = snap.data();
+            if (u === data.user && p === data.pass) {
+                sessionStorage.setItem("sbs_admin", "1");
+                showAdmin();
+            } else {
+                err.textContent = "INCORRECT USERNAME OR PASSWORD";
+                document.getElementById("loginPass").value = "";
+            }
+        } catch(e) {
+            err.textContent = "CONNECTION ERROR";
+        }
+    };
+
+    window.doLogout = function() {
+        sessionStorage.removeItem("sbs_admin");
+        document.getElementById("adminScreen").style.display = "none";
+        document.getElementById("loginScreen").style.display = "flex";
+        document.getElementById("loginUser").value = "";
+        document.getElementById("loginPass").value = "";
+    };
+
+    document.getElementById("loginBtn").addEventListener("click", window.doLogin);
+    document.getElementById("logoutBtn").addEventListener("click", window.doLogout);
+    document.addEventListener("keydown", e => {
+        if (e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none") {
+            window.doLogin();
+        }
+    });
+
+    window.setFilter = function(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderSubmissions();
+    };
+
+    async function loadSubmissions() {
+        try {
+            const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"));
+            const snap = await getDocs(q);
+            allSubs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            updateStats();
+            renderSubmissions();
+        } catch(e) {
+            document.getElementById("submissionsList").innerHTML = `<div class="empty-state">ERROR LOADING — CHECK FIRESTORE RULES</div>`;
+        }
+    }
+
+    function updateStats() {
+        document.getElementById("statTotal").textContent = allSubs.length;
+        document.getElementById("statUnread").textContent = allSubs.filter(s => !s.read).length;
+    }
+
+    function renderSubmissions() {
+        const list = document.getElementById("submissionsList");
+        let filtered = allSubs;
+        if (currentFilter === "unread") filtered = allSubs.filter(s => !s.read);
+        else if (currentFilter === "pending") filtered = allSubs.filter(s => s.status === "pending");
+        else if (currentFilter === "approved") filtered = allSubs.filter(s => s.status === "approved");
+        else if (currentFilter === "rejected") filtered = allSubs.filter(s => s.status === "rejected");
+
+        if (!filtered.length) {
+            list.innerHTML = `<div class="empty-state">NO SUBMISSIONS</div>`;
+            return;
+        }
+
+        list.innerHTML = filtered.map(s => {
+            const date = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) : "—";
+            const isUnread = !s.read;
+
+            let actionsHtml = "";
+            if (s.status === "approved") {
+                actionsHtml = `<span class="sub-status sub-status--approved">✓ APPROVED</span>`;
+            } else if (s.status === "rejected") {
+                actionsHtml = `<span class="sub-status sub-status--rejected">✕ REJECTED</span>`;
+            } else {
+                actionsHtml = `
+                <button class="sub-btn sub-btn--approve" onclick="event.stopPropagation();updateStatus('${s.id}', 'approved')">✓ APPROVE</button>
+                <button class="sub-btn sub-btn--reject" onclick="event.stopPropagation();updateStatus('${s.id}', 'rejected')">✕ REJECT</button>`;
+            }
+
+            return `
+        <div class="sub-card ${isUnread ? 'unread' : ''}" id="card-${s.id}" onclick="markRead('${s.id}')">
+            <div class="sub-card-top">
+                <div class="sub-artist">
+                    ${isUnread ? '<span class="unread-dot"></span>' : ''}
+                    ${s.artist || "—"}
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="sub-genre">${s.genre || "—"}</span>
+                    <span class="sub-date">${date}</span>
+                </div>
+            </div>
+            <div class="sub-meta">
+                <div class="sub-meta-item">
+                    <span class="sub-meta-label">EMAIL</span>
+                    <span class="sub-meta-value"><a href="mailto:${s.email}">${s.email || "—"}</a></span>
+                </div>
+                <div class="sub-meta-item">
+                    <span class="sub-meta-label">PHONE</span>
+                    <span class="sub-meta-value">${s.phone || "—"}</span>
+                </div>
+                <div class="sub-meta-item">
+                    <span class="sub-meta-label">SOCIAL</span>
+                    <span class="sub-meta-value"><a href="${s.social}" target="_blank">${s.social || "—"}</a></span>
+                </div>
+                <div class="sub-meta-item" style="grid-column:1/-1">
+                    <span class="sub-meta-label">MIX LINK</span>
+                    <span class="sub-meta-value"><a href="${s.mix_link}" target="_blank">${s.mix_link || "—"}</a></span>
+                </div>
+            </div>
+            <div class="sub-message">${s.message || "—"}</div>
+            <div class="sub-actions">
+                ${actionsHtml}
+                <button class="sub-btn sub-btn--delete" onclick="event.stopPropagation();deleteSubmission('${s.id}')">🗑 DELETE</button>
+            </div>
+        </div>`;
+        }).join("");
+    }
+
+    window.markRead = async function(id) {
+        const sub = allSubs.find(s => s.id === id);
+        if (!sub || sub.read) return;
+        sub.read = true;
+        await updateDoc(doc(db, "submissions", id), { read: true });
+        updateStats();
+        renderSubmissions();
+    };
+
+    window.deleteSubmission = async function(id) {
+        if (!confirm("წაშლა დარწმუნებული ხარ?")) return;
+        await deleteDoc(doc(db, "submissions", id));
+        allSubs = allSubs.filter(s => s.id !== id);
+        updateStats();
+        renderSubmissions();
+    };
+
+    window.updateStatus = async function(id, status) {
+        const sub = allSubs.find(s => s.id === id);
+        if (!sub) return;
+        sub.status = status;
+        sub.read = true;
+        await updateDoc(doc(db, "submissions", id), { status, read: true });
+
+        const isApproved = status === "approved";
+        const htmlContent = `
+<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;">
+  <div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;">
+    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
+    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">B</div>
+    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
+  </div>
+  <div style="text-align:center;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div>
+  <div style="font-size:22px;letter-spacing:3px;color:${isApproved ? '#00c864' : '#FE0000'};margin-bottom:8px;">${isApproved ? '✓ ACCEPTED' : '✕ NOT SELECTED'}</div>
+  <div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div>
+  <div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div>
+  <div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">
+    ${isApproved
+            ? `YOUR MIX SUBMISSION HAS BEEN ACCEPTED.<br><br>OUR REPRESENTATIVE WILL CONTACT YOU ON YOUR PROVIDED PHONE NUMBER — <span style="color:#ffffff;">${sub.phone}</span> — TO DISCUSS FURTHER DETAILS.`
+            : `THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.`
+        }
+  </div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;">7BS.GE — TBILISI, GEORGIA</div>
+</div>`;
+
+        try {
+            // Email გაგზავნა
+            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
+                    to: [{ email: sub.email, name: sub.artist }],
+                    subject: isApproved ? "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY" : "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY",
+                    htmlContent
+                })
+            });
+
+            // SMS გაგზავნა
+            const smsText = isApproved
+                ? `DEAR ${sub.artist}\nYOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.`
+                : `DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.`;
+
+            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sms: true,
+                    phone: sub.phone,
+                    smsText
+                })
+            });
+        } catch(e) {
+            console.error("Error:", e);
+        }
+
+        updateStats();
+        renderSubmissions();
+    };
+</script>
+
+</body>
+</html>

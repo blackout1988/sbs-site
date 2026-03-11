@@ -1,0 +1,553 @@
+/* ================================
+   SBS CALENDAR — clean rewrite
+   ================================ */
+
+/* ================================
+   DESKTOP LAYOUT
+   ================================
+   Structure:
+   .cal-wrap (column)
+     ├── .cal-grid          (full width, all days)
+     └── .cal-bottom-row (row)
+           ├── .cal-pickers-row  (month picker, left)
+           └── .cal-event-popup  (right, fills space)
+*/
+
+.cal-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+/* ================================
+   DAY GRID — full width on top
+   ================================ */
+.cal-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+}
+
+.cal-cell {
+    width: calc((100% - 6px * 30) / 31);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.5px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 6px;
+    cursor: default;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    min-height: 36px;
+}
+
+.cal-cell.is-saturday {
+    color: var(--brand-red);
+    border-color: rgba(254,0,0,0.20);
+    background: rgba(254,0,0,0.06);
+}
+
+.cal-cell.has-event {
+    cursor: pointer;
+    border-color: rgba(254,0,0,0.50);
+    background: rgba(254,0,0,0.12);
+    box-shadow: 0 0 10px rgba(254,0,0,0.15);
+}
+.cal-cell.has-event:hover {
+    background: rgba(254,0,0,0.20);
+}
+.cal-cell.is-active {
+    background: var(--brand-red);
+    border-color: var(--brand-red);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(254,0,0,0.40);
+}
+.cal-cell.is-active-empty {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.25);
+    color: #fff;
+}
+.cal-cell:not(.has-event):not(.is-active):hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.20);
+    color: #fff;
+    cursor: pointer;
+}
+.cal-cell.is-saturday:not(.has-event):not(.is-active):hover {
+    background: rgba(254,0,0,0.15);
+    border-color: rgba(254,0,0,0.40);
+    color: #fff;
+}
+
+/* ================================
+   BOTTOM ROW — picker + popup
+   ================================ */
+.cal-bottom-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* ================================
+   MONTH PICKER (left)
+   ================================ */
+.cal-pickers-row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.cal-picker {
+    flex: 0 0 160px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 272px;
+}
+
+/* Hide day picker on desktop */
+.cal-picker--day {
+    display: none;
+}
+
+.cal-picker__body {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.cal-picker__body::before,
+.cal-picker__body::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 80px;
+    pointer-events: none;
+    z-index: 3;
+}
+.cal-picker__body::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(7,7,10,0.95), transparent);
+}
+.cal-picker__body::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(7,7,10,0.95), transparent);
+}
+
+.cal-picker__highlight {
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 44px;
+    background: rgba(255,255,255,0.05);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.cal-picker__scroll {
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 88px 0;
+}
+.cal-picker__scroll::-webkit-scrollbar { display: none; }
+
+.cal-picker__item {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 1px;
+    scroll-snap-align: center;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+.cal-picker__item:hover                       { color: rgba(255,255,255,0.70); }
+.cal-picker__item.is-selected                 { color: var(--brand-red); font-size: 13px; }
+.cal-picker__item.has-event:not(.is-selected) { color: rgba(255,255,255,0.45); }
+
+/* ================================
+   EVENT POPUP (right of picker)
+   ================================ */
+.cal-right {
+    flex: 1;
+    min-width: 0;
+}
+
+.cal-event-popup {
+    display: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 5px;
+    padding: 17px;
+    animation: popupIn 0.2s ease;
+    height: 220px;
+    box-sizing: border-box;
+}
+.cal-event-popup.is-visible { display: block; }
+
+.cal-event-popup:has(.cal-popup__empty) {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.08);
+    min-height: 211px;
+    display: flex;
+    align-items: center;
+}
+
+@keyframes popupIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.cal-popup__inner {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    height: 100%;
+}
+.cal-popup__info { flex: 1; min-width: 0; }
+
+.cal-popup__date {
+    font-size: 42px;
+    color: var(--brand-red);
+    line-height: 1;
+    margin-bottom: 10px;
+}
+.cal-popup__tag {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(254,0,0,0.35);
+    background: rgba(254,0,0,0.10);
+    font-size: 10px;
+    color: rgba(255,255,255,0.80);
+    letter-spacing: 0.6px;
+    margin-bottom: 10px;
+}
+.cal-popup__event {
+    font-size: 16px;
+    color: #FE0000;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+.cal-popup__title {
+    font-size: 20px;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 6px;
+}
+.cal-popup__sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 6px;
+}
+.cal-popup__time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.5px;
+}
+.cal-popup__dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--brand-red);
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(254,0,0,0.6);
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+}
+.cal-popup__countdown {
+    font-size: 22px;
+    color: rgba(255,255,255,0.70);
+    letter-spacing: 2px;
+    margin-top: 10px;
+}
+.cal-popup__empty {
+    font-size: 28px;
+    color: rgba(255,255,255,0.20);
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+.cal-popup__img {
+    flex: 0 0 130px;
+    width: 130px;
+    height: 169px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(254,0,0,0.20);
+}
+.cal-popup__img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.cal-popup__released {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    padding: 7px 16px;
+    border-radius: 5px;
+    background: var(--brand-red);
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+.cal-popup__released:hover { opacity: 0.85; }
+
+/* ================================
+   DAY PICKER — number + weekday
+   ================================ */
+.cal-day-num {
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+.cal-day-name {
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.6;
+}
+.cal-picker--day .cal-picker__item {
+    height: 56px;
+    flex-direction: column;
+    gap: 2px;
+}
+.cal-picker--day .cal-picker__item.is-selected .cal-day-num { font-size: 26px; }
+.cal-picker--day .cal-picker__item.is-selected .cal-day-name { opacity: 1; font-size: 11px; }
+.cal-picker--day .cal-picker__body { height: 56px; overflow: hidden; }
+.cal-picker--day .cal-picker__scroll { padding: 0; height: 56px; overflow-y: scroll; }
+.cal-picker--day .cal-picker__highlight { top: 0; transform: none; height: 56px; }
+.cal-picker--day .cal-picker__body::before,
+.cal-picker--day .cal-picker__body::after { display: none; }
+
+/* ================================
+   MOBILE  (max-width: 640px)
+   ================================ */
+@media (max-width: 640px) {
+
+    /* Stack everything in column */
+    .cal-wrap {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Bottom row also stacks: pickers top, popup below */
+    .cal-bottom-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Pickers row: month + day side by side */
+    .cal-pickers-row {
+        flex-direction: row;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .cal-picker {
+        flex: 1;
+        max-height: none;
+    }
+
+    .cal-picker__body {
+        height: 140px;
+    }
+
+    .cal-picker__scroll {
+        padding: 48px 0;
+    }
+
+    .cal-picker__item {
+        font-size: 11px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Show day picker on mobile */
+    .cal-picker--day {
+        display: flex;
+        flex: 1;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 5px;
+        overflow: hidden;
+        height: 140px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cal-picker--day .cal-picker__body {
+        width: 100%;
+        height: 56px;
+        overflow: hidden;
+    }
+
+    .cal-picker--day .cal-picker__scroll {
+        padding: 0;
+        height: 56px;
+        overflow-y: scroll;
+    }
+
+    /* Right side full width */
+    .cal-right {
+        width: 100%;
+    }
+
+    /* Hide day grid on mobile */
+    #calDayGrid {
+        display: none;
+    }
+
+    /* Popup: text left, image right */
+    .cal-popup__inner {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .cal-popup__img {
+        width: 110px;
+        height: 140px;
+        flex: 0 0 110px;
+    }
+
+    .cal-popup__date  { font-size: 28px; }
+    .cal-popup__title { font-size: 15px; }
+}
+/* ================================
+   MOBILE CAROUSEL
+   ================================ */
+.cal-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.cal-carousel__track {
+    display: flex;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.cal-carousel__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 5px;
+    padding: 17px;
+    box-sizing: border-box;
+}
+
+.cal-carousel__btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+.cal-carousel__btn:hover { background: rgba(254,0,0,0.5); }
+.cal-carousel__btn--prev { left: 6px; }
+.cal-carousel__btn--next { right: 6px; }
+
+.cal-carousel__dots {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cal-carousel__dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    gap: 3px;
+    min-width: 0;
+}
+.cal-carousel__dot:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.25);
+}
+.cal-carousel__dot.is-active {
+    background: rgba(254,0,0,0.12);
+    border-color: rgba(254,0,0,0.55);
+    box-shadow: 0 0 10px rgba(254,0,0,0.15);
+}
+
+.cal-dot__day {
+    font-size: 18px;
+    line-height: 1;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 1px;
+}
+.cal-dot__month {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.45);
+}
+.cal-carousel__dot.is-active .cal-dot__day { color: #fff; }
+.cal-carousel__dot.is-active .cal-dot__month { color: var(--brand-red); }
+
+/* 5–7 ღილაკი — პატარდება */
+.cal-carousel__dots:has(.cal-carousel__dot:nth-child(5)) .cal-carousel__dot {
+    width: 44px;
+    padding: 6px 0;
+}
+.cal-carousel__dots:has(.cal-carousel__dot:nth-child(5)) .cal-dot__day { font-size: 15px; }
+.cal-carousel__dots:has(.cal-carousel__dot:nth-child(5)) .cal-dot__month { font-size: 8px; }
+
+/* 8+ ღილაკი — კიდევ უფრო პატარა */
+.cal-carousel__dots:has(.cal-carousel__dot:nth-child(8)) .cal-carousel__dot {
+    width: 36px;
+    padding: 5px 0;
+}
+.cal-carousel__dots:has(.cal-carousel__dot:nth-child(8)) .cal-dot__day { font-size: 13px; }
+.cal-carousel__dots:has(.cal-carousel__dot:nth-child(8)) .cal-dot__month { font-size: 7px; letter-spacing: 1px; }
