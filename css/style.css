@@ -2228,3 +2228,44 @@ body {
 .custom-select.is-error .custom-select__trigger {
     border-color: rgba(254,0,0,0.60);
 }
+
+/* ── FOOTER CONTACT ── */
+.footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer__contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer__contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.50);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer__contact-item:hover {
+    color: #fff;
+}
+
+.footer__inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+}
+
+@media (max-width: 768px) {
+    .footer__inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
