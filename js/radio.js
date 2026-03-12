@@ -72,7 +72,22 @@ function initRadio() {
   // ================================
   var animLoop = null;
 
+  function setMediaSession(title) {
+    if (!('mediaSession' in navigator)) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title || 'LIVE RADIO',
+      artist: '7TH BLOCK SOCIETY',
+      album: 'SBS RADIO',
+      artwork: [
+        { src: '/assets/favicon-512.png', sizes: '512x512', type: 'image/png' }
+      ]
+    });
+    navigator.mediaSession.setActionHandler('play',  function() { radioWidget.play();  });
+    navigator.mediaSession.setActionHandler('pause', function() { radioWidget.pause(); });
+  }
+
   function animateTrackName(title) {
+    setMediaSession(title);
     if (!radioLabel || !radioTrackLabel) return;
     if (animLoop) { clearTimeout(animLoop); animLoop = null; }
 
