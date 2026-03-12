@@ -79,6 +79,7 @@ function initRadio() {
       artist: '7TH BLOCK SOCIETY',
       album: 'SBS RADIO',
       artwork: [
+        { src: '/assets/og-image.jpg', sizes: '1200x630', type: 'image/jpeg' },
         { src: '/assets/favicon-512.png', sizes: '512x512', type: 'image/png' }
       ]
     });
@@ -176,7 +177,10 @@ function initRadio() {
     radioPlaying = true;
     setIcon("playing");
     radioWidget.getCurrentSound(function(sound) {
-      if (sound) animateTrackName(parseTrackTitle(sound.title));
+      var title = sound ? parseTrackTitle(sound.title) : 'LIVE RADIO';
+      animateTrackName(title);
+      // delay — SC-ს გადავაწერთ
+      setTimeout(function() { setMediaSession(title); }, 500);
     });
   });
 
