@@ -73,18 +73,30 @@ function initRadio() {
   var animLoop = null;
 
   function setMediaSession(title) {
-    if (!('mediaSession' in navigator)) return;
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: title || 'LIVE RADIO',
-      artist: '7TH BLOCK SOCIETY',
-      album: 'SBS RADIO',
-      artwork: [
-        { src: '/assets/og-image.jpg', sizes: '1200x630', type: 'image/jpeg' },
-        { src: '/assets/favicon-512.png', sizes: '512x512', type: 'image/png' }
-      ]
+    var targets = [navigator];
+    // iframe-ის contentWindow-ზეც ვცდით — iOS Safari-სთვის
+    try {
+      if (radioIframe && radioIframe.contentWindow && radioIframe.contentWindow.navigator) {
+        targets.push(radioIframe.contentWindow.navigator);
+      }
+    } catch(e) {}
+
+    targets.forEach(function(nav) {
+      if (!('mediaSession' in nav)) return;
+      nav.mediaSession.metadata = new MediaMetadata({
+        title: title || 'LIVE RADIO',
+        artist: '7TH BLOCK SOCIETY',
+        album: 'SBS RADIO',
+        artwork: [
+          { src: 'https://7bs.ge/assets/favicon-512.png', sizes: '96x96',   type: 'image/png' },
+          { src: 'https://7bs.ge/assets/favicon-512.png', sizes: '512x512', type: 'image/png' }
+        ]
+      });
+      try {
+        nav.mediaSession.setActionHandler('play',  function() { radioWidget.play();  });
+        nav.mediaSession.setActionHandler('pause', function() { radioWidget.pause(); });
+      } catch(e) {}
     });
-    navigator.mediaSession.setActionHandler('play',  function() { radioWidget.play();  });
-    navigator.mediaSession.setActionHandler('pause', function() { radioWidget.pause(); });
   }
 
   function animateTrackName(title) {
@@ -180,7 +192,7 @@ function initRadio() {
       var title = sound ? parseTrackTitle(sound.title) : 'LIVE RADIO';
       animateTrackName(title);
       // delay — SC-ს გადავაწერთ
-      setTimeout(function() { setMediaSession(title); }, 500);
+      setTimeout(function() { setMediaSession(title); }, 1000);
     });
   });
 
