@@ -41,7 +41,7 @@
 
     <link rel="stylesheet" href="css/style.css?v=2" />
     <link rel="stylesheet" href="css/calendar.css" />
-    <link rel="stylesheet" href="css/radio.css?v=2" />
+    <link rel="stylesheet" href="css/radio.css?v=4" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
     <script type="module">
@@ -123,28 +123,20 @@
                     <span class="radio-pulse__ring"></span>
                     <span class="radio-pulse__ring"></span>
                     <span class="radio-pulse__dot">
-                        <svg class="radio-pulse__icon radio-pulse__icon--play" id="radioPulseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 8">
-                            <rect x="0" y="0" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="1.6" width="1.2" height="1.2" fill="white"/>
-                            <rect x="1.6" y="1.6" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="3.2" width="1.2" height="1.2" fill="white"/>
-                            <rect x="1.6" y="3.2" width="1.2" height="1.2" fill="white"/>
-                            <rect x="3.2" y="3.2" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="4.8" width="1.2" height="1.2" fill="white"/>
-                            <rect x="1.6" y="4.8" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="6.4" width="1.2" height="1.2" fill="white"/>
+                        <!-- PLAY -->
+                        <svg class="radio-pulse__icon radio-pulse__icon--play" viewBox="0 0 10 10" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="2,1 9,5 2,9"/>
                         </svg>
-                        <svg class="radio-pulse__icon radio-pulse__icon--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 8">
-                            <rect x="0" y="0" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="1.6" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="3.2" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="4.8" width="1.2" height="1.2" fill="white"/>
-                            <rect x="0" y="6.4" width="1.2" height="1.2" fill="white"/>
-                            <rect x="3.6" y="0" width="1.2" height="1.2" fill="white"/>
-                            <rect x="3.6" y="1.6" width="1.2" height="1.2" fill="white"/>
-                            <rect x="3.6" y="3.2" width="1.2" height="1.2" fill="white"/>
-                            <rect x="3.6" y="4.8" width="1.2" height="1.2" fill="white"/>
-                            <rect x="3.6" y="6.4" width="1.2" height="1.2" fill="white"/>
+                        <!-- PAUSE -->
+                        <svg class="radio-pulse__icon radio-pulse__icon--pause" viewBox="0 0 10 10" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="1" y="1" width="3" height="8" rx="0.5"/>
+                            <rect x="6" y="1" width="3" height="8" rx="0.5"/>
+                        </svg>
+                        <!-- LOADING dots -->
+                        <svg class="radio-pulse__icon radio-pulse__icon--loading" viewBox="0 0 24 10" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="4"  cy="5" r="2.5"><animate attributeName="opacity" values="1;0.2;1" dur="0.9s" begin="0s"   repeatCount="indefinite"/></circle>
+                            <circle cx="12" cy="5" r="2.5"><animate attributeName="opacity" values="1;0.2;1" dur="0.9s" begin="0.3s" repeatCount="indefinite"/></circle>
+                            <circle cx="20" cy="5" r="2.5"><animate attributeName="opacity" values="1;0.2;1" dur="0.9s" begin="0.6s" repeatCount="indefinite"/></circle>
                         </svg>
                     </span>
                 </span>

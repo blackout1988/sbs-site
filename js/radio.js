@@ -128,110 +128,142 @@ function initRadio() {
     return pick;
   }
 
+
+  // ================================
+  // Icon state helper
+  // ================================
+  function setIcon(state) {
+    if (!radioDot) return;
+    radioDot.classList.remove("is-loading", "is-playing");
+    if (state === "loading") radioDot.classList.add("is-loading");
+    if (state === "playing") radioDot.classList.add("is-playing");
+  }
+
   // ================================
   // Widget Events
   // ================================
+  var pendingPlay = false;
+
   radioWidget.bind(SC.Widget.Events.READY, function() {
     radioReady = true;
     radioWidget.setVolume(100);
     radioWidget.getSounds(function(sounds) {
       if (sounds && sounds.length) totalTracks = sounds.length;
     });
+    // თუ user-მა უკვე დააჭირა — ავტომატურად ვუშვებთ
+    if (pendingPlay) {
+      pendingPlay = false;
+      doFirstPlay();
+    }
   });
 
   radioWidget.bind(SC.Widget.Events.PLAY, function() {
     radioPlaying = true;
-    if (radioDot) radioDot.classList.add("is-playing");
+    setIcon("playing");
     radioWidget.getCurrentSound(function(sound) {
       if (sound) animateTrackName(parseTrackTitle(sound.title));
     });
   });
 
+  radioWidget.bind(SC.Widget.Events.PLAY_PROGRESS, function() {
+    if (radioDot && radioDot.classList.contains("is-loading")) {
+      setIcon("playing");
+      radioPlaying = true;
+    }
+  });
+
   radioWidget.bind(SC.Widget.Events.PAUSE, function() {
     radioPlaying = false;
-    if (radioDot) radioDot.classList.remove("is-playing");
+    setIcon("idle");
   });
 
   radioWidget.bind(SC.Widget.Events.FINISH, function() {
     radioPlaying = false;
-    if (radioDot) radioDot.classList.remove("is-playing");
+    setIcon("loading");
     var idx = pickRandomIndex();
     writeState(idx, Date.now());
     radioWidget.skip(idx);
-    radioWidget.play();
+    setTimeout(function() { radioWidget.play(); }, 300);
   });
 
-  // ================================
-  // Click — play() ყოველთვის პირდაპირ!
-  // ================================
-  radioBtnToggle.addEventListener("click", function() {
-    if (!radioReady) return;
+  function doFirstPlay() {
+    radioLoaded = true;
+    var state = cachedState;
 
-    // პაუზა
-    if (radioLoaded && radioPlaying) {
+    if (state && state.trackIndex != null && state.startedAt) {
+      var elapsed = Date.now() - state.startedAt;
+      playHistory.push(state.trackIndex);
+      radioWidget.skip(state.trackIndex);
+      setTimeout(function() {
+        radioWidget.play();
+        setTimeout(function() {
+          radioWidget.getDuration(function(dur) {
+            var duration = Number(dur || 0);
+            if (duration > 0 && elapsed >= duration) {
+              var idx = pickRandomIndex();
+              writeState(idx, Date.now());
+              radioWidget.skip(idx);
+              setTimeout(function() { radioWidget.play(); }, 300);
+            } else if (elapsed > 0) {
+              radioWidget.seekTo(elapsed);
+            }
+          });
+        }, 600);
+      }, 300);
+    } else {
+      var idx = pickRandomIndex();
+      radioWidget.skip(idx);
+      setTimeout(function() {
+        radioWidget.play();
+        setTimeout(function() {
+          radioWidget.getDuration(function(dur) {
+            var duration = Number(dur || 0);
+            var seekMs = Math.floor(duration * 0.10);
+            if (seekMs > 0) {
+              writeState(idx, Date.now() - seekMs);
+              radioWidget.seekTo(seekMs);
+            } else {
+              writeState(idx, Date.now());
+            }
+          });
+        }, 600);
+      }, 300);
+    }
+  }
+
+  // ================================
+  // Click
+  // ================================
+  var clickLocked = false;
+
+  radioBtnToggle.addEventListener("click", function() {
+    if (clickLocked) return;
+    clickLocked = true;
+    setTimeout(function() { clickLocked = false; }, 500);
+
+    // უკრავს → პაუზა
+    if (radioPlaying) {
       radioWidget.pause();
       return;
     }
 
-    // resume პაუზიდან
-    if (radioLoaded && !radioPlaying) {
+    // loading ვაჩვენებ დაუყოვნებლივ
+    setIcon("loading");
+
+    // პაუზიდან resume
+    if (radioLoaded) {
       radioWidget.play();
-      setTimeout(function() {
-        var state = cachedState;
-        if (state && state.startedAt) {
-          var elapsed = Date.now() - state.startedAt;
-          radioWidget.getDuration(function(dur) {
-            if (Number(dur) > 0 && elapsed > 0 && elapsed < Number(dur)) {
-              radioWidget.seekTo(elapsed);
-            }
-          });
-        }
-      }, 400);
       return;
     }
 
-    // პირველი დაჭერა
-    radioLoaded = true;
-    var state = cachedState; // თუ undefined — null-ივით ვექცევით (ახალი visitor)
-
-    if (state && state.trackIndex != null && state.startedAt) {
-      // სხვა visitor-ი უსმენდა — იმ ტრეკზე + elapsed
-      var elapsed = Date.now() - state.startedAt;
-      playHistory.push(state.trackIndex);
-      radioWidget.skip(state.trackIndex);
-      radioWidget.play(); // gesture ✅
-      setTimeout(function() {
-        radioWidget.getDuration(function(dur) {
-          var duration = Number(dur || 0);
-          if (duration > 0 && elapsed >= duration) {
-            // ტრეკი დამთავრდებოდა — შემდეგი
-            var idx = pickRandomIndex();
-            writeState(idx, Date.now());
-            radioWidget.skip(idx);
-            radioWidget.play();
-          } else if (elapsed > 0) {
-            radioWidget.seekTo(elapsed);
-          }
-        });
-      }, 600);
-    } else {
-      // პირველი visitor ან cachedState ჯერ არ მოვიდა
-      var idx = pickRandomIndex();
-      radioWidget.skip(idx);
-      radioWidget.play(); // gesture ✅
-      setTimeout(function() {
-        radioWidget.getDuration(function(dur) {
-          var duration = Number(dur || 0);
-          var seekMs = Math.floor(duration * 0.10);
-          if (seekMs > 0) {
-            writeState(idx, Date.now() - seekMs);
-            radioWidget.seekTo(seekMs);
-          } else {
-            writeState(idx, Date.now());
-          }
-        });
-      }, 600);
+    // SC ჯერ არ არის მზად — pending დავტოვებ
+    if (!radioReady) {
+      pendingPlay = true;
+      return;
     }
+
+    // პირველი დაჭერა — SC მზადაა
+    doFirstPlay();
   });
 
   // ================================

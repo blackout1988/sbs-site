@@ -85,31 +85,41 @@
     100% { transform: scale(3.2); opacity: 0;   }
 }
 
-/* ---- SVG icons — inside the dot, centered via flex ---- */
+/* ---- SVG icons — inside the dot ---- */
 .radio-pulse__icon {
     position: absolute;
     z-index: 2;
-    width: 7px;
-    height: 7px;
-    opacity: 0;
-    transition: opacity 0.15s;
-    pointer-events: none;
     display: none;
+    pointer-events: none;
 }
 
-/* default — play visible */
-.radio-pulse__icon--play  { display: block; }
-.radio-pulse__icon--pause { display: none;  }
-
-/* playing — pause visible */
-.radio-btn__pulse.is-playing .radio-pulse__icon--play  { display: none;  }
-.radio-btn__pulse.is-playing .radio-pulse__icon--pause { display: block; }
-
-/* hover / touch — reveal */
-.radio-btn:hover .radio-pulse__icon,
-.radio-btn.touched .radio-pulse__icon {
-    opacity: 1;
+/* play / pause — 6x6px */
+.radio-pulse__icon--play,
+.radio-pulse__icon--pause {
+    width: 6px;
+    height: 6px;
 }
+
+/* loading dots — wider */
+.radio-pulse__icon--loading {
+    width: 9px;
+    height: 4px;
+}
+
+/* DEFAULT state — play visible */
+.radio-pulse__icon--play    { display: inline-block; }
+.radio-pulse__icon--pause   { display: none;         }
+.radio-pulse__icon--loading { display: none;         }
+
+/* LOADING state */
+.radio-btn__pulse.is-loading .radio-pulse__icon--play    { display: none;         }
+.radio-btn__pulse.is-loading .radio-pulse__icon--pause   { display: none;         }
+.radio-btn__pulse.is-loading .radio-pulse__icon--loading { display: inline-block; }
+
+/* PLAYING state */
+.radio-btn__pulse.is-playing .radio-pulse__icon--play    { display: none;         }
+.radio-btn__pulse.is-playing .radio-pulse__icon--pause   { display: inline-block; }
+.radio-btn__pulse.is-playing .radio-pulse__icon--loading { display: none;         }
 
 /* Playing state */
 .radio-btn__pulse.is-playing .radio-pulse__dot {
