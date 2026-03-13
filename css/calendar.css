@@ -664,7 +664,7 @@
 .cal-carousel__dots:has(.cal-carousel__dot:nth-child(8)) .cal-dot__month { font-size: 7px; letter-spacing: 1px; }
 /* ── Bio + Links in event popup ── */
 .cal-popup__bio {
-    font-family: 'Courier New', monospace;
+    font-family: 'Doto', monospace;
     font-size: 9px;
     font-weight: 400;
     letter-spacing: 0.5px;
