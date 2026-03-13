@@ -80,6 +80,102 @@ async function fetchGoogleCalendarEvents() {
   }
 }
 
+
+async function fetchFirestoreEvents() {
+  try {
+    const res = await fetch(
+        "https://firestore.googleapis.com/v1/projects/sevenblocksociety/databases/(default)/documents/approved_events"
+    );
+    const data = await res.json();
+    if (!data.documents) return [];
+    return data.documents.map(doc => {
+      const f = doc.fields || {};
+      const getString = k => f[k]?.stringValue || "";
+      const getNum    = k => parseInt(f[k]?.integerValue ?? f[k]?.doubleValue ?? 0);
+      const docId = doc.name ? doc.name.split("/").pop() : "";
+      const subId = docId.replace(/_rec$|_sat$/, "");
+      const isRec = docId.endsWith("_rec");
+      const isSat = docId.endsWith("_sat");
+      return {
+        year:    getNum("year"),
+        month:   getNum("month"),
+        day:     getNum("day"),
+        title:   getString("artist") || "SBS EVENT",
+        type:    getString("type") || "PODCAST",
+        artist:  getString("artist"),
+        event:   getString("event"),
+        time:    getString("time") || "00:00",
+        desc:    getString("desc"),
+        image:   getString("image") || "assets/tk.jpg",
+        youtube: getString("youtube"),
+        _subId:  subId,
+        _docId:  docId,
+        _isRec:  isRec,
+        _isSat:  isSat,
+      };
+    }).filter(e => e.year && e.month && e.day);
+  } catch(err) {
+    console.warn("[SBS] Firestore events fetch failed:", err);
+    return [];
+  }
+}
+
+async function enrichEventsWithAvatars() {
+  const allWithSub = SBS_EVENTS.filter(e => e._subId);
+  if (!allWithSub.length) return;
+
+  const uniqueIds = [...new Set(allWithSub.map(e => e._subId))];
+
+  const avatarMap = {};
+  await Promise.all(uniqueIds.map(async subId => {
+    try {
+      const res = await fetch(
+          `https://firestore.googleapis.com/v1/projects/sevenblocksociety/databases/(default)/documents/submissions/${subId}`
+      );
+      const data = await res.json();
+      const mixLink = data.fields?.mix_link?.stringValue || "";
+      if (!mixLink || !mixLink.includes("soundcloud.com")) return;
+
+      const r = await fetch(
+          "https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=" + encodeURIComponent(mixLink)
+      );
+      const d = await r.json();
+      if (d.avatar) avatarMap[subId] = d.avatar;
+    } catch(e) {}
+  }));
+
+  // subId → submission data map
+  const subDataMap = {};
+  await Promise.all(uniqueIds.map(async subId => {
+    try {
+      const res = await fetch(
+          `https://firestore.googleapis.com/v1/projects/sevenblocksociety/databases/(default)/documents/submissions/${subId}`
+      );
+      const data = await res.json();
+      const f = data.fields || {};
+      subDataMap[subId] = {
+        social:   f.social?.stringValue   || f.instagram?.stringValue || "",
+        mix_link: f.mix_link?.stringValue  || "",
+        bio:      f.message?.stringValue   || "",
+      };
+    } catch(e) {}
+  }));
+
+  SBS_EVENTS = SBS_EVENTS.map(e => {
+    const avatar = avatarMap[e._subId];
+    const sub    = subDataMap[e._subId] || {};
+    return {
+      ...e,
+      // avatar მხოლოდ tk.jpg-ის ჩასანაცვლებლად, სხვა image-ი ხელუხლებელია
+      image:    (!e.image || e.image === "assets/tk.jpg") ? (avatar || e.image) : e.image,
+      // bio/social/mix_link ყველა event-ს მოაქვს submissions-იდან
+      social:   sub.social   || e.social   || "",
+      mix_link: sub.mix_link || e.mix_link || "",
+      bio:      sub.bio      || e.bio      || "",
+    };
+  });
+}
+
 const MONTHS = [
   "JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE",
   "JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"
@@ -92,6 +188,9 @@ function getEventsForMonth(year, month) {
 function getEventForDay(year, month, day) {
   return SBS_EVENTS.find(e => e.year === year && e.month === month && e.day === day) || null;
 }
+function getEventsForDay(year, month, day) {
+  return SBS_EVENTS.filter(e => e.year === year && e.month === month && e.day === day);
+}
 
 function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
@@ -101,6 +200,15 @@ function isSaturday(year, month, day) {
   return new Date(year, month - 1, day).getDay() === 6;
 }
 
+
+function getEventStatus(event) {
+  const now = new Date();
+  const eventTime = getEventDateTime(event);
+  const afterWindow = new Date(eventTime.getTime() + 24 * 60 * 60 * 1000); // +24h
+  if (now < eventTime)       return "UPCOMING";   // ჯერ არ დამდგარა
+  if (now < afterWindow)     return "ACTIVE";     // გავიდა მაგრამ 24h ფანჯარაშია
+  return "PAST";                                   // 24h გავიდა
+}
 
 function getEventDateTime(event) {
   const [h, m] = event.time.split(":").map(Number);
@@ -123,16 +231,82 @@ function formatCountdown(ms) {
 }
 
 
+function getTagHTML(typeStr, isReleased) {
+  if (isReleased) {
+    return `<div class="cal-popup__tag cal-popup__tag--released doto" id="popupTag"><i class="bi bi-bookmark-star cal-tag-icon"></i>PODCAST RELEASED</div>`;
+  }
+  if (typeStr === "RECORDING") {
+    return `<div class="cal-popup__tag doto" id="popupTag"><i class="bi bi-record-circle cal-tag-icon cal-tag-icon--rec"></i>PODCAST RECORD</div>`;
+  }
+  if (typeStr === "PODCAST") {
+    return `<div class="cal-popup__tag doto" id="popupTag"><span class="cal-tag-pulse"></span>NEXT SATURDAY EVENT</div>`;
+  }
+  return `<div class="cal-popup__tag doto" id="popupTag">${typeStr}</div>`;
+}
+
+function getSocialLabel(url) {
+  if (!url) return "";
+  if (url.includes("instagram.com"))   return "INSTAGRAM";
+  if (url.includes("soundcloud.com"))  return "SOUNDCLOUD";
+  if (url.includes("facebook.com"))    return "FACEBOOK";
+  if (url.includes("tiktok.com"))      return "TIKTOK";
+  return "LINK";
+}
+
+function openLightbox(src) {
+  let lb = document.getElementById("sbsLightbox");
+  if (!lb) {
+    lb = document.createElement("div");
+    lb.id = "sbsLightbox";
+    lb.style.cssText = `
+      position:fixed;inset:0;z-index:9999;
+      background:rgba(0,0,0,0.92);
+      display:flex;align-items:center;justify-content:center;
+      cursor:zoom-out;animation:popupIn 0.2s ease;
+    `;
+    lb.innerHTML = `<img style="max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain;border:1px solid rgba(254,0,0,0.25);" />`;
+    lb.addEventListener("click", () => lb.remove());
+    document.body.appendChild(lb);
+  }
+  lb.querySelector("img").src = src;
+  lb.style.display = "flex";
+}
+
+let _rebuildCalendar = null;
+
 async function initCalendar() {
   const container = document.getElementById("upcomingCalendar");
   if (!container) return;
 
   await fetchGoogleCalendarEvents();
+  const fsEvents = await fetchFirestoreEvents();
+  SBS_EVENTS = [...SBS_EVENTS, ...fsEvents];
+  // მხოლოდ RELEASE DATE (_sat) ვაჩვენებთ — _rec ივენთები ამოვიღეთ
+  SBS_EVENTS = SBS_EVENTS.filter(e => !e._isRec);
+
+  const seen = new Set();
+  SBS_EVENTS = SBS_EVENTS.filter(e => {
+    const key = `${e.year}-${e.month}-${e.day}-${e.artist}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  // SC avatar-ები ჩამოვიტანოთ tk.jpg-ის მქონე event-ებისთვის
+  await enrichEventsWithAvatars();
 
   const now = new Date();
   let selectedYear = now.getFullYear();
   let selectedMonth = now.getMonth() + 1;
   let selectedDay = now.getDate();
+
+  // თუ ამ თვეში ყველა event PAST-ია → შემდეგ თვეზე გადავიდეთ
+  const thisMonthEvents = getEventsForMonth(selectedYear, selectedMonth);
+  const allPast = thisMonthEvents.length > 0 && thisMonthEvents.every(e => getEventStatus(e) === "PAST");
+  if (allPast) {
+    selectedMonth++;
+    if (selectedMonth > 12) { selectedMonth = 1; selectedYear++; }
+  }
 
   const isMobile = () => window.innerWidth <= 640;
 
@@ -232,17 +406,22 @@ async function initCalendar() {
         <div class="cal-popup__inner">
           <div class="cal-popup__info">
             <div class="cal-popup__date doto">${String(event.day).padStart(2,"0")} ${MONTHS[event.month-1]}</div>
-            ${event.type ? `<div class="cal-popup__tag doto">${event.type}</div>` : ""}
+            ${event.type ? getTagHTML(event.type, (getEventDateTime(event) - new Date()) <= 0) : ""}
             <div class="cal-popup__title doto">${event.artist || event.title}</div>
-            ${event.event ? `<div class="cal-popup__sub">${event.event}</div>` : ""}
+
             <div class="cal-popup__time doto">
               <span class="cal-popup__dot"></span>
               ${MONTHS[event.month-1]} ${event.day}, ${event.year} — ${event.time}
             </div>
             <div class="cal-popup__countdown doto" data-eventidx="${i}"></div>
             ${isReleased && event.youtube ? `<a class="cal-popup__released doto" href="${event.youtube}" target="_blank">▶ WATCH ON YOUTUBE</a>` : ""}
+            ${event.bio ? `<div class="cal-popup__bio">${event.bio}</div>` : ""}
+            <div class="cal-popup__links">
+              ${event.mix_link ? `<a class="cal-popup__link doto" href="${event.mix_link}" target="_blank">▶ MIX</a>` : ""}
+              ${event.social   ? `<a class="cal-popup__link doto" href="${event.social}"   target="_blank">${getSocialLabel(event.social)}</a>` : ""}
+            </div>
           </div>
-          ${event.image ? `<div class="cal-popup__img"><img src="${event.image}" alt="" /></div>` : ""}
+          ${event.image ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>` : ""}
         </div>
       `;
       track.appendChild(slide);
@@ -278,18 +457,21 @@ async function initCalendar() {
       });
     }
 
-    prev.addEventListener("click", () => goTo(currentSlide - 1));
-    next.addEventListener("click", () => goTo(currentSlide + 1));
+    prev.addEventListener("click", () => { if (window._calMobileRotateTimer) { clearInterval(window._calMobileRotateTimer); window._calMobileRotateTimer = null; } goTo(currentSlide - 1); });
+    next.addEventListener("click", () => { if (window._calMobileRotateTimer) { clearInterval(window._calMobileRotateTimer); window._calMobileRotateTimer = null; } goTo(currentSlide + 1); });
     dots.addEventListener("click", e => {
       const dot = e.target.closest(".cal-carousel__dot");
-      if (dot) goTo(Number(dot.dataset.idx));
+      if (dot) { if (window._calMobileRotateTimer) { clearInterval(window._calMobileRotateTimer); window._calMobileRotateTimer = null; } goTo(Number(dot.dataset.idx)); }
     });
 
     let touchStartX = 0;
     track.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
     track.addEventListener("touchend", e => {
       const d = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(d) > 40) goTo(d > 0 ? currentSlide + 1 : currentSlide - 1);
+      if (Math.abs(d) > 40) {
+        if (window._calMobileRotateTimer) { clearInterval(window._calMobileRotateTimer); window._calMobileRotateTimer = null; }
+        goTo(d > 0 ? currentSlide + 1 : currentSlide - 1);
+      }
     });
 
     allEvents.forEach((event, i) => {
@@ -305,8 +487,36 @@ async function initCalendar() {
       }, 1000);
     });
 
-    goTo(0);
+    // ყველაზე ახლო upcoming ივენთიდან დავიწყოთ
+    const now = new Date();
+    const startIdx = (() => {
+      const upIdx = allEvents.findIndex(e => getEventDateTime(e) > now);
+      return upIdx >= 0 ? upIdx : 0;
+    })();
+
+    goTo(startIdx);
+
+    // auto-rotate: 6 წამში შემდეგ ივენთზე
+    if (window._calMobileRotateTimer) clearInterval(window._calMobileRotateTimer);
+
+    const startMobileRotate = () => {
+      if (allEvents.length > 1) {
+        window._calMobileRotateTimer = setInterval(() => {
+          goTo((currentSlide + 1) % allEvents.length);
+        }, 6000);
+      }
+    };
+    const stopMobileRotate = () => {
+      if (window._calMobileRotateTimer) { clearInterval(window._calMobileRotateTimer); window._calMobileRotateTimer = null; }
+    };
+
+    carousel.addEventListener('mouseenter', stopMobileRotate);
+    carousel.addEventListener('mouseleave', startMobileRotate);
+
+    // startMobileRotate(); — გათიშულია
   }
+
+  _rebuildCalendar = () => applyMobileLayout();
 
   function applyMobileLayout() {
     const dayPicker = document.getElementById("calDayPicker");
@@ -339,15 +549,22 @@ async function initCalendar() {
       const sat = isSaturday(selectedYear, selectedMonth, d);
       const event = getEventForDay(selectedYear, selectedMonth, d);
 
+      const status = event ? getEventStatus(event) : null;
       const cell = document.createElement("div");
       cell.className = "cal-cell doto" +
           (sat ? " is-saturday" : "") +
-          (event ? " has-event" : "");
+          (event ? " has-event" : "") +
+          (status === "PAST" ? " is-past" : "");
       cell.textContent = String(d).padStart(2, "0");
       cell.dataset.day = d;
 
       if (event) {
-        cell.addEventListener("click", () => showPopup(event, cell));
+        cell.addEventListener("click", () => {
+          // მომხმარებელი ხელით ირჩევს — auto-rotate გავაჩეროთ
+          if (window._calAutoRotateTimer) { clearInterval(window._calAutoRotateTimer); window._calAutoRotateTimer = null; }
+          const dayEvs = getEventsForDay(selectedYear, selectedMonth, d);
+          showPopupEvent(dayEvs[0], cell, dayEvs, 0);
+        });
       } else {
         cell.addEventListener("click", () => showEmpty(d, cell));
       }
@@ -355,12 +572,45 @@ async function initCalendar() {
       dayGrid.appendChild(cell);
     }
 
-    // Auto-show first event
-    const firstEvent = getEventsForMonth(selectedYear, selectedMonth)[0];
-    if (firstEvent) {
+    // Auto-show: დღეს ყველაზე ახლო UPCOMING/ACTIVE, შემდეგ პირველი
+    const monthEvents = getEventsForMonth(selectedYear, selectedMonth);
+
+    // დღეს ახლობელი — UPCOMING-ებიდან ყველაზე ახლო თარიღი
+    const upcomingEvents = monthEvents
+        .filter(e => getEventStatus(e) !== "PAST")
+        .sort((a, b) => getEventDateTime(a) - getEventDateTime(b));
+
+    const autoEvents = upcomingEvents.length ? upcomingEvents : monthEvents.slice();
+
+    if (autoEvents.length) {
+      let autoIdx = 0;
+
+      // auto-rotate timer
+      if (window._calAutoRotateTimer) clearInterval(window._calAutoRotateTimer);
+
+      const showAutoEvent = () => {
+        const ev = autoEvents[autoIdx];
+        if (!ev) return;
+        const cell = dayGrid.querySelector(`[data-day="${ev.day}"]`);
+        if (cell) {
+          const dayEvs = getEventsForDay(selectedYear, selectedMonth, ev.day);
+          showPopupEvent(dayEvs[0], cell, dayEvs, 0);
+        }
+        autoIdx = (autoIdx + 1) % autoEvents.length;
+      };
+
+      // hover pause — ვამოწმებთ მაუსი dayGrid ან popup-შია
+      const isHovered = () => {
+        const el = document.querySelector(':hover');
+        return el && (dayGrid.contains(el) || popup.contains(el));
+      };
+
+      const startAutoRotate = () => {};
+      const stopAutoRotate = () => {};
+
       setTimeout(() => {
-        const cell = dayGrid.querySelector(`[data-day="${firstEvent.day}"]`);
-        if (cell) showPopup(firstEvent, cell);
+        showAutoEvent();
+        startAutoRotate();
       }, 100);
     }
   }
@@ -382,66 +632,114 @@ async function initCalendar() {
   }
 
   let popupCountdownTimer = null;
+  let popupRotateTimer = null;
+  let popupDayEvents = [];
+  let popupDayIdx = 0;
 
-  function showPopup(event, cell) {
-    // Clear any running popup countdown
+  function showPopupEvent(event, cell, dayEvents, idx) {
+    // Clear timers
     if (popupCountdownTimer) { clearInterval(popupCountdownTimer); popupCountdownTimer = null; }
+    if (popupRotateTimer)    { clearInterval(popupRotateTimer);    popupRotateTimer = null; }
+    popupDayEvents = dayEvents || [event];
+    popupDayIdx    = idx || 0;
+
+    // dots HTML
+    const dotsHTML = popupDayEvents.length > 1
+        ? `<div class="cal-popup__dots">${popupDayEvents.map((_, i) =>
+            `<span class="cal-popup__dot-nav${i === popupDayIdx ? ' is-active' : ''}" data-idx="${i}"></span>`
+        ).join('')}</div>`
+        : '';
 
     const eventTime = getEventDateTime(event);
     const now = new Date();
     const diff = eventTime - now;
     const isReleased = diff <= 0;
 
+    const tagLabel = event.type || "PODCAST";
+
     popup.innerHTML = `
+      ${dotsHTML}
       <div class="cal-popup__inner">
         <div class="cal-popup__info">
-          <div class="cal-popup__date doto">${String(event.day).padStart(2, "0")} ${MONTHS[event.month - 1]}</div>
-          ${event.type ? `<div class="cal-popup__tag doto">${event.type}</div>` : ""}
+          <div class="cal-popup__header">
+            <div class="cal-popup__date doto">${String(event.day).padStart(2, "0")} ${MONTHS[event.month - 1]}</div>
+            ${getTagHTML(tagLabel, isReleased)}
+          </div>
           <div class="cal-popup__title doto">${event.artist || event.title}</div>
-          ${event.event ? `<div class="cal-popup__sub">${event.event}</div>` : ""}
           <div class="cal-popup__time doto">
             <span class="cal-popup__dot"></span>
             ${MONTHS[event.month - 1]} ${event.day}, ${event.year} — ${event.time}
           </div>
-          <div class="cal-popup__countdown doto" id="popupCountdown"></div>
+          ${!isReleased ? `
+          <div class="cal-popup__cd-wrap">
+            <div class="cal-popup__cd-label doto">RELEASES IN</div>
+            <div class="cal-popup__countdown doto" id="popupCountdown"></div>
+          </div>` : `<div class="cal-popup__countdown doto" id="popupCountdown"></div>`}
           ${isReleased && event.youtube
         ? `<a class="cal-popup__released doto" href="${event.youtube}" target="_blank">▶ WATCH ON YOUTUBE</a>`
         : ""
     }
+          ${event.bio ? `<div class="cal-popup__bio">${event.bio}</div>` : ""}
+          <div class="cal-popup__links">
+            ${event.mix_link ? `<a class="cal-popup__link doto" href="${event.mix_link}" target="_blank">▶ MIX</a>` : ""}
+            ${event.social   ? `<a class="cal-popup__link doto" href="${event.social}"   target="_blank">${getSocialLabel(event.social)}</a>` : ""}
+          </div>
         </div>
-        ${event.image ? `<div class="cal-popup__img"><img src="${event.image}" alt="" /></div>` : ""}
+        ${event.image ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>` : ""}
       </div>
     `;
     popup.classList.add("is-visible");
 
-    // Start countdown in popup
+    // dots click handlers
+    popup.querySelectorAll(".cal-popup__dot-nav").forEach(dot => {
+      dot.addEventListener("click", () => {
+        const i = parseInt(dot.dataset.idx);
+        showPopupEvent(popupDayEvents[i], cell, popupDayEvents, i);
+      });
+    });
+
+    // auto-rotate 4 წამში
+    if (popupDayEvents.length > 1) {
+      popupRotateTimer = setInterval(() => {
+        popupDayIdx = (popupDayIdx + 1) % popupDayEvents.length;
+        showPopupEvent(popupDayEvents[popupDayIdx], cell, popupDayEvents, popupDayIdx);
+      }, 4000);
+    }
+
+    // countdown logic
     const cdEl = document.getElementById("popupCountdown");
-    if (cdEl) {
-      if (isReleased) {
-        cdEl.textContent = "";
+    const tagEl = () => document.getElementById("popupTag");
+
+    function updatePopupCountdown() {
+      const now = new Date();
+      const diff = eventTime - now;
+
+      if (diff > 0) {
+        // release-მდე countdown
+        if (cdEl) cdEl.textContent = formatCountdown(diff);
       } else {
-        const timerId = setInterval(() => {
-          const remaining = getEventDateTime(event) - new Date();
-          if (remaining <= 0) {
-            cdEl.textContent = "";
-            clearInterval(timerId);
-            popupCountdownTimer = null;
-            // Show released link
-            const rel = popup.querySelector(".cal-popup__released");
-            if (!rel && event.youtube) {
-              const a = document.createElement("a");
-              a.className = "cal-popup__released doto";
-              a.href = event.youtube;
-              a.target = "_blank";
-              a.textContent = "▶ WATCH ON YOUTUBE";
-              cdEl.after(a);
-            }
-          } else {
-            cdEl.textContent = formatCountdown(remaining);
-          }
-        }, 1000);
+        // გავიდა
+        if (cdEl) cdEl.textContent = "";
+        if (tagEl()) { tagEl().className = 'cal-popup__tag cal-popup__tag--released doto'; tagEl().innerHTML = '<i class="bi bi-bookmark-star cal-tag-icon"></i>PODCAST RELEASED'; }
+        if (!popup.querySelector(".cal-popup__released") && event.youtube) {
+          const a = document.createElement("a");
+          a.className = "cal-popup__released doto";
+          a.href = event.youtube;
+          a.target = "_blank";
+          a.textContent = "▶ WATCH ON YOUTUBE";
+          cdEl && cdEl.after(a);
+        }
+        clearInterval(popupCountdownTimer);
+        popupCountdownTimer = null;
+        return;
+      }
+    }
+
+    if (cdEl) {
+      updatePopupCountdown();
+      if (!isReleased) {
+        const timerId = setInterval(updatePopupCountdown, 1000);
         popupCountdownTimer = timerId;
-        cdEl.textContent = formatCountdown(diff);
       }
     }
     dayGrid.querySelectorAll(".cal-cell").forEach(c => { c.classList.remove("is-active"); c.classList.remove("is-active-empty"); });
@@ -455,6 +753,7 @@ async function initCalendar() {
       return;
     }
     popup.innerHTML = `
+      ${dotsHTML}
       <div class="cal-popup__inner">
         <div class="cal-popup__info">
           <div class="cal-popup__date doto">${String(day).padStart(2, "0")} ${MONTHS[selectedMonth - 1]}</div>
@@ -506,7 +805,7 @@ async function initCalendar() {
       selectedDay = Math.max(1, Math.min(days, idx + 1));
       buildDayPicker();
       const event = getEventForDay(selectedYear, selectedMonth, selectedDay);
-      if (event) showPopup(event, null);
+      if (event) { const dayEvs = getEventsForDay(selectedYear, selectedMonth, selectedDay); showPopupEvent(dayEvs[0], null, dayEvs, 0); }
       else showEmpty(selectedDay, null);
     }, 80);
   });
@@ -518,7 +817,7 @@ async function initCalendar() {
     dayScroll.scrollTo({ top: (selectedDay - 1) * 56, behavior: "smooth" });
     buildDayPicker();
     const event = getEventForDay(selectedYear, selectedMonth, selectedDay);
-    if (event) showPopup(event, null);
+    if (event) { const dayEvs = getEventsForDay(selectedYear, selectedMonth, selectedDay); showPopupEvent(dayEvs[0], null, dayEvs, 0); }
     else showEmpty(selectedDay, null);
   });
 

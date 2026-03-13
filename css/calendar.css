@@ -47,7 +47,7 @@
     min-height: 36px;
 }
 
-.cal-cell.is-saturday {
+.cal-cell.is-saturday.has-event {
     color: var(--brand-red);
     border-color: rgba(254,0,0,0.20);
     background: rgba(254,0,0,0.06);
@@ -79,11 +79,7 @@
     color: #fff;
     cursor: pointer;
 }
-.cal-cell.is-saturday:not(.has-event):not(.is-active):hover {
-    background: rgba(254,0,0,0.15);
-    border-color: rgba(254,0,0,0.40);
-    color: #fff;
-}
+
 
 /* ================================
    BOTTOM ROW — picker + popup
@@ -107,7 +103,7 @@
 }
 
 .cal-picker {
-    flex: 0 0 160px;
+    flex: 0 0 271px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 5px;
@@ -198,18 +194,17 @@
     display: none;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 5px;
-    padding: 17px;
+    border-radius: 8px;
+    padding: 20px;
     animation: popupIn 0.2s ease;
-    height: 220px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 .cal-event-popup.is-visible { display: block; }
 
 .cal-event-popup:has(.cal-popup__empty) {
     background: rgba(255,255,255,0.03);
     border-color: rgba(255,255,255,0.08);
-    min-height: 211px;
     display: flex;
     align-items: center;
 }
@@ -221,17 +216,32 @@
 
 .cal-popup__inner {
     display: flex;
-    gap: 18px;
-    align-items: center;
-    height: 100%;
+    gap: 20px;
+    align-items: flex-start;
 }
-.cal-popup__info { flex: 1; min-width: 0; }
+.cal-popup__info {
+    flex: 1;
+    min-width: 0;
+}
 
 .cal-popup__date {
-    font-size: 42px;
+    font-size: 38px;
     color: var(--brand-red);
     line-height: 1;
+}
+.cal-popup__date-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+/* date და tag ერთ რიგში */
+.cal-popup__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 .cal-popup__tag {
     display: inline-flex;
@@ -242,64 +252,142 @@
     font-size: 10px;
     color: rgba(255,255,255,0.80);
     letter-spacing: 0.6px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 .cal-popup__event {
-    font-size: 16px;
+    font-size: 14px;
     color: #FE0000;
     letter-spacing: 1px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 .cal-popup__title {
-    font-size: 20px;
+    font-size: 18px;
     color: #fff;
     line-height: 1.2;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 .cal-popup__sub {
-    font-size: 12px;
+    font-size: 11px;
     color: rgba(255,255,255,0.45);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 .cal-popup__time {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
+    font-size: 11px;
     color: rgba(255,255,255,0.55);
     letter-spacing: 0.5px;
+    margin-bottom: 4px;
 }
 .cal-popup__dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--brand-red);
-    flex-shrink: 0;
-    box-shadow: 0 0 8px rgba(254,0,0,0.6);
-    animation: pulse 2s infinite;
+    display: none;
 }
 @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.5; transform: scale(0.8); }
 }
+.cal-popup__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.cal-tag-icon {
+    font-size: 11px;
+    color: #00c853;
+    flex-shrink: 0;
+}
+.cal-tag-icon--rec {
+    color: var(--brand-red);
+    animation: pulse 2s infinite;
+}
+.cal-tag-icon--rocket {
+    color: rgba(255,255,255,0.70);
+}
+.cal-tag-pulse {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brand-red);
+    flex-shrink: 0;
+    animation: tagPulse 1.4s ease-in-out infinite;
+}
+@keyframes tagPulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(254,0,0,0.6); }
+    50%       { opacity: 0.7; box-shadow: 0 0 0 5px rgba(254,0,0,0); }
+}
+.cal-popup__tag--released {
+    border-color: rgba(0,200,83,0.40);
+    background: rgba(0,200,83,0.12);
+    color: rgba(255,255,255,0.90);
+}
+
+/* Multi-event dots navigation */
+.cal-popup__dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding: 8px 0 4px;
+}
+.cal-popup__dot-nav {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.20);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    flex-shrink: 0;
+}
+.cal-popup__dot-nav.is-active {
+    background: var(--brand-red);
+    transform: scale(1.3);
+    box-shadow: 0 0 6px rgba(254,0,0,0.6);
+}
+.cal-popup__dot-nav:hover {
+    background: rgba(255,255,255,0.50);
+}
+
+/* PAST event cell — იგივე სტილი, მხოლოდ არააქტიური */
+.cal-cell.is-past {
+    cursor: default;
+    pointer-events: none;
+}
+
+.cal-popup__cd-wrap {
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+.cal-popup__cd-label {
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: rgba(254,0,0,0.55);
+    margin-bottom: 3px;
+}
 .cal-popup__countdown {
     font-size: 22px;
-    color: rgba(255,255,255,0.70);
-    letter-spacing: 2px;
-    margin-top: 10px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 3px;
+    line-height: 1;
 }
 .cal-popup__empty {
-    font-size: 28px;
+    font-size: 24px;
     color: rgba(255,255,255,0.20);
     letter-spacing: 1px;
     margin-top: 10px;
 }
 .cal-popup__img {
-    flex: 0 0 130px;
-    width: 130px;
-    height: 169px;
-    border-radius: 8px;
+    flex: 0 0 160px;
+    width: 160px;
+    height: 220px;
+    border-radius: 6px;
     overflow: hidden;
     border: 1px solid rgba(254,0,0,0.20);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.cal-popup__img:hover {
+    transform: scale(1.02);
 }
 .cal-popup__img img {
     width: 100%; height: 100%;
@@ -310,7 +398,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-top: 6px;
+    margin-top: 8px;
     padding: 7px 16px;
     border-radius: 5px;
     background: var(--brand-red);
@@ -430,16 +518,27 @@
     .cal-popup__inner {
         flex-direction: row;
         align-items: flex-start;
+        gap: 14px;
+    }
+
+    .cal-event-popup {
+        padding: 14px;
     }
 
     .cal-popup__img {
-        width: 110px;
-        height: 140px;
         flex: 0 0 110px;
+        width: 110px;
+        height: 150px;
+        border-radius: 6px;
+        margin: 0;
     }
 
-    .cal-popup__date  { font-size: 28px; }
-    .cal-popup__title { font-size: 15px; }
+    .cal-popup__date      { font-size: 26px; }
+    .cal-popup__title     { font-size: 14px; }
+    .cal-popup__countdown { font-size: 16px; letter-spacing: 2px; }
+    .cal-popup__bio       { font-size: 8px; -webkit-line-clamp: 2; }
+    .cal-popup__links     { gap: 5px; margin-top: 8px; }
+    .cal-popup__link      { font-size: 7px; padding: 3px 8px; }
 }
 /* ================================
    MOBILE CAROUSEL
@@ -462,9 +561,21 @@
     width: 100%;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 5px;
-    padding: 17px;
+    border-radius: 8px;
+    padding: 16px;
     box-sizing: border-box;
+    min-height: 200px;
+}
+.cal-carousel__slide .cal-popup__inner {
+    align-items: flex-start;
+    gap: 14px;
+}
+.cal-carousel__slide .cal-popup__img {
+    flex: 0 0 110px;
+    width: 110px;
+    height: 150px;
+    border-radius: 6px;
+    margin: 0;
 }
 
 .cal-carousel__btn {
@@ -551,3 +662,43 @@
 }
 .cal-carousel__dots:has(.cal-carousel__dot:nth-child(8)) .cal-dot__day { font-size: 13px; }
 .cal-carousel__dots:has(.cal-carousel__dot:nth-child(8)) .cal-dot__month { font-size: 7px; letter-spacing: 1px; }
+/* ── Bio + Links in event popup ── */
+.cal-popup__bio {
+    font-family: 'Doto', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.9;
+    margin-top: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cal-popup__links {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.cal-popup__link {
+    font-family: 'Doto', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.80);
+    border: 1px solid rgba(254,0,0,0.35);
+    background: rgba(254,0,0,0.08);
+    border-radius: 4px;
+    padding: 4px 12px;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+}
+.cal-popup__link:hover {
+    background: rgba(254,0,0,0.18);
+    border-color: rgba(254,0,0,0.60);
+    color: #fff;
+}

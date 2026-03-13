@@ -247,162 +247,267 @@
             color: var(--text);
         }
 
-        /* submissions list */
-        .submissions-list { display: flex; flex-direction: column; gap: 12px; }
-
-        .sub-card {
+        /* submissions table */
+        .search-bar {
+            width: 100%;
             background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px 24px;
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text);
+            font-family: 'Doto', monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            outline: none;
             transition: border-color 0.2s;
+        }
+        .search-bar::placeholder { color: var(--muted); }
+        .search-bar:focus { border-color: rgba(254,0,0,0.5); }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        thead tr {
+            background: rgba(255,255,255,0.04);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 10px 10px;
+            text-align: left;
+            color: var(--muted);
+            font-size: 10px;
+        }
+        th:hover { color: var(--text); }
+        th .sort-arrow { margin-left: 4px; opacity: 0.4; }
+        th.sorted .sort-arrow { opacity: 1; color: var(--red); }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.15s;
             cursor: pointer;
         }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(255,255,255,0.03); }
+        tbody tr.unread { border-left: 2px solid var(--red); }
 
-        .sub-card.unread { border-color: rgba(254,0,0,0.35); }
-        .sub-card:hover { border-color: rgba(255,255,255,0.25); }
-
-        .sub-card-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
+        td {
+            padding: 11px 10px;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-size: 11px;
+            overflow-x: auto;
+            text-overflow: ellipsis;
         }
 
-        .sub-artist {
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        td.wrap { white-space: normal; max-width: 180px; word-break: break-all; }
 
         .unread-dot {
-            width: 7px;
-            height: 7px;
+            width: 6px; height: 6px;
             border-radius: 50%;
             background: var(--red);
+            display: inline-block;
+            margin-right: 7px;
             flex-shrink: 0;
+            vertical-align: middle;
         }
+
+        .td-artist { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; }
+        .td-artist:hover { color: rgba(255,255,255,0.5); }
 
         .sub-genre {
-            font-size: 9px;
+            font-size: 8px;
             letter-spacing: 2px;
-            color: var(--red);
-            border: 1px solid rgba(254,0,0,0.35);
+            color: rgba(255,255,255,0.45);
+            border: 1px solid rgba(255,255,255,0.18);
             border-radius: 4px;
-            padding: 4px 10px;
-        }
-
-        .sub-meta {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .sub-meta-item { display: flex; flex-direction: column; gap: 3px; }
-        .sub-meta-label { font-size: 8px; letter-spacing: 1.5px; color: var(--muted); }
-        .sub-meta-value { font-size: 11px; letter-spacing: 0.5px; color: var(--text); word-break: break-all; }
-        .sub-meta-value a { color: var(--text); text-decoration: none; }
-        .sub-meta-value a:hover { color: var(--red); }
-
-        .sub-message {
-            font-size: 10px;
-            letter-spacing: 0.3px;
-            color: rgba(255,255,255,0.60);
-            line-height: 1.8;
-            margin-bottom: 16px;
-            font-weight: 100;
-            border-left: 2px solid var(--border);
-            padding-left: 12px;
-        }
-
-        .sub-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .sub-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 6px;
-            font-family: 'Doto', monospace;
-            font-size: 10px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid;
-        }
-
-        .sub-btn--approve {
-            background: rgba(0,200,100,0.08);
-            border-color: rgba(0,200,100,0.35);
-            color: #00c864;
-        }
-
-        .sub-btn--approve:hover {
-            background: rgba(0,200,100,0.18);
-        }
-
-        .sub-btn--reject {
-            background: rgba(254,0,0,0.06);
-            border-color: rgba(254,0,0,0.35);
-            color: var(--red);
-        }
-
-        .sub-btn--reject:hover {
-            background: rgba(254,0,0,0.14);
-        }
-
-        .sub-btn--delete {
-            background: rgba(255,255,255,0.03);
-            border-color: rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.35);
-            margin-left: auto;
-        }
-
-        .sub-btn--delete:hover {
-            background: rgba(254,0,0,0.08);
-            border-color: rgba(254,0,0,0.30);
-            color: var(--red);
-        }
-
-        .sub-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+            padding: 3px 8px;
         }
 
         .sub-status {
-            font-size: 9px;
+            font-size: 8px;
             letter-spacing: 2px;
-            padding: 6px 14px;
-            border-radius: 6px;
+            padding: 4px 0;
+            border-radius: 4px;
             border: 1px solid;
+            display: inline-block;
+            width: 90px;
+            text-align: center;
         }
+        .sub-status--approved { color: #00c864; border-color: rgba(0,200,100,0.35); background: rgba(0,200,100,0.08); }
+        .sub-status--rejected { color: var(--red); border-color: rgba(254,0,0,0.35); background: rgba(254,0,0,0.06); }
+        .sub-status--pending  { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.15); background: transparent; }
 
-        .sub-status--approved {
+        /* notify toggle */
+        .notify-toggle {
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.15s;
+            min-width: 40px;
+        }
+        .notify-on {
+            background: rgba(0, 200, 100, 0.10);
+            border-color: rgba(0, 200, 100, 0.40);
             color: #00c864;
-            border-color: rgba(0,200,100,0.35);
-            background: rgba(0,200,100,0.08);
+        }
+        .notify-on:hover {
+            background: rgba(0, 200, 100, 0.20);
+        }
+        .notify-off {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.25);
+        }
+        .notify-off:hover {
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.5);
         }
 
-        .sub-status--rejected {
-            color: var(--red);
-            border-color: rgba(254,0,0,0.35);
-            background: rgba(254,0,0,0.06);
-        }
+        .td-actions { display: flex; gap: 6px; justify-content: center; }
 
-        .sub-date {
+        .sub-btn {
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-family: 'Doto', monospace;
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+        .sub-btn--approve { background: rgba(0,200,100,0.08); border-color: rgba(0,200,100,0.35); color: #00c864; }
+        .sub-btn--approve:hover { background: rgba(0,200,100,0.18); }
+        .sub-btn--reject  { background: rgba(254,0,0,0.06); border-color: rgba(254,0,0,0.35); color: var(--red); }
+        .sub-btn--reject:hover  { background: rgba(254,0,0,0.14); }
+        .sub-btn--delete  { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.3); }
+        .sub-btn--delete:hover  { background: rgba(254,0,0,0.08); border-color: rgba(254,0,0,0.3); color: var(--red); }
+        .sub-btn--edit    { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.25); color: #fff; }
+        .sub-btn--edit:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
+
+        td a { color: var(--text); text-decoration: none; }
+        td a:hover { color: var(--red); }
+
+        .bio-cell {
+            position: relative;
+            display: inline-block;
+        }
+        .bio-cell .bio-label {
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 4px;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .bio-cell:hover .bio-label {
+            color: var(--text);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .bio-tooltip {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            background: #1a1a1f;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.7;
+            max-width: 280px;
+            white-space: normal;
+            word-break: break-word;
+            pointer-events: none;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+        .bio-cell:hover .bio-tooltip { display: block; }
+
+        .table-count { font-size: 9px; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; }
+
+
+
+        .date-pick {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 5px;
+            color: var(--text);
+            font-family: 'Doto', monospace;
+            font-size: 8px;
+            letter-spacing: 1px;
+            padding: 5px 7px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            width: 130px;
+        }
+        .date-pick:hover { border-color: rgba(255,255,255,0.3); }
+        .date-pick:focus { outline: none; border-color: var(--red); }
+        .date-pick.has-date { border-color: rgba(254,0,0,0.5); }
+        .date-pick.saturday.has-date { border-color: rgba(255,200,0,0.5); }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; cursor: pointer; }
+
+        .modal-label { font-size: 8px; letter-spacing: 2px; color: var(--muted); margin-bottom: 4px; }
+        .modal-value { font-size: 11px; letter-spacing: 0.5px; color: var(--text); word-break: break-all; }
+        .modal-value a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+        .modal-field { display: flex; flex-direction: column; }
+
+        .modal-datetime {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: 'Doto', monospace;
             font-size: 9px;
             letter-spacing: 1px;
-            color: var(--muted);
-            margin-left: auto;
+            padding: 9px 10px;
+            cursor: pointer;
+            transition: border-color 0.2s;
         }
+        .modal-datetime:focus { outline: none; }
+        .modal-datetime.recording:focus, .modal-datetime.recording:not(:placeholder-shown) { border-color: rgba(254,0,0,0.5); }
+        .modal-datetime.saturday:focus,  .modal-datetime.saturday:not(:placeholder-shown)  { border-color: rgba(255,200,0,0.5); }
+        .modal-datetime.has-date.recording { border-color: rgba(254,0,0,0.5); }
+        .modal-datetime.has-date.saturday  { border-color: rgba(255,200,0,0.5); }
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.4; cursor: pointer; }
+
+        .modal-status-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Doto', monospace;
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: transparent;
+            color: var(--muted);
+        }
+        .modal-status-btn.active-pending  { border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.06); }
+        .modal-status-btn.active-approved { border-color: rgba(0,200,100,0.5);   color: #00c864; background: rgba(0,200,100,0.1); }
+        .modal-status-btn.active-rejected { border-color: rgba(254,0,0,0.5);     color: var(--red); background: rgba(254,0,0,0.08); }
 
         .empty-state {
-            text-align: center;
             padding: 60px 20px;
             color: var(--muted);
             font-size: 11px;
@@ -410,7 +515,6 @@
         }
 
         .loading {
-            text-align: center;
             padding: 60px 20px;
             color: var(--muted);
             font-size: 11px;
@@ -426,7 +530,462 @@
             .sub-meta { grid-template-columns: 1fr 1fr; }
             .admin-header { padding: 16px; }
         }
+
+        /* ── INLINE DATE PICKER ── */
+        .td-schedule {
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .td-schedule:hover .sched-val { opacity: 0.7; }
+
+        .sched-val {
+            font-size: 9px;
+            letter-spacing: 0.5px;
+            transition: opacity 0.15s;
+        }
+        .sched-empty { color: rgba(255,255,255,0.75); }
+
+        /* floating picker */
+        #datePicker {
+            position: fixed;
+            z-index: 9999;
+            background: #0e0e12;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 16px;
+            width: 240px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+        #datePicker input[type="datetime-local"] {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Doto', monospace;
+            font-size: 10px;
+            padding: 8px 10px;
+            outline: none;
+            color-scheme: dark;
+            margin-bottom: 10px;
+        }
+        #datePicker input[type="datetime-local"]:focus {
+            border-color: rgba(255,255,255,0.35);
+        }
+        .picker-label {
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .picker-label.rec { color: rgba(254,0,0,0.8); }
+        .picker-label.sat { color: rgba(255,200,0,0.8); }
+        .picker-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .picker-save {
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Doto', monospace;
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            border: 1px solid rgba(0,200,100,0.35);
+            background: rgba(0,200,100,0.08);
+            color: #00c864;
+            transition: background 0.15s;
+        }
+        .picker-save:hover { background: rgba(0,200,100,0.18); }
+        .picker-clear {
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Doto', monospace;
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: transparent;
+            color: rgba(255,255,255,0.3);
+            transition: background 0.15s;
+        }
+        .picker-clear:hover { background: rgba(254,0,0,0.08); border-color: rgba(254,0,0,0.3); color: var(--red); }
+
+        /* ── INFO POPUP ── */
+        #infoPopup {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.75);
+        }
+        #infoPopupBox {
+            background: #0e0e12;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 28px;
+            position: relative;
+        }
+        .info-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+        .info-close:hover { color: #fff; }
+        .info-artist-name {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-bottom: 4px;
+            padding-right: 30px;
+        }
+        .info-date {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+        .info-divider {
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 16px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .info-field {}
+        .info-field.full { grid-column: 1/-1; }
+        .info-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+        .info-val {
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            color: #fff;
+            word-break: break-all;
+        }
+        .info-val a { color: #fff; text-decoration: none; }
+        .info-val a:hover { color: var(--red); }
+        .info-val.muted { color: var(--muted); }
+
+        /* edit mode */
+        .ip-edit-btn {
+            position: absolute; top: 14px; right: 44px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 4px;
+            color: rgba(255,255,255,0.35);
+            font-family: 'Doto', monospace;
+            font-size: 9px; letter-spacing: 1.5px;
+            padding: 4px 10px; cursor: pointer;
+            transition: all 0.15s;
+        }
+        .ip-edit-btn:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+        .ip-input {
+            width: 100%; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 4px; color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 12px; padding: 6px 8px;
+            outline: none; transition: border-color 0.15s;
+            box-sizing: border-box;
+        }
+        .ip-input:focus { border-color: rgba(255,255,255,0.4); }
+        .ip-artist-input {
+            background: transparent;
+            border: none; border-bottom: 1px solid rgba(255,255,255,0.25);
+            border-radius: 0; color: #fff;
+            font-family: 'Doto', monospace;
+            font-size: 20px; letter-spacing: 2px;
+            padding: 2px 0; outline: none; width: 100%;
+        }
+        .ip-artist-input:focus { border-bottom-color: rgba(255,255,255,0.6); }
+        .ip-save-row {
+            display: flex; gap: 8px; margin-top: 16px;
+            padding-top: 16px; border-top: 1px solid var(--border);
+        }
+        .ip-save-btn {
+            flex: 1; padding: 10px;
+            background: rgba(0,200,100,0.08);
+            border: 1px solid rgba(0,200,100,0.35);
+            border-radius: 6px; color: #00c864;
+            font-family: 'Doto', monospace;
+            font-size: 10px; letter-spacing: 2px;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .ip-save-btn:hover { background: rgba(0,200,100,0.18); }
+        .ip-cancel-btn {
+            flex: 1; padding: 10px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 6px; color: rgba(255,255,255,0.3);
+            font-family: 'Doto', monospace;
+            font-size: 10px; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .ip-cancel-btn:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+        .info-bio {
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .info-bio.expanded {
+            display: block;
+            overflow: visible;
+            cursor: pointer;
+        }
+        .bio-toggle {
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.35);
+            cursor: pointer;
+            margin-top: 4px;
+            display: none;
+        }
+        .bio-toggle:hover { color: rgba(255,255,255,0.7); }
+
+        /* ── DROPDOWN MENU ── */
+        /* ── DROPDOWN MENU ── */
+        .dd-wrap {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+        }
+        .dd-btn {
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-family: 'Doto', monospace;
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            transition: all 0.15s;
+            letter-spacing: 0;
+        }
+        .dd-btn:hover { background: rgba(255,255,255,0.12); }
+        .dd-menu {
+            display: none;
+            position: fixed;
+            background: #0e0e12;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 9000;
+            min-width: 120px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .dd-wrap.open .dd-menu { display: block; }
+        .dd-item {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .dd-item:hover { background: rgba(255,255,255,0.06); }
+        .dd-item.accept { color: #00c864; }
+        .dd-item.reject { color: var(--red); }
+        .dd-item.pending { color: rgba(255,255,255,0.6); }
+        .dd-item.delete { color: rgba(255,255,255,0.35); border-top: 1px solid rgba(255,255,255,0.07); }
+        .dd-item.delete:hover { color: var(--red); }            position: relative;
+        display: inline-flex;
+        justify-content: center;
+        }
+        .dd-btn {
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-family: 'Doto', monospace;
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            transition: all 0.15s;
+            letter-spacing: 0;
+        }
+        .dd-btn:hover { background: rgba(255,255,255,0.12); }
+        .dd-menu {
+            display: none;
+            position: fixed;
+            background: #0e0e12;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 9000;
+            min-width: 120px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .dd-wrap.open .dd-menu { display: block; }
+        .dd-item {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+        .dd-item:hover { background: rgba(255,255,255,0.06); }
+        .dd-item.accept { color: #00c864; }
+        .dd-item.reject { color: var(--red); }
+        .dd-item.pending { color: rgba(255,255,255,0.6); }
+        .dd-item.delete { color: rgba(255,255,255,0.35); border-top: 1px solid rgba(255,255,255,0.07); }
+        .dd-item.delete:hover { color: var(--red); }
+
+        /* ── CONFIRM POPUP ── */
+        #confirmPopup {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+        }
+        #confirmBox {
+            background: #0e0e12;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+        .confirm-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: block;
+            text-align: center;
+            color: #f5c518;
+        }
+        .confirm-title {
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .confirm-action {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+        .confirm-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .confirm-yes {
+            padding: 11px;
+            border-radius: 7px;
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .confirm-yes.accept  { border: 1px solid rgba(0,200,100,0.35);  background: rgba(0,200,100,0.08);  color: #00c864; }
+        .confirm-yes.accept:hover  { background: rgba(0,200,100,0.18); }
+        .confirm-yes.reject  { border: 1px solid rgba(254,0,0,0.35);    background: rgba(254,0,0,0.06);    color: var(--red); }
+        .confirm-yes.reject:hover  { background: rgba(254,0,0,0.14); }
+        .confirm-yes.pending { border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+        .confirm-yes.pending:hover { background: rgba(255,255,255,0.1); }
+        .confirm-yes.delete  { border: 1px solid rgba(254,0,0,0.35);    background: rgba(254,0,0,0.06);    color: var(--red); }
+        .confirm-yes.delete:hover  { background: rgba(254,0,0,0.18); }
+        .confirm-no {
+            padding: 11px;
+            border-radius: 7px;
+            font-family: 'Doto', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: transparent;
+            color: var(--muted);
+            transition: background 0.15s;
+        }
+        .confirm-no:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.4);
+            font-size: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            vertical-align: middle;
+            margin-left: 6px;
+            transition: border-color 0.15s, color 0.15s;
+            font-style: normal;
+        }
+        .info-icon:hover {
+            border-color: rgba(255,255,255,0.6);
+            color: #fff;
+        }
+
+        .info-avatar {
+            width: 72px; height: 72px;
+            border-radius: 4px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .info-avatar-placeholder {
+            width: 72px; height: 72px;
+            border-radius: 4px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            flex-shrink: 0;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
 
@@ -488,14 +1047,127 @@
         </div>
 
         <div class="submissions-list" id="submissionsList">
-            <div class="loading">LOADING...</div>
+            <input class="search-bar" id="searchInput" type="text" placeholder="SEARCH BY ARTIST, EMAIL, GENRE...">
+            <div class="table-count" id="tableCount"></div>
+            <div class="table-wrap">
+                <table id="subsTable">
+                    <thead>
+                    <tr>
+                        <th onclick="sortTable('status')">STATUS <span class="sort-arrow">↕</span></th>
+                        <th onclick="sortTable('artist')">ARTIST <span class="sort-arrow">↕</span></th>
+                        <th onclick="sortTable('genre')">GENRE <span class="sort-arrow">↕</span></th>
+                        <th onclick="sortTable('scheduleRecording')">RECORD DATE <span class="sort-arrow">↕</span></th>
+                        <th onclick="sortTable('scheduleSaturday')">RELEASE DATE <span class="sort-arrow">↕</span></th>
+                        <th>NOTIFY</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                    </tr>
+                    </thead>
+                    <tbody id="subsBody">
+                    <tr><td colspan="6" class="empty-state">LOADING...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;padding:20px">
+    <div id="modalBox" style="background:#0e0e12;border:1px solid rgba(255,255,255,0.12);border-radius:14px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:32px">
+
+        <!-- STEP 1: INFO + APPROVE/REJECT -->
+        <div id="modalStep1">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+                <div style="font-size:11px;letter-spacing:3px;color:var(--muted)">SUBMISSION</div>
+                <button onclick="closeModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1">✕</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px">
+                <div class="modal-field">
+                    <div class="modal-label">ARTIST</div>
+                    <div class="modal-value" id="m-artist"></div>
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">GENRE</div>
+                    <div class="modal-value" id="m-genre"></div>
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">EMAIL</div>
+                    <div class="modal-value" id="m-email"></div>
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">PHONE</div>
+                    <div class="modal-value" id="m-phone"></div>
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">SOCIAL</div>
+                    <div class="modal-value" id="m-social"></div>
+                </div>
+                <div class="modal-field">
+                    <div class="modal-label">MIX LINK</div>
+                    <div class="modal-value" id="m-mix"></div>
+                </div>
+                <div class="modal-field" style="grid-column:1/-1">
+                    <div class="modal-label">BIO</div>
+                    <div class="modal-value" id="m-bio" style="line-height:1.8;color:rgba(255,255,255,0.6);font-size:10px"></div>
+                </div>
+            </div>
+
+            <div style="height:1px;background:var(--border);margin-bottom:20px"></div>
+
+            <div style="display:flex;gap:16px;margin-bottom:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;align-items:center">
+                <span style="font-family:'Doto',monospace;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.30);margin-right:4px">NOTIFY:</span>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-family:'Doto',monospace;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.60)">
+                    <input type="checkbox" id="chkSendEmail" checked style="accent-color:var(--red);width:13px;height:13px;cursor:pointer">
+                    EMAIL
+                </label>
+                <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-family:'Doto',monospace;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.60)">
+                    <input type="checkbox" id="chkSendSms" checked style="accent-color:var(--red);width:13px;height:13px;cursor:pointer">
+                    SMS
+                </label>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                <button onclick="modalApprove()" style="padding:14px;background:rgba(0,200,100,0.08);border:1px solid rgba(0,200,100,0.35);border-radius:8px;color:#00c864;font-family:'Doto',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:background 0.15s">✓ APPROVE</button>
+                <button onclick="modalReject()" style="padding:14px;background:rgba(254,0,0,0.06);border:1px solid rgba(254,0,0,0.35);border-radius:8px;color:var(--red);font-family:'Doto',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:background 0.15s">✕ REJECT</button>
+                <button onclick="modalPending()" style="padding:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:rgba(255,255,255,0.6);font-family:'Doto',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:background 0.15s">● PENDING</button>
+            </div>
+
+            <div style="margin-top:10px">
+                <button onclick="deleteFromModal()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.07);border-radius:8px;color:rgba(255,255,255,0.2);font-family:'Doto',monospace;font-size:9px;letter-spacing:2px;cursor:pointer"><i class="bi bi-trash"></i> DELETE</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: RECORD DATE + SATURDAY DATE -->
+        <div id="modalStep2" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <div style="font-size:11px;letter-spacing:3px;color:var(--red)"><i class="bi bi-calendar2"></i> SCHEDULE</div>
+                <button onclick="closeModal()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1">✕</button>
+            </div>
+            <div style="font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-bottom:24px" id="m-artist-2"></div>
+
+            <div style="margin-bottom:16px">
+                <div class="modal-label" style="margin-bottom:8px;color:rgba(254,0,0,0.8)">RECORD DATE</div>
+                <input type="datetime-local" id="m-recording" class="modal-datetime recording" style="width:100%">
+            </div>
+
+            <div style="margin-bottom:24px">
+                <div class="modal-label" style="margin-bottom:8px;color:rgba(255,200,0,0.8)">RELEASE DATE</div>
+                <input type="datetime-local" id="m-saturday" class="modal-datetime saturday" style="width:100%">
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <button onclick="goBackStep1()" style="padding:13px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--muted);font-family:'Doto',monospace;font-size:9px;letter-spacing:2px;cursor:pointer">← BACK</button>
+                <button onclick="saveModal()" style="padding:13px;background:rgba(0,200,100,0.08);border:1px solid rgba(0,200,100,0.35);border-radius:8px;color:#00c864;font-family:'Doto',monospace;font-size:10px;letter-spacing:2px;cursor:pointer">SAVE ✓</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBXRWLVHI3hNM5hv7w6uZyUovN9mdrThrU",
@@ -579,77 +1251,348 @@
         }
     }
 
+    window.toggleNotify = async function(id, btn) {
+        const sub = allSubs.find(s => s.id === id);
+        if (!sub) return;
+        const newVal = sub.notifyEnabled === false ? true : false;
+        sub.notifyEnabled = newVal;
+        await updateDoc(doc(db, 'submissions', id), { notifyEnabled: newVal });
+        btn.textContent = newVal ? 'ON' : 'OFF';
+        btn.className = 'notify-toggle ' + (newVal ? 'notify-on' : 'notify-off');
+        btn.title = newVal ? 'Notifications ON — click to disable' : 'Notifications OFF — click to enable';
+    };
+
     function updateStats() {
         document.getElementById("statTotal").textContent = allSubs.length;
         document.getElementById("statUnread").textContent = allSubs.filter(s => !s.read).length;
     }
 
+    let sortKey = 'createdAt';
+    let sortDir = -1; // -1 desc, 1 asc
+    let searchQuery = '';
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        searchQuery = this.value.toLowerCase();
+        renderSubmissions();
+    });
+
+    window.sortTable = function(key) {
+        if (sortKey === key) sortDir *= -1;
+        else { sortKey = key; sortDir = -1; }
+        // update header arrows
+        document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+        event.currentTarget.classList.add('sorted');
+        renderSubmissions();
+    };
+
     function renderSubmissions() {
-        const list = document.getElementById("submissionsList");
+        const tbody = document.getElementById('subsBody');
+        const countEl = document.getElementById('tableCount');
+
         let filtered = allSubs;
-        if (currentFilter === "unread") filtered = allSubs.filter(s => !s.read);
-        else if (currentFilter === "pending") filtered = allSubs.filter(s => s.status === "pending");
-        else if (currentFilter === "approved") filtered = allSubs.filter(s => s.status === "approved");
-        else if (currentFilter === "rejected") filtered = allSubs.filter(s => s.status === "rejected");
+
+        // filter
+        if (currentFilter === 'unread')    filtered = filtered.filter(s => !s.read);
+        else if (currentFilter === 'pending')   filtered = filtered.filter(s => s.status === 'pending');
+        else if (currentFilter === 'approved')  filtered = filtered.filter(s => s.status === 'approved');
+        else if (currentFilter === 'rejected')  filtered = filtered.filter(s => s.status === 'rejected');
+
+        // search
+        if (searchQuery) {
+            filtered = filtered.filter(s =>
+                (s.artist||'').toLowerCase().includes(searchQuery) ||
+                (s.email||'').toLowerCase().includes(searchQuery) ||
+                (s.genre||'').toLowerCase().includes(searchQuery) ||
+                (s.phone||'').toLowerCase().includes(searchQuery) ||
+                (s.message||'').toLowerCase().includes(searchQuery)
+            );
+        }
+
+        // sort
+        filtered = [...filtered].sort((a, b) => {
+            let av = a[sortKey], bv = b[sortKey];
+            if (sortKey === 'createdAt') {
+                av = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+                bv = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+            } else {
+                av = (av||'').toString().toLowerCase();
+                bv = (bv||'').toString().toLowerCase();
+            }
+            if (av < bv) return -sortDir;
+            if (av > bv) return sortDir;
+            return 0;
+        });
+
+        countEl.textContent = filtered.length + ' RECORD' + (filtered.length !== 1 ? 'S' : '');
 
         if (!filtered.length) {
-            list.innerHTML = `<div class="empty-state">NO SUBMISSIONS</div>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-state">NO RESULTS</td></tr>`;
             return;
         }
 
-        list.innerHTML = filtered.map(s => {
-            const date = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) : "—";
+        tbody.innerHTML = filtered.map(s => {
+            const date = s.createdAt?.toDate
+                ? s.createdAt.toDate().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+                : '—';
             const isUnread = !s.read;
 
-            let actionsHtml = "";
-            if (s.status === "approved") {
-                actionsHtml = `<span class="sub-status sub-status--approved">✓ APPROVED</span>`;
-            } else if (s.status === "rejected") {
-                actionsHtml = `<span class="sub-status sub-status--rejected">✕ REJECTED</span>`;
+            let statusHtml = '';
+            if (s.status === 'approved') statusHtml = `<span class="sub-status sub-status--approved">✓ APPROVED</span>`;
+            else if (s.status === 'rejected') statusHtml = `<span class="sub-status sub-status--rejected">✕ REJECTED</span>`;
+            else statusHtml = `<span class="sub-status sub-status--pending"><span style="color:var(--red)">●</span> PENDING</span>`;
+            return `<tr class="${isUnread ? 'unread' : ''}" id="card-${s.id}" onclick="" style="${s.status==='rejected'?'color:rgba(254,0,0,0.7)':s.status==='approved'?'color:rgba(0,200,100,0.85)':''}">
+                <td>${statusHtml}</td>
+                <td class="td-artist" onclick="event.stopPropagation();openInfoPopup('${s.id}');setTimeout(()=>markRead('${s.id}'),100)">${isUnread ? '<span class="unread-dot"></span>' : ''}${s.artist||'—'}</td>
+                <td>${s.genre ? `<span class="sub-genre">${s.genre}</span>` : '—'}</td>
+                <td class="td-schedule" onclick="event.stopPropagation();tryOpenPicker('${s.id}','rec',this)">
+                    <span class="sched-val ${s.scheduleRecording ? '' : 'sched-empty'}" style="${s.status==='rejected'?'color:rgba(254,0,0,0.4);cursor:default':s.status==='approved'?'color:rgba(0,200,100,0.7)':''}">${s.scheduleRecording ? formatSchedDate(s.scheduleRecording) : '—— —— ——  ——:——'}</span>
+                </td>
+                <td class="td-schedule" onclick="event.stopPropagation();tryOpenPicker('${s.id}','sat',this)">
+                    <span class="sched-val ${s.scheduleSaturday ? '' : 'sched-empty'}" style="${s.status==='rejected'?'color:rgba(254,0,0,0.4);cursor:default':s.status==='approved'?'color:rgba(0,200,100,0.7)':''}">${s.scheduleSaturday ? formatSchedDate(s.scheduleSaturday) : '—— —— ——  ——:——'}</span>
+                </td>
+                <td onclick="event.stopPropagation()" style="text-align:center">
+                    <button
+                        class="notify-toggle ${s.notifyEnabled !== false ? 'notify-on' : 'notify-off'}"
+                        onclick="toggleNotify('${s.id}', this)"
+                        title="${s.notifyEnabled !== false ? 'Notifications ON — click to disable' : 'Notifications OFF — click to enable'}"
+                    >${s.notifyEnabled !== false ? 'ON' : 'OFF'}</button>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="dd-wrap" id="dd-${s.id}">
+                        <button class="dd-btn" onclick="toggleDropdown('${s.id}',this)">⋮</button>
+                        <div class="dd-menu">
+                            ${s.status !== 'approved' ? `<button class="dd-item accept" onclick="closeAllDropdowns();askConfirm('accept','✓ APPROVE — ${s.artist||s.id}',()=>updateStatus('${s.id}','approved'))">✓ APPROVE</button>` : ''}
+                            ${s.status !== 'rejected' ? `<button class="dd-item reject" onclick="closeAllDropdowns();askConfirm('reject','✕ REJECT — ${s.artist||s.id}',()=>updateStatus('${s.id}','rejected'))">✕ REJECT</button>` : ''}
+                            ${s.status !== 'pending' ? `<button class="dd-item pending" onclick="closeAllDropdowns();askConfirm('pending','● PENDING — ${s.artist||s.id}',()=>updateStatus('${s.id}','pending'))">● PENDING</button>` : ''}
+                            <button class="dd-item delete" onclick="closeAllDropdowns();askConfirm('delete','DELETE — ${s.artist||s.id}',()=>deleteSubmission('${s.id}'))"><i class="bi bi-trash"></i> DELETE</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Tooltip positioning
+    document.addEventListener('mousemove', function(e) {
+        const tooltip = document.querySelector('.bio-cell:hover .bio-tooltip');
+        if (!tooltip) return;
+        const x = e.clientX + 14;
+        const y = e.clientY + 14;
+        const tw = tooltip.offsetWidth;
+        const th = tooltip.offsetHeight;
+        tooltip.style.left = (x + tw > window.innerWidth ? x - tw - 28 : x) + 'px';
+        tooltip.style.top  = (y + th > window.innerHeight ? y - th - 28 : y) + 'px';
+    });
+
+    let modalId = null;
+    let modalStatus = null;
+    let modalScAvatar = '';
+
+    window.openModal = function(id) {
+        const s = allSubs.find(x => x.id === id);
+        if (!s) return;
+        modalId = id;
+        modalStatus = s.status || 'pending';
+
+        document.getElementById('m-artist').textContent = s.artist || '—';
+        document.getElementById('m-genre').textContent  = s.genre  || '—';
+        document.getElementById('m-phone').textContent  = s.phone  || '—';
+        document.getElementById('m-bio').textContent    = s.message || '—';
+        document.getElementById('m-email').innerHTML  = s.email    ? `<a href="mailto:${s.email}">${s.email}</a>` : '—';
+        document.getElementById('m-social').innerHTML = s.social   ? `<a href="${s.social}" target="_blank">${s.social.includes('instagram')?'INSTAGRAM':s.social.includes('facebook')?'FACEBOOK':s.social.includes('soundcloud')?'SOUNDCLOUD':s.social}</a>` : '—';
+        document.getElementById('m-mix').innerHTML    = s.mix_link ? `<a href="${s.mix_link}" target="_blank">LINK ↗</a>` : '—';
+
+        document.getElementById('m-recording').value = s.scheduleRecording || '';
+        document.getElementById('m-saturday').value  = s.scheduleSaturday  || '';
+
+        // Fetch SC avatar in background and cache on sub object
+        modalScAvatar = s.scAvatar || '';
+        if (s.mix_link && (s.mix_link.includes('soundcloud.com') || s.mix_link.includes('on.soundcloud.com'))) {
+            fetch('https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=' + encodeURIComponent(s.mix_link))
+                .then(r => r.json())
+                .then(d => { if (d.avatar) { modalScAvatar = d.avatar; s.scAvatar = d.avatar; } })
+                .catch(() => {});
+        }
+
+        // show step 1
+        document.getElementById('modalStep1').style.display = 'block';
+        document.getElementById('modalStep2').style.display = 'none';
+
+        const modal = document.getElementById('editModal');
+        modal.style.display = 'flex';
+        markRead(id);
+    };
+
+    window.closeModal = function() {
+        document.getElementById('editModal').style.display = 'none';
+        modalId = null;
+    };
+
+    window.modalApprove = async function() {
+        modalStatus = 'approved';
+        document.getElementById('m-artist-2').textContent = document.getElementById('m-artist').textContent;
+        document.getElementById('modalStep1').style.display = 'none';
+        document.getElementById('modalStep2').style.display = 'block';
+
+        // SC avatar-ი თუ ჯერ არ ჩამოვიდა — ახლა await-ით ვიღებთ
+        const sub = allSubs.find(s => s.id === modalId);
+        if (sub && !sub.scAvatar && sub.mix_link && (sub.mix_link.includes('soundcloud.com') || sub.mix_link.includes('on.soundcloud.com'))) {
+            try {
+                const r = await fetch('https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=' + encodeURIComponent(sub.mix_link));
+                const d = await r.json();
+                if (d.avatar) { sub.scAvatar = d.avatar; modalScAvatar = d.avatar; }
+            } catch(e) {}
+        }
+        if (sub?.scAvatar) modalScAvatar = sub.scAvatar;
+    };
+
+    window.modalReject = async function() {
+        if (!modalId) return;
+        const sub = allSubs.find(s => s.id === modalId);
+        if (!sub) return;
+        sub.status = 'rejected';
+        try {
+            await updateDoc(doc(db, 'submissions', modalId), { status: 'rejected' });
+        } catch(e) { console.error(e); }
+
+        // Email / SMS
+        const sendEmail = sub.notifyEnabled !== false;
+        const sendSms   = sub.notifyEnabled !== false;
+        const htmlContent = `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:#FE0000;margin-bottom:8px;">✕ NOT SELECTED</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div><div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.</div><div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
+        try {
+            if (sendEmail) {
+                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" }, to: [{ email: sub.email, name: sub.artist }], subject: "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY", htmlContent })
+                });
+            }
+            if (sendSms) {
+                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sms: true, phone: sub.phone, smsText: `DEAR ${sub.artist}
+WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
+                });
+            }
+        } catch(e) { console.error(e); }
+
+        updateStats();
+        renderSubmissions();
+        closeModal();
+    };
+
+    window.modalPending = async function() {
+        if (!modalId) return;
+        const sub = allSubs.find(s => s.id === modalId);
+        if (!sub) return;
+        sub.status = 'pending';
+        try {
+            await updateDoc(doc(db, 'submissions', modalId), { status: 'pending' });
+        } catch(e) { console.error(e); }
+        updateStats();
+        renderSubmissions();
+        closeModal();
+    };
+
+    window.goBackStep1 = function() {
+        document.getElementById('modalStep1').style.display = 'block';
+        document.getElementById('modalStep2').style.display = 'none';
+        modalStatus = 'pending';
+    };
+
+    window.saveModal = async function() {
+        if (!modalId) return;
+        const sub = allSubs.find(s => s.id === modalId);
+        if (!sub) return;
+
+        const recording = document.getElementById('m-recording').value;
+        const saturday  = document.getElementById('m-saturday').value;
+        const resolvedImage = sub.customImage || modalScAvatar || 'assets/tk.jpg';
+        sub.status = 'approved';
+        sub.scheduleRecording = recording;
+        sub.scheduleSaturday  = saturday;
+
+        try {
+            await updateDoc(doc(db, 'submissions', modalId), {
+                status: 'approved',
+                scheduleRecording: recording || null,
+                scheduleSaturday:  saturday  || null
+            });
+
+            // Recording date → approved_events
+            if (recording) {
+                const dt = new Date(recording);
+                await setDoc(doc(db, 'approved_events', `${modalId}_rec`), {
+                    year:   dt.getFullYear(),
+                    month:  dt.getMonth() + 1,
+                    day:    dt.getDate(),
+                    time:   `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`,
+                    artist: sub.artist || '',
+                    type:   'RECORDING',
+                    event:  '7TH BLOCK SOCIETY',
+                    desc:   sub.message || '',
+                    image:  resolvedImage,
+                    youtube: '',
+                });
             } else {
-                actionsHtml = `
-                <button class="sub-btn sub-btn--approve" onclick="event.stopPropagation();updateStatus('${s.id}', 'approved')">✓ APPROVE</button>
-                <button class="sub-btn sub-btn--reject" onclick="event.stopPropagation();updateStatus('${s.id}', 'rejected')">✕ REJECT</button>`;
+                try { await deleteDoc(doc(db, 'approved_events', `${modalId}_rec`)); } catch(e) {}
             }
 
-            return `
-        <div class="sub-card ${isUnread ? 'unread' : ''}" id="card-${s.id}" onclick="markRead('${s.id}')">
-            <div class="sub-card-top">
-                <div class="sub-artist">
-                    ${isUnread ? '<span class="unread-dot"></span>' : ''}
-                    ${s.artist || "—"}
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span class="sub-genre">${s.genre || "—"}</span>
-                    <span class="sub-date">${date}</span>
-                </div>
-            </div>
-            <div class="sub-meta">
-                <div class="sub-meta-item">
-                    <span class="sub-meta-label">EMAIL</span>
-                    <span class="sub-meta-value"><a href="mailto:${s.email}">${s.email || "—"}</a></span>
-                </div>
-                <div class="sub-meta-item">
-                    <span class="sub-meta-label">PHONE</span>
-                    <span class="sub-meta-value">${s.phone || "—"}</span>
-                </div>
-                <div class="sub-meta-item">
-                    <span class="sub-meta-label">SOCIAL</span>
-                    <span class="sub-meta-value"><a href="${s.social}" target="_blank">${s.social || "—"}</a></span>
-                </div>
-                <div class="sub-meta-item" style="grid-column:1/-1">
-                    <span class="sub-meta-label">MIX LINK</span>
-                    <span class="sub-meta-value"><a href="${s.mix_link}" target="_blank">${s.mix_link || "—"}</a></span>
-                </div>
-            </div>
-            <div class="sub-message">${s.message || "—"}</div>
-            <div class="sub-actions">
-                ${actionsHtml}
-                <button class="sub-btn sub-btn--delete" onclick="event.stopPropagation();deleteSubmission('${s.id}')">🗑 DELETE</button>
-            </div>
-        </div>`;
-        }).join("");
-    }
+            // Saturday/Podcast date → approved_events
+            if (saturday) {
+                const dt = new Date(saturday);
+                await setDoc(doc(db, 'approved_events', `${modalId}_sat`), {
+                    year:   dt.getFullYear(),
+                    month:  dt.getMonth() + 1,
+                    day:    dt.getDate(),
+                    time:   `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`,
+                    artist: sub.artist || '',
+                    type:   'PODCAST',
+                    event:  '7TH BLOCK SOCIETY',
+                    desc:   sub.message || '',
+                    image:  resolvedImage,
+                    youtube: '',
+                });
+            } else {
+                try { await deleteDoc(doc(db, 'approved_events', `${modalId}_sat`)); } catch(e) {}
+            }
+
+            updateStats();
+            renderSubmissions();
+
+            // Email / SMS
+            const sendEmail = sub.notifyEnabled !== false;
+            const sendSms   = sub.notifyEnabled !== false;
+            const htmlContent = `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:#00c864;margin-bottom:8px;">✓ ACCEPTED</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div><div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">YOUR MIX SUBMISSION HAS BEEN ACCEPTED.<br><br>OUR REPRESENTATIVE WILL CONTACT YOU ON YOUR PROVIDED PHONE NUMBER — <span style="color:#ffffff;">${sub.phone}</span> — TO DISCUSS FURTHER DETAILS.</div><div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
+            try {
+                if (sendEmail) {
+                    await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" }, to: [{ email: sub.email, name: sub.artist }], subject: "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY", htmlContent })
+                    });
+                }
+                if (sendSms) {
+                    await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ sms: true, phone: sub.phone, smsText: `DEAR ${sub.artist}
+YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.` })
+                    });
+                }
+            } catch(e) { console.error(e); }
+
+            closeModal();
+        } catch(e) { console.error('Save error:', e); }
+    };
+
+    window.deleteFromModal = async function() {
+        if (!modalId) return;
+        if (!confirm('წაშლა დარწმუნებული ხარ?')) return;
+        await deleteSubmission(modalId);
+        closeModal();
+    };
+
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
 
     window.markRead = async function(id) {
         const sub = allSubs.find(s => s.id === id);
@@ -657,7 +1600,12 @@
         sub.read = true;
         await updateDoc(doc(db, "submissions", id), { read: true });
         updateStats();
-        renderSubmissions();
+        if (document.getElementById('infoPopup').style.display === 'none') {
+            renderSubmissions();
+        } else {
+            const row = document.getElementById('card-' + id);
+            if (row) { row.classList.remove('unread'); const dot = row.querySelector('.unread-dot'); if(dot) dot.remove(); }
+        }
     };
 
     window.deleteSubmission = async function(id) {
@@ -683,7 +1631,7 @@
     <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">B</div>
     <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
   </div>
-  <div style="text-align:center;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div>
+  <div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div>
   <div style="font-size:22px;letter-spacing:3px;color:${isApproved ? '#00c864' : '#FE0000'};margin-bottom:8px;">${isApproved ? '✓ ACCEPTED' : '✕ NOT SELECTED'}</div>
   <div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div>
   <div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div>
@@ -693,36 +1641,43 @@
             : `THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.`
         }
   </div>
-  <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);text-align:center;">7BS.GE — TBILISI, GEORGIA</div>
+  <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div>
 </div>`;
 
         try {
+            const sendEmail = sub.notifyEnabled !== false;
+            const sendSms   = sub.notifyEnabled !== false;
+
             // Email გაგზავნა
-            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
-                    to: [{ email: sub.email, name: sub.artist }],
-                    subject: isApproved ? "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY" : "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY",
-                    htmlContent
-                })
-            });
+            if (sendEmail) {
+                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
+                        to: [{ email: sub.email, name: sub.artist }],
+                        subject: isApproved ? "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY" : "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY",
+                        htmlContent
+                    })
+                });
+            }
 
             // SMS გაგზავნა
-            const smsText = isApproved
-                ? `DEAR ${sub.artist}\nYOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.`
-                : `DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.`;
+            if (sendSms) {
+                const smsText = isApproved
+                    ? `DEAR ${sub.artist}\nYOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.`
+                    : `DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.`;
 
-            await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    sms: true,
-                    phone: sub.phone,
-                    smsText
-                })
-            });
+                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sms: true,
+                        phone: sub.phone,
+                        smsText
+                    })
+                });
+            }
         } catch(e) {
             console.error("Error:", e);
         }
@@ -730,7 +1685,463 @@
         updateStats();
         renderSubmissions();
     };
+
+    // ── INLINE DATE PICKER ──
+    let pickerSubId = null;
+    let pickerField = null; // 'rec' | 'sat'
+
+    window.openDatePicker = function(id, field, tdEl) {
+        pickerSubId = id;
+        pickerField = field;
+        const sub = allSubs.find(x => x.id === id);
+        const label = document.getElementById('pickerLabel');
+        const input = document.getElementById('pickerInput');
+        const picker = document.getElementById('datePicker');
+
+        label.textContent = field === 'rec' ? 'RECORD DATE' : 'RELEASE DATE';
+        label.className = 'picker-label ' + field;
+        input.value = field === 'rec' ? (sub.scheduleRecording || '') : (sub.scheduleSaturday || '');
+
+        // Fetch SC avatar in background if not cached yet
+        if (!sub.scAvatar && sub.mix_link && (sub.mix_link.includes('soundcloud.com') || sub.mix_link.includes('on.soundcloud.com'))) {
+            fetch('https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=' + encodeURIComponent(sub.mix_link))
+                .then(r => r.json())
+                .then(d => { if (d.avatar) sub.scAvatar = d.avatar; })
+                .catch(() => {});
+        }
+
+        // პოზიცია
+        const rect = tdEl.getBoundingClientRect();
+        picker.style.display = 'block';
+        const pw = 240, ph = 120;
+        let left = rect.left;
+        let top  = rect.bottom + 6;
+        if (left + pw > window.innerWidth)  left = window.innerWidth - pw - 10;
+        if (top  + ph > window.innerHeight) top  = rect.top - ph - 6;
+        picker.style.left = left + 'px';
+        picker.style.top  = top  + 'px';
+
+        input.focus();
+    };
+
+    window.saveDatePicker = async function() {
+        const val = document.getElementById('pickerInput').value;
+        if (!val) return;
+        const sub = allSubs.find(x => x.id === pickerSubId);
+        const dbField = pickerField === 'rec' ? 'scheduleRecording' : 'scheduleSaturday';
+        sub[dbField] = val;
+        await updateDoc(doc(db, 'submissions', pickerSubId), { [dbField]: val });
+
+        // approved_events-ში ჩაწერა (calendar-ისთვის)
+        if (sub.status === 'approved') {
+            const dt = new Date(val);
+            const eventType = pickerField === 'rec' ? 'RECORDING' : 'PODCAST';
+            const eventId = `${pickerSubId}_${pickerField}`;
+            await setDoc(doc(db, 'approved_events', eventId), {
+                year:   dt.getFullYear(),
+                month:  dt.getMonth() + 1,
+                day:    dt.getDate(),
+                time:   `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`,
+                artist: sub.artist || '',
+                type:   eventType,
+                event:  '7TH BLOCK SOCIETY',
+                desc:   sub.message || '',
+                image:  sub.scAvatar || 'assets/tk.jpg',
+                youtube: '',
+            });
+        }
+
+        closeDatePicker();
+        renderSubmissions();
+    };
+
+    window.clearDatePicker = async function() {
+        const sub = allSubs.find(x => x.id === pickerSubId);
+        const dbField = pickerField === 'rec' ? 'scheduleRecording' : 'scheduleSaturday';
+        sub[dbField] = null;
+        await updateDoc(doc(db, 'submissions', pickerSubId), { [dbField]: null });
+        // approved_events-იდანაც წავშალოთ
+        const eventId = pickerField === 'rec' ? `${pickerSubId}_rec` : `${pickerSubId}_sat`;
+        try { await deleteDoc(doc(db, 'approved_events', eventId)); } catch(e) {}
+        closeDatePicker();
+        renderSubmissions();
+    };
+
+    function closeDatePicker() {
+        document.getElementById('datePicker').style.display = 'none';
+        pickerSubId = null;
+        pickerField = null;
+    }
+
+    document.addEventListener('click', function(e) {
+        const picker = document.getElementById('datePicker');
+        if (picker.style.display !== 'none' && !picker.contains(e.target) && !e.target.closest('.td-schedule')) {
+            closeDatePicker();
+        }
+    });
+
+
+    // ── INFO POPUP ──
+    window.openInfoPopup = function(id) {
+        const s = allSubs.find(x => x.id === id);
+        if (!s) return;
+        ipCurrentId = id;
+        ipEditMode = false;
+        document.getElementById('ipEditBtn').textContent = '✎ EDIT';
+
+        const date = s.createdAt?.toDate
+            ? s.createdAt.toDate().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})
+            : '—';
+
+        document.getElementById('ip-artist').textContent = s.artist || '—';
+        document.getElementById('ip-date').textContent   = date;
+        document.getElementById('ip-phone').textContent  = s.phone  || '—';
+        document.getElementById('ip-genre-badge').textContent = s.genre || '';
+        document.getElementById('ip-genre-badge').style.display = s.genre ? 'inline-block' : 'none';
+        const bioEl = document.getElementById('ip-bio');
+        const bioToggle = document.getElementById('bio-toggle');
+        bioEl.classList.remove('expanded');
+        bioEl.textContent = s.message || '—';
+        // შემდეგ frame-ზე ვამოწმებთ truncate-ია თუ არა
+        requestAnimationFrame(() => {
+            if (bioEl.scrollHeight > bioEl.clientHeight + 2) {
+                bioToggle.style.display = 'block';
+                bioToggle.textContent = '▼ MORE';
+            } else {
+                bioToggle.style.display = 'none';
+            }
+        });
+
+        document.getElementById('ip-email').innerHTML  = s.email
+            ? `<a href="mailto:${s.email}">${s.email}</a>` : '<span class="muted">—</span>';
+        document.getElementById('ip-social').innerHTML = s.social
+            ? `<a href="${s.social}" target="_blank">${s.social.includes('instagram')?'INSTAGRAM':s.social.includes('facebook')?'FACEBOOK':s.social.includes('soundcloud')?'SOUNDCLOUD':s.social}</a>`
+            : '<span class="muted">—</span>';
+        document.getElementById('ip-mix').innerHTML    = s.mix_link
+            ? `<a href="${s.mix_link}" target="_blank">LINK ↗</a>` : '<span class="muted">—</span>';
+        document.getElementById('ip-image').innerHTML  = s.customImage
+            ? `<a href="${s.customImage}" target="_blank" style="word-break:break-all">${s.customImage}</a>`
+            : `<span class="muted">${s.scAvatar ? 'SOUNDCLOUD (AUTO)' : '—'}</span>`;
+
+        const st = s.status || 'pending';
+        document.getElementById('ip-status').innerHTML =
+            st === 'approved' ? '<span style="color:#00c864">✓ APPROVED</span>' :
+                st === 'rejected' ? '<span style="color:var(--red)">✕ REJECTED</span>' :
+                    '<span style="color:var(--muted)">PENDING</span>';
+
+        // avatar reset
+        const avatarImg = document.getElementById('ip-avatar');
+        avatarImg.style.display = 'none';
+
+        // SoundCloud avatar
+        if (s.mix_link && s.mix_link.includes('soundcloud.com') || s.mix_link.includes('on.soundcloud.com')) {
+            fetch('https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=' + encodeURIComponent(s.mix_link))
+                .then(r => r.json())
+                .then(d => {
+                    if (d.avatar) {
+                        avatarImg.src = d.avatar;
+                        avatarImg.style.display = 'block';
+                    }
+                }).catch(() => {});
+        }
+
+        document.getElementById('infoPopup').style.display = 'flex';
+        document.getElementById('ip-save-row').style.display = 'none';
+        document.getElementById('ip-status-row').style.display = '';
+        // reset any open inputs
+        ['email','phone','social','mix'].forEach(f => {
+            document.getElementById('ip-' + f).style.display = '';
+            document.getElementById('ip-' + f + '-input').style.display = 'none';
+        });
+        document.getElementById('ip-artist').style.display = '';
+        document.getElementById('ip-artist-input').style.display = 'none';
+        document.getElementById('ip-genre-field').style.display = 'none';
+    };
+
+    let ipEditMode = false;
+    let ipCurrentId = null;
+
+    window.toggleInfoEdit = function() {
+        ipEditMode ? cancelInfoEdit() : enterInfoEdit();
+    };
+
+    function enterInfoEdit() {
+        ipEditMode = true;
+        const s = allSubs.find(x => x.id === ipCurrentId);
+        if (!s) return;
+
+        // artist
+        document.getElementById('ip-artist').style.display = 'none';
+        const artistInput = document.getElementById('ip-artist-input');
+        artistInput.value = s.artist || '';
+        artistInput.style.display = 'block';
+
+        // genre badge → input
+        document.getElementById('ip-genre-badge').style.display = 'none';
+        const genreField = document.getElementById('ip-genre-field');
+        genreField.style.display = 'block';
+        document.getElementById('ip-genre-input').value = s.genre || '';
+
+        // fields
+        const fields = ['email','phone','social','mix'];
+        const keys   = ['email','phone','social','mix_link'];
+        fields.forEach((f, i) => {
+            document.getElementById('ip-' + f).style.display = 'none';
+            const inp = document.getElementById('ip-' + f + '-input');
+            inp.value = s[keys[i]] || '';
+            inp.style.display = 'block';
+        });
+
+        // image
+        document.getElementById('ip-image').style.display = 'none';
+        const imageInput = document.getElementById('ip-image-input');
+        imageInput.value = s.customImage || '';
+        imageInput.style.display = 'block';
+
+        document.getElementById('ip-save-row').style.display = 'flex';
+        document.getElementById('ip-status-row').style.display = 'none';
+        document.getElementById('ipEditBtn').textContent = '✕ CANCEL';
+    }
+
+    window.cancelInfoEdit = function() {
+        ipEditMode = false;
+        // restore view
+        document.getElementById('ip-artist').style.display = '';
+        document.getElementById('ip-artist-input').style.display = 'none';
+        document.getElementById('ip-genre-field').style.display = 'none';
+        const s = allSubs.find(x => x.id === ipCurrentId);
+        document.getElementById('ip-genre-badge').style.display = s?.genre ? 'inline-block' : 'none';
+
+        ['email','phone','social','mix'].forEach(f => {
+            document.getElementById('ip-' + f).style.display = '';
+            document.getElementById('ip-' + f + '-input').style.display = 'none';
+        });
+
+        document.getElementById('ip-image').style.display = '';
+        document.getElementById('ip-image-input').style.display = 'none';
+
+        document.getElementById('ip-save-row').style.display = 'none';
+        document.getElementById('ip-status-row').style.display = '';
+        document.getElementById('ipEditBtn').textContent = '✎ EDIT';
+    };
+
+    window.saveInfoEdit = async function() {
+        const s = allSubs.find(x => x.id === ipCurrentId);
+        if (!s) return;
+
+        const customImage = document.getElementById('ip-image-input').value.trim();
+
+        const updates = {
+            artist:      document.getElementById('ip-artist-input').value.trim(),
+            genre:       document.getElementById('ip-genre-input').value.trim(),
+            email:       document.getElementById('ip-email-input').value.trim(),
+            phone:       document.getElementById('ip-phone-input').value.trim(),
+            social:      document.getElementById('ip-social-input').value.trim(),
+            mix_link:    document.getElementById('ip-mix-input').value.trim(),
+            customImage: customImage || null,
+        };
+
+        // save to Firestore
+        await updateDoc(doc(db, 'submissions', ipCurrentId), updates);
+
+        // update local array
+        Object.assign(s, updates);
+
+        // პრიორიტეტი: customImage → scAvatar → default
+        const resolvedImage = customImage || s.scAvatar || 'assets/tk.jpg';
+
+        // approved_events-შიც განახლება თუ არსებობს
+        for (const suffix of ['_rec', '_sat']) {
+            const eventId = ipCurrentId + suffix;
+            try {
+                const snap = await getDoc(doc(db, 'approved_events', eventId));
+                if (snap.exists()) {
+                    await updateDoc(doc(db, 'approved_events', eventId), {
+                        artist: updates.artist,
+                        image:  resolvedImage,
+                    });
+                }
+            } catch(e) {}
+        }
+
+        // exit edit mode and re-open to refresh view
+        ipEditMode = false;
+        document.getElementById('ipEditBtn').textContent = '✎ EDIT';
+        openInfoPopup(ipCurrentId);
+        renderSubmissions();
+    };
+
+    window.closeInfoPopup = function() {
+        document.getElementById('infoPopup').style.display = 'none';
+    };
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeInfoPopup();
+    });
+
+
+    function formatSchedDate(val) {
+        if (!val) return '—';
+        const d = new Date(val);
+        if (isNaN(d)) return val.replace('T',' ');
+        return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})
+            + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+    }
+
+
+    // ── DROPDOWN ──
+    window.toggleDropdown = function(id, btnEl) {
+        const wrap = document.getElementById('dd-' + id);
+        const isOpen = wrap.classList.contains('open');
+        closeAllDropdowns();
+        if (!isOpen) {
+            const menu = wrap.querySelector('.dd-menu');
+            const rect = btnEl.getBoundingClientRect();
+            menu.style.top  = (rect.bottom + 4) + 'px';
+            menu.style.left = (rect.right - 120) + 'px';
+            wrap.classList.add('open');
+        }
+    };
+
+    window.closeAllDropdowns = function() {
+        document.querySelectorAll('.dd-wrap.open').forEach(el => el.classList.remove('open'));
+    };
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dd-wrap')) closeAllDropdowns();
+    });
+
+
+    // ── CONFIRM POPUP ──
+    let confirmCallback = null;
+
+    window.askConfirm = function(actionType, label, callback) {
+        confirmCallback = callback;
+        const text = document.getElementById('confirmActionText');
+        const btn  = document.getElementById('confirmYesBtn');
+        text.textContent = label;
+        btn.className = 'confirm-yes ' + actionType;
+        document.getElementById('confirmPopup').style.display = 'flex';
+    };
+
+    window.confirmExecute = function() {
+        if (confirmCallback) confirmCallback();
+        closeConfirm();
+    };
+
+    window.closeConfirm = function() {
+        document.getElementById('confirmPopup').style.display = 'none';
+        confirmCallback = null;
+    };
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { closeConfirm(); closeInfoPopup(); }
+    });
+
+
+    window.tryOpenPicker = function(id, field, tdEl) {
+        const s = allSubs.find(x => x.id === id);
+        if (!s || s.status !== 'approved') return;
+        openDatePicker(id, field, tdEl);
+    };
+
+
+    window.toggleBio = function() {
+        const bio = document.getElementById('ip-bio');
+        const btn = document.getElementById('bio-toggle');
+        bio.classList.toggle('expanded');
+        btn.textContent = bio.classList.contains('expanded') ? '▲ LESS' : '▼ MORE';
+    };
+
 </script>
 
+
+<!-- INLINE DATE PICKER -->
+<div id="datePicker" style="display:none">
+    <div class="picker-label" id="pickerLabel"></div>
+    <input type="datetime-local" id="pickerInput">
+    <div class="picker-btns">
+        <button class="picker-save" onclick="saveDatePicker()">SAVE ✓</button>
+        <button class="picker-clear" onclick="clearDatePicker()">CLEAR</button>
+    </div>
+</div>
+
+<!-- INFO POPUP -->
+<div id="infoPopup" style="display:none" onclick="if(event.target===this)closeInfoPopup()">
+    <div id="infoPopupBox" style="position:relative">
+        <button class="info-close" onclick="closeInfoPopup()">✕</button>
+        <button class="ip-edit-btn" id="ipEditBtn" onclick="toggleInfoEdit()">✎ EDIT</button>
+        <div style="display:flex;align-items:center;gap:14px;padding-right:30px">
+            <div class="info-avatar-placeholder" id="ip-avatar-wrap"><img id="ip-avatar" class="info-avatar" style="display:none"></div>
+            <div style="width:100%">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <div class="info-artist-name" id="ip-artist"></div>
+                    <input class="ip-artist-input" id="ip-artist-input" style="display:none" placeholder="ARTIST NAME">
+                    <span class="sub-genre" id="ip-genre-badge"></span>
+                </div>
+            </div>
+        </div>
+        <div class="info-date" id="ip-date" style="margin-top:6px"></div>
+        <div class="info-divider"></div>
+        <div class="info-grid">
+            <div class="info-field">
+                <div class="info-label">EMAIL</div>
+                <div class="info-val" id="ip-email"></div>
+                <input class="ip-input" id="ip-email-input" style="display:none" placeholder="email@example.com">
+            </div>
+            <div class="info-field">
+                <div class="info-label">PHONE</div>
+                <div class="info-val" id="ip-phone"></div>
+                <input class="ip-input" id="ip-phone-input" style="display:none" placeholder="+995...">
+            </div>
+            <div class="info-field">
+                <div class="info-label">SOCIAL</div>
+                <div class="info-val" id="ip-social"></div>
+                <input class="ip-input" id="ip-social-input" style="display:none" placeholder="https://...">
+            </div>
+            <div class="info-field">
+                <div class="info-label">MIX LINK</div>
+                <div class="info-val" id="ip-mix"></div>
+                <input class="ip-input" id="ip-mix-input" style="display:none" placeholder="https://soundcloud.com/...">
+            </div>
+            <div class="info-field">
+                <div class="info-label">IMAGE URL</div>
+                <div class="info-val" id="ip-image"></div>
+                <input class="ip-input" id="ip-image-input" style="display:none" placeholder="https://...">
+            </div>
+            <div class="info-field">
+                <div class="info-label">GENRE</div>
+                <div style="display:none" id="ip-genre-field">
+                    <input class="ip-input" id="ip-genre-input" placeholder="e.g. TECHNO">
+                </div>
+            </div>
+            <div class="info-field full">
+                <div class="info-label">BIO</div>
+                <div class="info-bio" id="ip-bio" onclick="toggleBio()"></div>
+                <div class="bio-toggle" id="bio-toggle" onclick="toggleBio()">▼ MORE</div>
+            </div>
+        </div>
+        <div id="ip-save-row" class="ip-save-row" style="display:none">
+            <button class="ip-save-btn" onclick="saveInfoEdit()">✓ SAVE</button>
+            <button class="ip-cancel-btn" onclick="cancelInfoEdit()">CANCEL</button>
+        </div>
+        <div id="ip-status-row" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
+            <div class="info-val" id="ip-status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRM POPUP -->
+<div id="confirmPopup" style="display:none" onclick="if(event.target===this)closeConfirm()">
+    <div id="confirmBox">
+        <span class="confirm-icon"><i class="bi bi-exclamation-triangle"></i></span>
+        <div class="confirm-title">ARE YOU SURE?</div>
+        <div class="confirm-action" id="confirmActionText"></div>
+        <div class="confirm-btns">
+            <button class="confirm-yes" id="confirmYesBtn" onclick="confirmExecute()">YES</button>
+            <button class="confirm-no" onclick="closeConfirm()">CANCEL</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
