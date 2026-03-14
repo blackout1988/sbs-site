@@ -556,18 +556,31 @@
             width: 240px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.6);
         }
-        #datePicker input[type="datetime-local"] {
-            width: 100%;
+        .picker-inputs {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 2px;
+        }
+        .picker-part {
+            width: 32px;
             background: transparent;
             border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 6px;
+            border-radius: 4px;
             color: #fff;
             font-family: 'Doto', monospace;
-            font-size: 10px;
-            padding: 8px 10px;
+            font-size: 11px;
+            padding: 6px 4px;
+            text-align: center;
             outline: none;
-            color-scheme: dark;
-            margin-bottom: 10px;
+        }
+        .picker-part--time { border-color: rgba(255,255,255,0.08); }
+        .picker-part:focus { border-color: rgba(255,255,255,0.40); }
+        .picker-sep {
+            color: rgba(255,255,255,0.30);
+            font-family: 'Doto', monospace;
+            font-size: 11px;
+            margin: 0 2px;
         }
         #datePicker input[type="datetime-local"]:focus {
             border-color: rgba(255,255,255,0.35);
@@ -1349,10 +1362,10 @@
                 <td class="td-artist" onclick="event.stopPropagation();openInfoPopup('${s.id}');setTimeout(()=>markRead('${s.id}'),100)">${isUnread ? '<span class="unread-dot"></span>' : ''}${s.artist||'—'}</td>
                 <td>${s.genre ? `<span class="sub-genre">${s.genre}</span>` : '—'}</td>
                 <td class="td-schedule" onclick="event.stopPropagation();tryOpenPicker('${s.id}','rec',this)">
-                    <span class="sched-val ${s.scheduleRecording ? '' : 'sched-empty'}" style="${s.status==='rejected'?'color:rgba(254,0,0,0.4);cursor:default':s.status==='approved'?'color:rgba(0,200,100,0.7)':''}">${s.scheduleRecording ? formatSchedDate(s.scheduleRecording) : '—— —— ——  ——:——'}</span>
+                    <span class="sched-val ${s.scheduleRecording ? '' : 'sched-empty'}" style="${s.status==='rejected'?'color:rgba(254,0,0,0.4);cursor:default':s.status==='approved'?'color:rgba(0,200,100,0.7)':''}">${s.scheduleRecording ? formatSchedDate(s.scheduleRecording) : '—— ——  ——:——'}</span>
                 </td>
                 <td class="td-schedule" onclick="event.stopPropagation();tryOpenPicker('${s.id}','sat',this)">
-                    <span class="sched-val ${s.scheduleSaturday ? '' : 'sched-empty'}" style="${s.status==='rejected'?'color:rgba(254,0,0,0.4);cursor:default':s.status==='approved'?'color:rgba(0,200,100,0.7)':''}">${s.scheduleSaturday ? formatSchedDate(s.scheduleSaturday) : '—— —— ——  ——:——'}</span>
+                    <span class="sched-val ${s.scheduleSaturday ? '' : 'sched-empty'}" style="${s.status==='rejected'?'color:rgba(254,0,0,0.4);cursor:default':s.status==='approved'?'color:rgba(0,200,100,0.7)':''}">${s.scheduleSaturday ? formatSchedDate(s.scheduleSaturday) : '—— ——  ——:——'}</span>
                 </td>
                 <td onclick="event.stopPropagation()" style="text-align:center">
                     <button
@@ -1507,29 +1520,22 @@
         const sub = allSubs.find(s => s.id === modalId);
         if (!sub) return;
         sub.status = 'rejected';
-        try {
-            await updateDoc(doc(db, 'submissions', modalId), { status: 'rejected' });
-        } catch(e) { console.error(e); }
+        try { await updateDoc(doc(db, 'submissions', modalId), { status: 'rejected' }); } catch(e) { console.error(e); }
 
-        // Email / SMS
-        const sendEmail = sub.notifyEnabled !== false;
-        const sendSms   = sub.notifyEnabled !== false;
-        const htmlContent = `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:#FE0000;margin-bottom:8px;">✕ NOT SELECTED</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div><div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.</div><div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
-        try {
-            if (sendEmail) {
-                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" }, to: [{ email: sub.email, name: sub.artist }], subject: "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY", htmlContent })
-                });
+        if (sub.notifyEnabled !== false) {
+            const WORKER = 'https://calm-term-88ec.gogadididze1988.workers.dev';
+            const htmlContent = `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:#FE0000;margin-bottom:8px;">&#x2715; NOT SELECTED</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div><div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.</div><div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE &#x2014; TBILISI, GEORGIA</div></div>`;
+            if (sub.email) {
+                try { await fetch(WORKER, { method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ sender:{name:'7TH BLOCK SOCIETY',email:'info@7bs.ge'}, to:[{email:sub.email,name:sub.artist}], subject:'YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY', htmlContent }) });
+                } catch(e) { console.error('[SBS] Email error:', e); }
             }
-            if (sendSms) {
-                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sms: true, phone: sub.phone, smsText: `DEAR ${sub.artist}
-WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
-                });
+            if (sub.phone) {
+                try { await fetch(WORKER, { method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ sms:true, phone:sub.phone, smsText:`DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` }) });
+                } catch(e) { console.error('[SBS] SMS error:', e); }
             }
-        } catch(e) { console.error(e); }
+        }
 
         updateStats();
         renderSubmissions();
@@ -1619,25 +1625,55 @@ WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
             updateStats();
             renderSubmissions();
 
-            // Email / SMS
-            const sendEmail = sub.notifyEnabled !== false;
-            const sendSms   = sub.notifyEnabled !== false;
-            const htmlContent = `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:#00c864;margin-bottom:8px;">✓ ACCEPTED</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div><div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">YOUR MIX SUBMISSION HAS BEEN ACCEPTED.<br><br>OUR REPRESENTATIVE WILL CONTACT YOU ON YOUR PROVIDED PHONE NUMBER — <span style="color:#ffffff;">${sub.phone}</span> — TO DISCUSS FURTHER DETAILS.</div><div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
-            try {
-                if (sendEmail) {
-                    await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                        method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" }, to: [{ email: sub.email, name: sub.artist }], subject: "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY", htmlContent })
-                    });
-                }
-                if (sendSms) {
-                    await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                        method: "POST", headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ sms: true, phone: sub.phone, smsText: `DEAR ${sub.artist}
-YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.` })
-                    });
-                }
-            } catch(e) { console.error(e); }
+            // ── RECORD DATE SMS/Email ──
+            const sendEmail = document.getElementById('chkSendEmail')?.checked !== false;
+            const sendSms   = document.getElementById('chkSendSms')?.checked !== false;
+            const WORKER    = 'https://calm-term-88ec.gogadididze1988.workers.dev';
+            const MAPS_URL  = 'https://maps.google.com/?q=Ana+Politkovskaya+St+3/28,+Tbilisi,+Georgia';
+
+            function formatDT(dtStr) {
+                if (!dtStr) return null;
+                const d = new Date(dtStr);
+                const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+                const mons = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+                return `${days[d.getDay()]}, ${mons[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()} — ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            }
+
+            function sbsEmailHtml(artist, title, color, bodyHtml) {
+                return `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:${color};margin-bottom:8px;">${title}</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${artist}</div>${bodyHtml}<div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
+            }
+
+            async function sendNotify(emailHtml, subject, smsText) {
+                try {
+                    if (sendEmail) await fetch(WORKER, { method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ sender:{name:'7TH BLOCK SOCIETY',email:'info@7bs.ge'}, to:[{email:sub.email,name:sub.artist}], subject, htmlContent:emailHtml }) });
+                    if (sendSms)   await fetch(WORKER, { method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ sms:true, phone:sub.phone, smsText }) });
+                } catch(e) { console.error(e); }
+            }
+
+            const recStr = formatDT(recording);
+            const satStr = formatDT(saturday);
+
+            // RECORD DATE შეტყობინება
+            if (recording && recStr) {
+                const recBody = `<div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:20px;">YOUR RECORDING SESSION HAS BEEN SCHEDULED.</div><div style="background:rgba(254,0,0,0.06);border:1px solid rgba(254,0,0,0.20);border-radius:8px;padding:20px 24px;margin-bottom:24px;"><div style="font-size:9px;letter-spacing:2px;color:#FE0000;margin-bottom:10px;">🎙 RECORDING DATE</div><div style="font-size:13px;letter-spacing:1.5px;color:#fff;margin-bottom:12px;">${recStr}</div><div style="font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.50);margin-bottom:14px;">📍 Ana Politkovskaya St. 3/28, Tbilisi</div><a href="${MAPS_URL}" style="display:inline-block;padding:10px 20px;background:#FE0000;color:#fff;text-decoration:none;font-family:monospace;font-size:10px;letter-spacing:2px;border-radius:6px;">📍 OPEN IN GOOGLE MAPS</a></div>`;
+                await sendNotify(
+                    sbsEmailHtml(sub.artist, '🎙 RECORDING SCHEDULED', '#FE0000', recBody),
+                    'YOUR RECORDING SESSION — 7TH BLOCK SOCIETY',
+                    `DEAR ${sub.artist}, YOUR RECORDING: ${recStr}. ADDRESS: Ana Politkovskaya St. 3/28, Tbilisi`
+                );
+            }
+
+            // RELEASE DATE შეტყობინება
+            if (saturday && satStr) {
+                const satBody = `<div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:20px;">YOUR PODCAST RELEASE DATE HAS BEEN SET.</div><div style="background:rgba(0,200,100,0.06);border:1px solid rgba(0,200,100,0.20);border-radius:8px;padding:20px 24px;margin-bottom:24px;"><div style="font-size:9px;letter-spacing:2px;color:#00c864;margin-bottom:10px;">📅 RELEASE DATE</div><div style="font-size:13px;letter-spacing:1.5px;color:#fff;">${satStr}</div></div>`;
+                await sendNotify(
+                    sbsEmailHtml(sub.artist, '📅 PODCAST RELEASE DATE', '#00c864', satBody),
+                    'YOUR PODCAST RELEASE DATE — 7TH BLOCK SOCIETY',
+                    `DEAR ${sub.artist}\nYOUR PODCAST RELEASE DATE HAS BEEN SET.\nDATE: ${satStr}`
+                );
+            }
 
             closeModal();
         } catch(e) { console.error('Save error:', e); }
@@ -1671,6 +1707,9 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
     window.deleteSubmission = async function(id) {
         if (!confirm("წაშლა დარწმუნებული ხარ?")) return;
         await deleteDoc(doc(db, "submissions", id));
+        // კალენდარიდანაც წავშალოთ
+        try { await deleteDoc(doc(db, "approved_events", id + "_rec")); } catch(e) {}
+        try { await deleteDoc(doc(db, "approved_events", id + "_sat")); } catch(e) {}
         allSubs = allSubs.filter(s => s.id !== id);
         updateStats();
         renderSubmissions();
@@ -1679,67 +1718,50 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
     window.updateStatus = async function(id, status) {
         const sub = allSubs.find(s => s.id === id);
         if (!sub) return;
+        const prevStatus = sub.status;
         sub.status = status;
         sub.read = true;
         await updateDoc(doc(db, "submissions", id), { status, read: true });
 
-        const isApproved = status === "approved";
-        const htmlContent = `
-<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;">
-  <div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;">
-    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
-    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">B</div>
-    <div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div>
-  </div>
-  <div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div>
-  <div style="font-size:22px;letter-spacing:3px;color:${isApproved ? '#00c864' : '#FE0000'};margin-bottom:8px;">${isApproved ? '✓ ACCEPTED' : '✕ NOT SELECTED'}</div>
-  <div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div>
-  <div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div>
-  <div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">
-    ${isApproved
-            ? `YOUR MIX SUBMISSION HAS BEEN ACCEPTED.<br><br>OUR REPRESENTATIVE WILL CONTACT YOU ON YOUR PROVIDED PHONE NUMBER — <span style="color:#ffffff;">${sub.phone}</span> — TO DISCUSS FURTHER DETAILS.`
-            : `THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.`
+        // PENDING — არაფერი არ გაეგზავნოს
+        if (status === "pending") {
+            updateStats();
+            renderSubmissions();
+            return;
         }
-  </div>
-  <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div>
-</div>`;
 
-        try {
-            const sendEmail = sub.notifyEnabled !== false;
-            const sendSms   = sub.notifyEnabled !== false;
+        // APPROVED ან REJECTED — შეტყობინება
+        const isApproved = status === "approved";
+        const notify     = sub.notifyEnabled !== false;
+        if (!notify) { updateStats(); renderSubmissions(); return; }
 
-            // Email გაგზავნა
-            if (sendEmail) {
-                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        sender: { name: "7TH BLOCK SOCIETY", email: "info@7bs.ge" },
-                        to: [{ email: sub.email, name: sub.artist }],
-                        subject: isApproved ? "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY" : "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY",
-                        htmlContent
-                    })
-                });
-            }
+        const WORKER = "https://calm-term-88ec.gogadididze1988.workers.dev";
 
-            // SMS გაგზავნა
-            if (sendSms) {
-                const smsText = isApproved
-                    ? `DEAR ${sub.artist}\nYOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.`
-                    : `DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.`;
+        const htmlContent = `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;font-family:'Courier New',monospace;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:${isApproved ? '#00c864' : '#FE0000'};margin-bottom:8px;">${isApproved ? '✓ ACCEPTED' : '✕ NOT SELECTED'}</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${sub.artist}</div><div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:24px;">${isApproved ? `YOUR MIX SUBMISSION HAS BEEN ACCEPTED.<br><br>OUR REPRESENTATIVE WILL CONTACT YOU ON YOUR PROVIDED PHONE NUMBER — <span style="color:#ffffff;">${sub.phone}</span> — TO DISCUSS FURTHER DETAILS.` : `THANK YOU FOR SUBMITTING YOUR MIX.<br><br>AFTER CAREFUL CONSIDERATION, WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.<br><br>WE ENCOURAGE YOU TO KEEP CREATING AND SUBMIT AGAIN IN THE FUTURE.`}</div><div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
 
-                await fetch("https://calm-term-88ec.gogadididze1988.workers.dev", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        sms: true,
-                        phone: sub.phone,
-                        smsText
-                    })
-                });
-            }
-        } catch(e) {
-            console.error("Error:", e);
+        const subject  = isApproved ? "YOUR MIX HAS BEEN ACCEPTED — 7TH BLOCK SOCIETY" : "YOUR MIX SUBMISSION — 7TH BLOCK SOCIETY";
+        const smsText  = isApproved
+            ? `DEAR ${sub.artist}\nYOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.`
+            : `DEAR ${sub.artist}\nWE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.`;
+
+        // Email — ცალკე try/catch
+        if (sub.email) {
+            try {
+                const r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"},
+                    body: JSON.stringify({ sender:{name:"7TH BLOCK SOCIETY",email:"info@7bs.ge"}, to:[{email:sub.email,name:sub.artist}], subject, htmlContent }) });
+                if (!r.ok) console.warn("[SBS] Email failed:", r.status, await r.text());
+            } catch(e) { console.error("[SBS] Email error:", e); }
+        }
+
+        // SMS — ცალკე try/catch
+        if (sub.phone) {
+            try {
+                const r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"},
+                    body: JSON.stringify({ sms:true, phone:sub.phone, smsText }) });
+                if (!r.ok) console.warn("[SBS] SMS failed:", r.status, await r.text());
+            } catch(e) { console.error("[SBS] SMS error:", e); }
+        } else {
+            console.warn("[SBS] SMS skipped — no phone:", sub.artist);
         }
 
         updateStats();
@@ -1753,14 +1775,35 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
     window.openDatePicker = function(id, field, tdEl) {
         pickerSubId = id;
         pickerField = field;
-        const sub = allSubs.find(x => x.id === id);
+        const sub   = allSubs.find(x => x.id === id);
         const label = document.getElementById('pickerLabel');
-        const input = document.getElementById('pickerInput');
         const picker = document.getElementById('datePicker');
 
         label.textContent = field === 'rec' ? 'RECORD DATE' : 'RELEASE DATE';
-        label.className = 'picker-label ' + field;
-        input.value = field === 'rec' ? (sub.scheduleRecording || '') : (sub.scheduleSaturday || '');
+        label.className   = 'picker-label ' + field;
+
+        // არსებული მნიშვნელობის parse
+        const existing = field === 'rec' ? (sub.scheduleRecording || '') : (sub.scheduleSaturday || '');
+        if (existing) {
+            const d = new Date(existing);
+            document.getElementById('pickerMM').value  = String(d.getMonth() + 1).padStart(2, '0');
+            document.getElementById('pickerDD').value  = String(d.getDate()).padStart(2, '0');
+            document.getElementById('pickerHH').value  = String(d.getHours()).padStart(2, '0');
+            document.getElementById('pickerMin').value = String(d.getMinutes()).padStart(2, '0');
+        } else {
+            document.getElementById('pickerMM').value  = '';
+            document.getElementById('pickerDD').value  = '';
+            document.getElementById('pickerHH').value  = '';
+            document.getElementById('pickerMin').value = '';
+        }
+
+        // auto-advance focus
+        ['pickerMM','pickerDD','pickerHH'].forEach((cur, i) => {
+            const next = ['pickerDD','pickerHH','pickerMin'][i];
+            document.getElementById(cur).oninput = function() {
+                if (this.value.length === 2) document.getElementById(next).focus();
+            };
+        });
 
         // Fetch SC avatar in background if not cached yet
         if (!sub.scAvatar && sub.mix_link && (sub.mix_link.includes('soundcloud.com') || sub.mix_link.includes('on.soundcloud.com'))) {
@@ -1781,14 +1824,27 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
         picker.style.left = left + 'px';
         picker.style.top  = top  + 'px';
 
-        input.focus();
+        document.getElementById('pickerMM').focus();
     };
 
     window.saveDatePicker = async function() {
-        const val = document.getElementById('pickerInput').value;
-        if (!val) return;
+        const mm  = document.getElementById('pickerMM').value.trim();
+        const dd  = document.getElementById('pickerDD').value.trim();
+        const hh  = document.getElementById('pickerHH').value.trim();
+        const min = document.getElementById('pickerMin').value.trim();
+        if (!mm || !dd || !hh || !min) return;
+
+        const year = new Date().getFullYear();
+        const val  = `${year}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}T${hh.padStart(2,'0')}:${min.padStart(2,'0')}:00`;
+        // Date parts ცალ-ცალკე — timezone shift-ის გარეშე
+        const dtYear  = year;
+        const dtMonth = parseInt(mm);
+        const dtDay   = parseInt(dd);
+        const dtHour  = parseInt(hh);
+        const dtMin   = parseInt(min);
         const sub = allSubs.find(x => x.id === pickerSubId);
-        const dbField = pickerField === 'rec' ? 'scheduleRecording' : 'scheduleSaturday';
+        const dbField   = pickerField === 'rec' ? 'scheduleRecording' : 'scheduleSaturday';
+        const prevValue = sub[dbField];
         sub[dbField] = val;
         await updateDoc(doc(db, 'submissions', pickerSubId), { [dbField]: val });
 
@@ -1796,12 +1852,12 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
         if (sub.status === 'approved') {
             const dt = new Date(val);
             const eventType = pickerField === 'rec' ? 'RECORDING' : 'PODCAST';
-            const eventId = `${pickerSubId}_${pickerField}`;
+            const eventId   = `${pickerSubId}_${pickerField}`;
             await setDoc(doc(db, 'approved_events', eventId), {
-                year:   dt.getFullYear(),
-                month:  dt.getMonth() + 1,
-                day:    dt.getDate(),
-                time:   `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`,
+                year:   dtYear,
+                month:  dtMonth,
+                day:    dtDay,
+                time:   `${String(dtHour).padStart(2,'0')}:${String(dtMin).padStart(2,'0')}`,
                 artist: sub.artist || '',
                 type:   eventType,
                 event:  '7TH BLOCK SOCIETY',
@@ -1809,6 +1865,60 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
                 image:  sub.scAvatar || 'assets/tk.jpg',
                 youtube: '',
             });
+
+            // ── SMS / Email შეტყობინება ──
+            if (sub.notifyEnabled !== false) {
+                const WORKER   = 'https://calm-term-88ec.gogadididze1988.workers.dev';
+                const MAPS_URL = 'https://maps.google.com/?q=Ana+Politkovskaya+St+3/28,+Tbilisi,+Georgia';
+
+                function formatDT() {
+                    const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+                    const mons = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+                    const dayName = days[new Date(dtYear, dtMonth-1, dtDay).getDay()];
+                    return `${dayName}, ${mons[dtMonth-1]} ${dtDay}, ${dtYear} — ${String(dtHour).padStart(2,'0')}:${String(dtMin).padStart(2,'0')}`;
+                }
+
+                function sbsEmailHtml(artist, title, color, bodyHtml) {
+                    return `<div style="background:#07070a;padding:48px 40px;font-family:'Courier New',monospace;max-width:600px;margin:0 auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;"><div style="display:flex;gap:8px;margin-bottom:32px;justify-content:center;"><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">B</div><div style="width:52px;height:52px;border:2px solid #FE0000;display:flex;align-items:center;justify-content:center;color:#FE0000;font-size:20px;font-weight:700;">S</div></div><div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.40);margin-bottom:32px;">7TH BLOCK SOCIETY</div><div style="font-size:22px;letter-spacing:3px;color:${color};margin-bottom:8px;">${title}</div><div style="width:40px;height:2px;background:#FE0000;margin-bottom:32px;"></div><div style="font-size:13px;letter-spacing:2px;color:#ffffff;margin-bottom:16px;">${artist}</div>${bodyHtml}<div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.25);">7BS.GE — TBILISI, GEORGIA</div></div>`;
+                }
+
+                async function sendNotify(emailHtml, subject, smsText) {
+                    if (sub.email) {
+                        try {
+                            await fetch(WORKER, { method:'POST', headers:{'Content-Type':'application/json'},
+                                body: JSON.stringify({ sender:{name:'7TH BLOCK SOCIETY',email:'info@7bs.ge'}, to:[{email:sub.email,name:sub.artist}], subject, htmlContent:emailHtml }) });
+                        } catch(e) { console.error('[SBS] Email error:', e); }
+                    }
+                    if (sub.phone) {
+                        try {
+                            await fetch(WORKER, { method:'POST', headers:{'Content-Type':'application/json'},
+                                body: JSON.stringify({ sms:true, phone:sub.phone, smsText }) });
+                        } catch(e) { console.error('[SBS] SMS error:', e); }
+                    }
+                }
+
+                const dtStr = formatDT();
+
+                // Rule 6: RECORD DATE დაემატა/შეიცვალა
+                if (pickerField === 'rec') {
+                    const recBody = `<div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:20px;">YOUR RECORDING SESSION HAS BEEN SCHEDULED.</div><div style="background:rgba(254,0,0,0.06);border:1px solid rgba(254,0,0,0.20);border-radius:8px;padding:20px 24px;margin-bottom:24px;"><div style="font-size:9px;letter-spacing:2px;color:#FE0000;margin-bottom:10px;">🎙 RECORDING DATE</div><div style="font-size:13px;letter-spacing:1.5px;color:#fff;margin-bottom:12px;">${dtStr}</div><div style="font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.50);margin-bottom:14px;">📍 Ana Politkovskaya St. 3/28, Tbilisi</div><a href="${MAPS_URL}" style="display:inline-block;padding:10px 20px;background:#FE0000;color:#fff;text-decoration:none;font-family:monospace;font-size:10px;letter-spacing:2px;border-radius:6px;">📍 OPEN IN GOOGLE MAPS</a></div>`;
+                    await sendNotify(
+                        sbsEmailHtml(sub.artist, '🎙 RECORDING SCHEDULED', '#FE0000', recBody),
+                        'YOUR RECORDING SESSION — 7TH BLOCK SOCIETY',
+                        `DEAR ${sub.artist}\nYOUR RECORDING: ${dtStr}\nADDRESS: Ana Politkovskaya St. 3/28, Tbilisi`
+                    );
+                }
+
+                // Rule 7: RELEASE DATE დაემატა — მხოლოდ თუ RECORD DATE უკვე გაწერილია
+                if (pickerField === 'sat' && sub.scheduleRecording) {
+                    const satBody = `<div style="font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.50);line-height:2;margin-bottom:20px;">YOUR PODCAST RELEASE DATE HAS BEEN SET.</div><div style="background:rgba(0,200,100,0.06);border:1px solid rgba(0,200,100,0.20);border-radius:8px;padding:20px 24px;margin-bottom:24px;"><div style="font-size:9px;letter-spacing:2px;color:#00c864;margin-bottom:10px;">📅 RELEASE DATE</div><div style="font-size:13px;letter-spacing:1.5px;color:#fff;">${dtStr}</div></div>`;
+                    await sendNotify(
+                        sbsEmailHtml(sub.artist, '📅 PODCAST RELEASE DATE', '#00c864', satBody),
+                        'YOUR PODCAST RELEASE DATE — 7TH BLOCK SOCIETY',
+                        `DEAR ${sub.artist}\nYOUR PODCAST RELEASE DATE: ${dtStr}`
+                    );
+                }
+            }
         }
 
         closeDatePicker();
@@ -1829,6 +1939,9 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
 
     function closeDatePicker() {
         document.getElementById('datePicker').style.display = 'none';
+        ['pickerMM','pickerDD','pickerHH','pickerMin'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
         pickerSubId = null;
         pickerField = null;
     }
@@ -2058,8 +2171,8 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
         if (!val) return '—';
         const d = new Date(val);
         if (isNaN(d)) return val.replace('T',' ');
-        return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})
-            + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+        return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short'})
+            + '  ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
     }
 
 
@@ -2133,7 +2246,15 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
 <!-- INLINE DATE PICKER -->
 <div id="datePicker" style="display:none">
     <div class="picker-label" id="pickerLabel"></div>
-    <input type="datetime-local" id="pickerInput">
+    <div class="picker-inputs">
+        <input class="picker-part" id="pickerMM" type="text" maxlength="2" placeholder="MM" inputmode="numeric">
+        <span class="picker-sep">/</span>
+        <input class="picker-part" id="pickerDD" type="text" maxlength="2" placeholder="DD" inputmode="numeric">
+        <span class="picker-sep" style="margin:0 6px">—</span>
+        <input class="picker-part picker-part--time" id="pickerHH" type="text" maxlength="2" placeholder="HH" inputmode="numeric">
+        <span class="picker-sep">:</span>
+        <input class="picker-part picker-part--time" id="pickerMin" type="text" maxlength="2" placeholder="MM" inputmode="numeric">
+    </div>
     <div class="picker-btns">
         <button class="picker-save" onclick="saveDatePicker()">SAVE ✓</button>
         <button class="picker-clear" onclick="clearDatePicker()">CLEAR</button>

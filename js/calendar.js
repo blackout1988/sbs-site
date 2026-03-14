@@ -70,11 +70,6 @@ async function fetchGoogleCalendarEvents() {
             youtube: youtubeField || plainDesc.match(/https?:\/\/(?:www\.)?youtube\.com\S+|https?:\/\/youtu\.be\S+/)?.[0] || ""
           };
         });
-    // DEBUG — remove after fixing
-    if (data.items && data.items[0]) {
-
-
-    }
   } catch(err) {
     console.warn("[SBS] Google Calendar fetch failed:", err);
   }
@@ -126,38 +121,34 @@ async function enrichEventsWithAvatars() {
 
   const uniqueIds = [...new Set(allWithSub.map(e => e._subId))];
 
-  const avatarMap = {};
-  await Promise.all(uniqueIds.map(async subId => {
-    try {
-      const res = await fetch(
-          `https://firestore.googleapis.com/v1/projects/sevenblocksociety/databases/(default)/documents/submissions/${subId}`
-      );
-      const data = await res.json();
-      const mixLink = data.fields?.mix_link?.stringValue || "";
-      if (!mixLink || !mixLink.includes("soundcloud.com")) return;
-
-      const r = await fetch(
-          "https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=" + encodeURIComponent(mixLink)
-      );
-      const d = await r.json();
-      if (d.avatar) avatarMap[subId] = d.avatar;
-    } catch(e) {}
-  }));
-
-  // subId → submission data map
+  const avatarMap  = {};
   const subDataMap = {};
+
+  // ერთი Promise.all — submission document მხოლოდ ერთხელ fetch-ს
   await Promise.all(uniqueIds.map(async subId => {
     try {
-      const res = await fetch(
+      const res  = await fetch(
           `https://firestore.googleapis.com/v1/projects/sevenblocksociety/databases/(default)/documents/submissions/${subId}`
       );
       const data = await res.json();
-      const f = data.fields || {};
+      const f    = data.fields || {};
+
+      // social / bio / mix_link
+      const mixLink = f.mix_link?.stringValue || "";
       subDataMap[subId] = {
         social:   f.social?.stringValue   || f.instagram?.stringValue || "",
-        mix_link: f.mix_link?.stringValue  || "",
-        bio:      f.message?.stringValue   || "",
+        mix_link: mixLink,
+        bio:      f.message?.stringValue  || "",
       };
+
+      // SC avatar — ერთი fetch, ერთი document
+      if (mixLink && mixLink.includes("soundcloud.com")) {
+        const r = await fetch(
+            "https://calm-term-88ec.gogadididze1988.workers.dev/sc-avatar?url=" + encodeURIComponent(mixLink)
+        );
+        const d = await r.json();
+        if (d.avatar) avatarMap[subId] = d.avatar;
+      }
     } catch(e) {}
   }));
 
@@ -230,6 +221,12 @@ function formatCountdown(ms) {
   return String(hours).padStart(2,"0") + ":" + String(mins).padStart(2,"0") + ":" + String(secs).padStart(2,"0");
 }
 
+
+function getYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  return m ? m[1] : null;
+}
 
 function getTagHTML(typeStr, isReleased) {
   if (isReleased) {
@@ -422,8 +419,7 @@ async function initCalendar() {
             </div>
           </div>
           ${(() => {
-        const artistKey = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
-        const videoId = isReleased && window.__sbsFullVideoMap && window.__sbsFullVideoMap[artistKey];
+        const videoId = isReleased && getYouTubeId(event.youtube);
         if (videoId) {
           return `<div class="cal-popup__img cal-popup__img--video">
                 <iframe
@@ -505,8 +501,7 @@ async function initCalendar() {
           // countdown გათავდა — სურათი ვიდეოთი შევცვალოთ
           const slide = cdEl.closest(".cal-carousel__slide");
           if (slide) {
-            const artistKey = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
-            const videoId = window.__sbsFullVideoMap && window.__sbsFullVideoMap[artistKey];
+            const videoId = getYouTubeId(event.youtube);
             if (videoId) {
               const imgEl = slide.querySelector(".cal-popup__img");
               if (imgEl) {
@@ -729,8 +724,7 @@ async function initCalendar() {
           </div>
         </div>
         ${(() => {
-      const artistKey = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
-      const videoId = isReleased && window.__sbsFullVideoMap && window.__sbsFullVideoMap[artistKey];
+      const videoId = isReleased && getYouTubeId(event.youtube);
       if (videoId) {
         return `<div class="cal-popup__img cal-popup__img--video">
               <iframe
@@ -788,6 +782,21 @@ async function initCalendar() {
           a.textContent = "▶ WATCH ON YOUTUBE";
           cdEl && cdEl.after(a);
         }
+        // სურათი ვიდეოთი შევცვალოთ
+        const videoId = getYouTubeId(event.youtube);
+        if (videoId) {
+          const imgEl = popup.querySelector(".cal-popup__img");
+          if (imgEl && !imgEl.classList.contains("cal-popup__img--video")) {
+            imgEl.outerHTML = `<div class="cal-popup__img cal-popup__img--video">
+              <iframe
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowfullscreen frameborder="0"
+                style="width:100%;height:100%;border-radius:8px;">
+              </iframe>
+            </div>`;
+          }
+        }
         clearInterval(popupCountdownTimer);
         popupCountdownTimer = null;
         return;
@@ -812,7 +821,6 @@ async function initCalendar() {
       return;
     }
     popup.innerHTML = `
-      ${dotsHTML}
       <div class="cal-popup__inner">
         <div class="cal-popup__info">
           <div class="cal-popup__date doto">${String(day).padStart(2, "0")} ${MONTHS[selectedMonth - 1]}</div>
