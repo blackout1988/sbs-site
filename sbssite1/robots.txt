@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-xsmtpsib-e22f584be96b0f49472d0201054b861b796a286d06216e2a58fbbfe07bfbc069-luRvvYmDqlTirkOD
-842a2e53139a43a4be9332eeb560d020
-
-Sitemap: https://YOUR-DOMAIN.COM/sitemap.xml
