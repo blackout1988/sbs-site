@@ -704,8 +704,7 @@ function init(){
       episodes = cached;
       originalEpisodes = [...episodes].sort((a,b)=> (a.originalIndex||0) - (b.originalIndex||0));
       episodes = [...originalEpisodes];
-      initSortBar();
-      renderEpisodes();
+      initSortBar(); // პირველი და ერთადერთი init — listeners-ი რეგისტრდება
     }
 
     paintVolume();
@@ -720,9 +719,27 @@ function init(){
       episodes = fresh;
       originalEpisodes = [...episodes].sort((a,b)=> (a.originalIndex||0) - (b.originalIndex||0));
       episodes = [...originalEpisodes];
-      initSortBar();
-      renderEpisodes();
+
+      if (!cached || !cached.length) {
+        // cache არ იყო — სრული init
+        initSortBar();
+      } else {
+        // data განახლდა — listeners უკვე გვაქვს, მხოლოდ render
+        const activeBtn = sortBar?.querySelector('.sort__btn.active');
+        const currentSort = activeBtn?.dataset.sort || 'newest';
+        const byDate = (a) => a.date ? new Date(a.date).getTime() : 0;
+        let next = [...originalEpisodes];
+        if (currentSort === 'newest')      next.sort((a,b)=> byDate(b) - byDate(a));
+        else if (currentSort === 'oldest') next.sort((a,b)=> byDate(a) - byDate(b));
+        else if (currentSort === 'artist') next.sort((a,b)=> (a.artist||'').localeCompare(b.artist||''));
+        else if (currentSort === 'top')    next.sort((a,b)=> (b.views||0) - (a.views||0));
+        episodes = next;
+        renderEpisodes();
+      }
       fetchYouTubeViews();
+    } else if (!cached || !cached.length) {
+      // cache-ც არ იყო და fresh-ც ვერ მოვიდა
+      initSortBar();
     }
   });
 }

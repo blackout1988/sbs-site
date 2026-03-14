@@ -2,8 +2,8 @@
    SBS CALENDAR — calendar.js
    ================================ */
 
-const GCAL_API_KEY   = "AIzaSyDMVgrni1f9a9-BURQhTH1YGKlOMMElvyA";
 const GCAL_ID        = "gogadididze1988@gmail.com";
+const GCAL_WORKER    = "https://calm-term-88ec.gogadididze1988.workers.dev";
 
 let SBS_EVENTS = [];
 
@@ -11,7 +11,7 @@ async function fetchGoogleCalendarEvents() {
   const now = new Date();
   const timeMin = new Date(now.getFullYear(), 0, 1).toISOString();
   const timeMax = new Date(now.getFullYear() + 1, 11, 31).toISOString();
-  const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL_ID)}/events?key=${GCAL_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&maxResults=50`;
+  const url = `${GCAL_WORKER}/gcal/events?calendarId=${encodeURIComponent(GCAL_ID)}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&maxResults=50`;
 
   try {
     const res  = await fetch(url);
@@ -246,10 +246,10 @@ function getTagHTML(typeStr, isReleased) {
 
 function getSocialLabel(url) {
   if (!url) return "";
-  if (url.includes("instagram.com"))   return "INSTAGRAM";
-  if (url.includes("soundcloud.com"))  return "SOUNDCLOUD";
-  if (url.includes("facebook.com"))    return "FACEBOOK";
-  if (url.includes("tiktok.com"))      return "TIKTOK";
+  if (url.includes("instagram.com"))  return `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg> INSTAGRAM`;
+  if (url.includes("soundcloud.com")) return `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg> SOUNDCLOUD`;
+  if (url.includes("facebook.com"))   return `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/></svg> FACEBOOK`;
+  if (url.includes("tiktok.com"))     return `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg> TIKTOK`;
   return "LINK";
 }
 
@@ -308,7 +308,7 @@ async function initCalendar() {
     if (selectedMonth > 12) { selectedMonth = 1; selectedYear++; }
   }
 
-  const isMobile = () => window.innerWidth <= 640;
+  const isMobile = () => true;
 
   container.innerHTML = `
     <div class="cal-wrap">
@@ -417,11 +417,27 @@ async function initCalendar() {
             ${isReleased && event.youtube ? `<a class="cal-popup__released doto" href="${event.youtube}" target="_blank">▶ WATCH ON YOUTUBE</a>` : ""}
             ${event.bio ? `<div class="cal-popup__bio">${event.bio}</div>` : ""}
             <div class="cal-popup__links">
-              ${event.mix_link ? `<a class="cal-popup__link doto" href="${event.mix_link}" target="_blank">▶ MIX</a>` : ""}
-              ${event.social   ? `<a class="cal-popup__link doto" href="${event.social}"   target="_blank">${getSocialLabel(event.social)}</a>` : ""}
+              ${event.mix_link ? `<a class="cal-popup__link cal-popup__link--sc doto" href="${event.mix_link}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg> SOUNDCLOUD</a>` : ""}
+              ${event.social   ? `<a class="cal-popup__link cal-popup__link--${event.social.includes('instagram') ? 'ig' : event.social.includes('soundcloud') ? 'sc' : event.social.includes('facebook') ? 'fb' : 'tt'} doto" href="${event.social}" target="_blank">${getSocialLabel(event.social)}</a>` : ""}
             </div>
           </div>
-          ${event.image ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>` : ""}
+          ${(() => {
+        const artistKey = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
+        const videoId = isReleased && window.__sbsFullVideoMap && window.__sbsFullVideoMap[artistKey];
+        if (videoId) {
+          return `<div class="cal-popup__img cal-popup__img--video">
+                <iframe
+                  src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowfullscreen frameborder="0"
+                  style="width:100%;height:100%;border-radius:8px;">
+                </iframe>
+              </div>`;
+        }
+        return event.image
+            ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>`
+            : "";
+      })()}
         </div>
       `;
       track.appendChild(slide);
@@ -482,8 +498,29 @@ async function initCalendar() {
       cdEl.textContent = formatCountdown(remaining);
       const timer = setInterval(() => {
         const r = getEventDateTime(event) - new Date();
-        if (r <= 0) { cdEl.textContent = ""; clearInterval(timer); }
-        else { cdEl.textContent = formatCountdown(r); }
+        if (r <= 0) {
+          cdEl.textContent = "";
+          clearInterval(timer);
+          // countdown გათავდა — სურათი ვიდეოთი შევცვალოთ
+          const slide = cdEl.closest(".cal-carousel__slide");
+          if (slide) {
+            const artistKey = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
+            const videoId = window.__sbsFullVideoMap && window.__sbsFullVideoMap[artistKey];
+            if (videoId) {
+              const imgEl = slide.querySelector(".cal-popup__img");
+              if (imgEl) {
+                imgEl.outerHTML = `<div class="cal-popup__img cal-popup__img--video">
+                  <iframe
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                    allow="autoplay; encrypted-media; fullscreen"
+                    allowfullscreen frameborder="0"
+                    style="width:100%;height:100%;border-radius:8px;">
+                  </iframe>
+                </div>`;
+              }
+            }
+          }
+        } else { cdEl.textContent = formatCountdown(r); }
       }, 1000);
     });
 
@@ -681,11 +718,27 @@ async function initCalendar() {
     }
           ${event.bio ? `<div class="cal-popup__bio">${event.bio}</div>` : ""}
           <div class="cal-popup__links">
-            ${event.mix_link ? `<a class="cal-popup__link doto" href="${event.mix_link}" target="_blank">▶ MIX</a>` : ""}
-            ${event.social   ? `<a class="cal-popup__link doto" href="${event.social}"   target="_blank">${getSocialLabel(event.social)}</a>` : ""}
+            ${event.mix_link ? `<a class="cal-popup__link cal-popup__link--sc doto" href="${event.mix_link}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.017 0-.032.002-.047.004L1 12.224c0-1.784 1.444-3.228 3.228-3.228.225 0 .445.023.658.067C5.484 7.434 7.368 6 9.599 6c2.486 0 4.507 2.016 4.507 4.508 0 .103-.004.205-.01.306A2.745 2.745 0 0 1 16 13.5a2.75 2.75 0 0 1-2.75 2.75H2.898A1.726 1.726 0 0 1 1.175 14.5v-2.275z"/></svg> SOUNDCLOUD</a>` : ""}
+            ${event.social   ? `<a class="cal-popup__link cal-popup__link--${event.social.includes('instagram') ? 'ig' : event.social.includes('soundcloud') ? 'sc' : event.social.includes('facebook') ? 'fb' : 'tt'} doto" href="${event.social}" target="_blank">${getSocialLabel(event.social)}</a>` : ""}
           </div>
         </div>
-        ${event.image ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>` : ""}
+        ${(() => {
+      const artistKey = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
+      const videoId = isReleased && window.__sbsFullVideoMap && window.__sbsFullVideoMap[artistKey];
+      if (videoId) {
+        return `<div class="cal-popup__img cal-popup__img--video">
+              <iframe
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowfullscreen frameborder="0"
+                style="width:100%;height:100%;border-radius:8px;">
+              </iframe>
+            </div>`;
+      }
+      return event.image
+          ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>`
+          : "";
+    })()}
       </div>
     `;
     popup.classList.add("is-visible");

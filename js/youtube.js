@@ -3,8 +3,8 @@
    Shorts only: <40min, dedup by views
    ================================ */
 
-const YT_API_KEY     = "AIzaSyA3arnK5Ar-A2tCH7HxEJY_TQcKnCp6sPA";
-const YT_HANDLE      = "7thblocksociety";
+// YT_WORKER — declared in player.js
+// YT_CHANNEL_ID — declared in player.js
 const YT_MAX_RESULTS = 50;
 
 let ytVideos        = [];
@@ -20,18 +20,9 @@ function parseDuration(iso) {
       parseInt(m[3] || 0);
 }
 
-/* ── 1. Handle → Channel ID ── */
-async function fetchChannelId() {
-  const url  = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${YT_HANDLE}&key=${YT_API_KEY}`;
-  const res  = await fetch(url);
-  const data = await res.json();
-  if (data.items && data.items.length) return data.items[0].id;
-  throw new Error("Channel not found");
-}
-
-/* ── 2. Channel → ALL videos (shorts + full) ── */
-async function fetchVideoList(channelId) {
-  const url  = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=${YT_MAX_RESULTS}&order=date&type=video&key=${YT_API_KEY}`;
+/* ── 1. Channel → ALL videos (shorts + full) via Worker ── */
+async function fetchVideoList() {
+  const url  = `${YT_WORKER}/yt/search?part=snippet&channelId=${YT_CHANNEL_ID}&maxResults=${YT_MAX_RESULTS}&order=date&type=video`;
   const res  = await fetch(url);
   const data = await res.json();
   if (!data.items) return [];
@@ -47,7 +38,6 @@ function buildFullVideoMap(allVideos, fullVideoIds) {
   const map = {};
   allVideos.forEach(v => {
     if (!fullVideoIds.has(v.id)) return;
-    /* | -მდე ნაწილი = artist key */
     const key = (v.title.includes("|") ? v.title.split("|")[0] : v.title).trim().toLowerCase();
     if (!map[key]) map[key] = v.id;
   });
@@ -59,12 +49,11 @@ async function filterAndDedup(videos) {
   if (!videos.length) return [];
 
   const ids  = videos.map(v => v.id).join(",");
-  const url  = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${ids}&key=${YT_API_KEY}`;
+  const url  = `${YT_WORKER}/yt/videos?part=contentDetails,statistics&id=${ids}`;
   const res  = await fetch(url);
   const data = await res.json();
   if (!data.items) return videos;
 
-  /* duration + views map */
   const infoMap = {};
   data.items.forEach(item => {
     infoMap[item.id] = {
@@ -73,18 +62,12 @@ async function filterAndDedup(videos) {
     };
   });
 
-  /* 1. ფილტრი: 40 წუთზე (2400 წამი) ნაკლები = shorts */
   const shorts  = videos.filter(v => (infoMap[v.id]?.duration ?? 9999) < 2400);
-  /* დიდი ვიდეოები = 40 წუთზე მეტი */
   const fullIds = new Set(videos.filter(v => (infoMap[v.id]?.duration ?? 0) >= 2400).map(v => v.id));
-
-  /* დიდი ვიდეოების map: artist → id */
   const fullMap = buildFullVideoMap(videos, fullIds);
 
-  /* views დავამატოთ */
   shorts.forEach(v => { v.views = infoMap[v.id]?.views || 0; });
 
-  /* 2. დედუპლიკაცია — მეტნახვიანი რჩება */
   const seen = {};
   shorts.forEach(v => {
     const key = (v.title.includes("|") ? v.title.split("|")[0] : v.title).trim().toLowerCase();
@@ -95,13 +78,11 @@ async function filterAndDedup(videos) {
 
   const deduped = Object.values(seen);
 
-  /* 3. თითოეულ შორთს დიდი ვიდეოს ID მივცეთ */
   deduped.forEach(v => {
     const key = (v.title.includes("|") ? v.title.split("|")[0] : v.title).trim().toLowerCase();
     v.fullVideoId = fullMap[key] || null;
   });
 
-  /* original order */
   deduped.sort((a, b) => shorts.indexOf(a) - shorts.indexOf(b));
 
   return deduped;
@@ -146,7 +127,6 @@ function renderYouTubeCarousel() {
     let longPressTimer = null;
     let isLongPress = false;
 
-    /* ── preview iframe შექმნა ── */
     function showPreview() {
       if (previewIframe) return;
       previewIframe = document.createElement("iframe");
@@ -154,12 +134,9 @@ function renderYouTubeCarousel() {
       previewIframe.allow = "autoplay; encrypted-media";
       previewIframe.frameBorder = "0";
       previewIframe.style.cssText = "position:absolute;inset:-15%;width:130%;height:130%;border-radius:inherit;z-index:1;pointer-events:none;";
-
-      /* overlay — YouTube UI-ს ფარავს */
       const overlay = document.createElement("div");
       overlay.className = "yt-preview-overlay";
       overlay.style.cssText = "position:absolute;inset:0;z-index:2;pointer-events:none;";
-
       thumb.appendChild(previewIframe);
       thumb.appendChild(overlay);
       thumb.querySelector("img").style.opacity = "0";
@@ -175,11 +152,9 @@ function renderYouTubeCarousel() {
       thumb.querySelector(".yt-card__play").style.opacity = "";
     }
 
-    /* ── Desktop: hover ── */
     card.addEventListener("mouseenter", showPreview);
     card.addEventListener("mouseleave", hidePreview);
 
-    /* ── Mobile: long press → preview, tap → modal ── */
     card.addEventListener("touchstart", e => {
       isLongPress = false;
       longPressTimer = setTimeout(() => {
@@ -190,11 +165,7 @@ function renderYouTubeCarousel() {
 
     card.addEventListener("touchend", e => {
       clearTimeout(longPressTimer);
-      if (isLongPress) {
-        /* long press დასრულდა — preview დარჩეს, tap-ზე modal */
-        return;
-      }
-      /* ჩვეულებრივი tap → დიდი ვიდეო */
+      if (isLongPress) return;
       hidePreview();
       const targetId = video.fullVideoId || video.id;
       window.open(`https://www.youtube.com/watch?v=${targetId}`, "_blank");
@@ -204,7 +175,6 @@ function renderYouTubeCarousel() {
       clearTimeout(longPressTimer);
     }, { passive: true });
 
-    /* ── Desktop click → დიდი ვიდეო ── */
     card.addEventListener("click", e => {
       hidePreview();
       const targetId = video.fullVideoId || video.id;
@@ -221,7 +191,6 @@ function renderYouTubeCarousel() {
   document.getElementById("ytModalOverlay")?.addEventListener("click", closeModal);
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
-  /* ── dots ── */
   const dotsWrap = document.getElementById("ytDots");
 
   function getVisibleCount() {
@@ -265,37 +234,25 @@ function renderYouTubeCarousel() {
   if (nextBtn) nextBtn.addEventListener("click", () => scrollTo(ytCarouselIndex + 1));
   window.addEventListener("resize", () => scrollTo(ytCarouselIndex));
 
-  /* ── Swipe / drag ── */
   const viewport = document.querySelector(".yt-carousel__viewport");
   let dragStartX = 0, dragDelta = 0, isDragging = false;
 
-  function onDragStart(x) {
-    dragStartX = x;
-    dragDelta  = 0;
-    isDragging = true;
-    track.classList.add("is-dragging");
-  }
-  function onDragMove(x) {
-    if (!isDragging) return;
-    dragDelta = x - dragStartX;
-  }
-  function onDragEnd() {
+  function onDragStart(x) { dragStartX = x; dragDelta = 0; isDragging = true; track.classList.add("is-dragging"); }
+  function onDragMove(x)  { if (!isDragging) return; dragDelta = x - dragStartX; }
+  function onDragEnd()    {
     if (!isDragging) return;
     isDragging = false;
     track.classList.remove("is-dragging");
     if (Math.abs(dragDelta) > 50) {
       scrollTo(dragDelta < 0 ? ytCarouselIndex + 1 : ytCarouselIndex - 1);
     } else {
-      scrollTo(ytCarouselIndex); /* snap back */
+      scrollTo(ytCarouselIndex);
     }
   }
 
-  /* mouse */
   viewport?.addEventListener("mousedown",  e => { onDragStart(e.clientX); });
   window.addEventListener("mousemove",     e => { if (isDragging) onDragMove(e.clientX); });
   window.addEventListener("mouseup",       () => onDragEnd());
-
-  /* touch */
   viewport?.addEventListener("touchstart", e => { onDragStart(e.touches[0].clientX); }, {passive:true});
   viewport?.addEventListener("touchmove",  e => { onDragMove(e.touches[0].clientX); },  {passive:true});
   viewport?.addEventListener("touchend",   () => onDragEnd());
@@ -307,10 +264,19 @@ function renderYouTubeCarousel() {
 async function initYouTube() {
   const loader = document.getElementById("ytLoader");
   try {
-    const channelId = await fetchChannelId();
-    const allVideos = await fetchVideoList(channelId);
+    const allVideos = await fetchVideoList();
     ytVideos        = await filterAndDedup(allVideos);
     ytVideos        = ytVideos.sort(() => Math.random() - 0.5);
+
+    /* გლობალურად შევინახოთ — calendar.js გამოიყენებს */
+    window.__sbsFullVideoMap = {};
+    ytVideos.forEach(v => {
+      if (v.fullVideoId) {
+        const key = (v.title.includes("|") ? v.title.split("|")[0] : v.title).trim().toLowerCase();
+        window.__sbsFullVideoMap[key] = v.fullVideoId;
+      }
+    });
+
     renderYouTubeCarousel();
   } catch(err) {
     console.warn("[SBS] YouTube fetch failed:", err);

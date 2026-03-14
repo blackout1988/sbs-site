@@ -194,11 +194,12 @@
     display: none;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 8px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 36px 40px;
     animation: popupIn 0.2s ease;
     box-sizing: border-box;
     overflow: hidden;
+    min-height: 220px;
 }
 .cal-event-popup.is-visible { display: block; }
 
@@ -228,6 +229,7 @@
     font-size: 38px;
     color: var(--brand-red);
     line-height: 1;
+    margin-bottom: 10px;
 }
 .cal-popup__date-row {
     display: flex;
@@ -252,7 +254,7 @@
     font-size: 10px;
     color: rgba(255,255,255,0.80);
     letter-spacing: 0.6px;
-    margin-bottom: 0;
+    margin-bottom: 12px;
 }
 .cal-popup__event {
     font-size: 14px;
@@ -261,15 +263,15 @@
     margin-bottom: 6px;
 }
 .cal-popup__title {
-    font-size: 18px;
+    font-size: 30px;
     color: #fff;
     line-height: 1.2;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 .cal-popup__sub {
     font-size: 11px;
     color: rgba(255,255,255,0.45);
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 .cal-popup__time {
     display: flex;
@@ -278,7 +280,7 @@
     font-size: 11px;
     color: rgba(255,255,255,0.55);
     letter-spacing: 0.5px;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
 }
 .cal-popup__dot {
     display: none;
@@ -440,6 +442,17 @@
 /* ================================
    MOBILE  (max-width: 640px)
    ================================ */
+/* Mobile layout always active (isMobile = true) */
+.cal-event-popup {
+    padding: 28px 28px !important;
+    min-height: 200px !important;
+    border-radius: 12px !important;
+}
+
+.cal-popup__inner {
+    gap: 20px !important;
+}
+
 @media (max-width: 640px) {
 
     /* Stack everything in column */
@@ -522,7 +535,9 @@
     }
 
     .cal-event-popup {
-        padding: 14px;
+        padding: 28px 28px;
+        min-height: 200px;
+        border-radius: 12px;
     }
 
     .cal-popup__img {
@@ -536,7 +551,7 @@
     .cal-popup__date      { font-size: 26px; }
     .cal-popup__title     { font-size: 14px; }
     .cal-popup__countdown { font-size: 16px; letter-spacing: 2px; }
-    .cal-popup__bio       { font-size: 8px; -webkit-line-clamp: 2; }
+    .cal-popup__bio       { font-size: 11px; -webkit-line-clamp: 3; }
     .cal-popup__links     { gap: 5px; margin-top: 8px; }
     .cal-popup__link      { font-size: 7px; padding: 3px 8px; }
 }
@@ -561,20 +576,20 @@
     width: 100%;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 8px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 40px 44px;
     box-sizing: border-box;
-    min-height: 200px;
+    min-height: 300px;
 }
 .cal-carousel__slide .cal-popup__inner {
     align-items: flex-start;
-    gap: 14px;
+    gap: 24px;
 }
 .cal-carousel__slide .cal-popup__img {
-    flex: 0 0 110px;
-    width: 110px;
-    height: 150px;
-    border-radius: 6px;
+    flex: 0 0 200px;
+    width: 200px;
+    height: 280px;
+    border-radius: 8px;
     margin: 0;
 }
 
@@ -665,15 +680,20 @@
 /* ── Bio + Links in event popup ── */
 .cal-popup__bio {
     font-family: 'Doto', monospace;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 400;
     letter-spacing: 0.5px;
-    color: rgba(255,255,255,0.40);
-    line-height: 1.8;
-    margin-top: 10px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.9;
+    margin-top: 14px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cal-popup__img--video {
+    cursor: default;
     overflow: hidden;
 }
 
@@ -690,15 +710,57 @@
     font-weight: 700;
     letter-spacing: 2px;
     color: rgba(255,255,255,0.80);
-    border: 1px solid rgba(254,0,0,0.35);
-    background: rgba(254,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
     border-radius: 4px;
-    padding: 4px 12px;
+    padding: 6px 14px;
     text-decoration: none;
-    transition: background 0.15s, border-color 0.15s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
-.cal-popup__link:hover {
-    background: rgba(254,0,0,0.18);
-    border-color: rgba(254,0,0,0.60);
-    color: #fff;
+
+/* SoundCloud — orange */
+.cal-popup__link--sc {
+    border-color: rgba(255,85,0,0.35);
+    background: rgba(255,85,0,0.08);
+}
+.cal-popup__link--sc:hover {
+    background: rgba(255,85,0,0.20);
+    border-color: rgba(255,85,0,0.80);
+    color: #ff5500;
+}
+
+/* Instagram — pink/purple gradient */
+.cal-popup__link--ig {
+    border-color: rgba(225,48,108,0.35);
+    background: rgba(225,48,108,0.08);
+}
+.cal-popup__link--ig:hover {
+    background: rgba(225,48,108,0.20);
+    border-color: rgba(225,48,108,0.80);
+    color: #e1306c;
+}
+
+/* Facebook — blue */
+.cal-popup__link--fb {
+    border-color: rgba(24,119,242,0.35);
+    background: rgba(24,119,242,0.08);
+}
+.cal-popup__link--fb:hover {
+    background: rgba(24,119,242,0.20);
+    border-color: rgba(24,119,242,0.80);
+    color: #1877f2;
+}
+
+/* TikTok — cyan */
+.cal-popup__link--tt {
+    border-color: rgba(0,242,234,0.35);
+    background: rgba(0,242,234,0.08);
+}
+.cal-popup__link--tt:hover {
+    background: rgba(0,242,234,0.15);
+    border-color: rgba(0,242,234,0.80);
+    color: #00f2ea;
 }
