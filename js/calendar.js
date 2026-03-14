@@ -455,7 +455,8 @@ async function initCalendar() {
     dots.className = "cal-carousel__dots";
     allEvents.forEach((ev, i) => {
       const dot = document.createElement("div");
-      dot.className = "cal-carousel__dot" + (i === 0 ? " is-active" : "");
+      const evIsReleased = getEventDateTime(ev) <= new Date();
+      dot.className = "cal-carousel__dot" + (i === 0 ? " is-active" : "") + (evIsReleased ? " is-released" : "");
       dot.dataset.idx = i;
       dot.innerHTML = `<span class="cal-dot__day doto">${String(ev.day).padStart(2,"0")}</span><span class="cal-dot__month doto">${MONTHS[ev.month-1].slice(0,3)}</span>`;
       dots.appendChild(dot);
@@ -524,11 +525,16 @@ async function initCalendar() {
       }, 1000);
     });
 
-    // ყველაზე ახლო upcoming ივენთიდან დავიწყოთ
+    // ყველაზე ახლო ივენთი დღევანდელ თარიღთან (წარსულიდანაც)
     const now = new Date();
     const startIdx = (() => {
-      const upIdx = allEvents.findIndex(e => getEventDateTime(e) > now);
-      return upIdx >= 0 ? upIdx : 0;
+      let closestIdx = 0;
+      let closestDiff = Infinity;
+      allEvents.forEach((e, i) => {
+        const diff = Math.abs(getEventDateTime(e) - now);
+        if (diff < closestDiff) { closestDiff = diff; closestIdx = i; }
+      });
+      return closestIdx;
     })();
 
     goTo(startIdx);

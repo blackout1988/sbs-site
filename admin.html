@@ -1111,6 +1111,10 @@
                 <div class="modal-field" style="grid-column:1/-1">
                     <div class="modal-label">BIO</div>
                     <div class="modal-value" id="m-bio" style="line-height:1.8;color:rgba(255,255,255,0.6);font-size:10px"></div>
+                    <textarea id="m-bio-edit" rows="4" style="display:none;width:100%;margin-top:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:'Doto',monospace;font-size:10px;letter-spacing:1px;line-height:1.8;padding:10px 12px;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
+                    <button id="m-bio-edit-btn" onclick="toggleBioEdit()" style="margin-top:6px;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.4);font-family:'Doto',monospace;font-size:9px;letter-spacing:1.5px;padding:5px 12px;cursor:pointer;">✎ EDIT BIO</button>
+                    <button id="m-bio-save-btn" onclick="saveBioEdit()" style="display:none;margin-top:6px;margin-left:8px;background:rgba(0,200,100,0.08);border:1px solid rgba(0,200,100,0.35);border-radius:6px;color:#00c864;font-family:'Doto',monospace;font-size:9px;letter-spacing:1.5px;padding:5px 12px;cursor:pointer;">✓ SAVE BIO</button>
+                    <button id="m-bio-cancel-btn" onclick="cancelBioEdit()" style="display:none;margin-top:6px;margin-left:8px;background:none;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(255,255,255,0.3);font-family:'Doto',monospace;font-size:9px;letter-spacing:1.5px;padding:5px 12px;cursor:pointer;">✕ CANCEL</button>
                 </div>
             </div>
 
@@ -1398,6 +1402,16 @@
         document.getElementById('m-genre').textContent  = s.genre  || '—';
         document.getElementById('m-phone').textContent  = s.phone  || '—';
         document.getElementById('m-bio').textContent    = s.message || '—';
+        // bio edit reset
+        const bioEdit = document.getElementById('m-bio-edit');
+        const bioEditBtn = document.getElementById('m-bio-edit-btn');
+        const bioSaveBtn = document.getElementById('m-bio-save-btn');
+        const bioCancelBtn = document.getElementById('m-bio-cancel-btn');
+        if (bioEdit) { bioEdit.style.display = 'none'; bioEdit.value = s.message || ''; }
+        if (bioEditBtn) bioEditBtn.style.display = 'inline-block';
+        if (bioSaveBtn) bioSaveBtn.style.display = 'none';
+        if (bioCancelBtn) bioCancelBtn.style.display = 'none';
+        document.getElementById('m-bio').style.display = 'block';
         document.getElementById('m-email').innerHTML  = s.email    ? `<a href="mailto:${s.email}">${s.email}</a>` : '—';
         document.getElementById('m-social').innerHTML = s.social   ? `<a href="${s.social}" target="_blank">${s.social.includes('instagram')?'INSTAGRAM':s.social.includes('facebook')?'FACEBOOK':s.social.includes('soundcloud')?'SOUNDCLOUD':s.social}</a>` : '—';
         document.getElementById('m-mix').innerHTML    = s.mix_link ? `<a href="${s.mix_link}" target="_blank">LINK ↗</a>` : '—';
@@ -1423,6 +1437,47 @@
         markRead(id);
     };
 
+    window.toggleBioEdit = function() {
+        document.getElementById('m-bio').style.display = 'none';
+        document.getElementById('m-bio-edit').style.display = 'block';
+        document.getElementById('m-bio-edit-btn').style.display = 'none';
+        document.getElementById('m-bio-save-btn').style.display = 'inline-block';
+        document.getElementById('m-bio-cancel-btn').style.display = 'inline-block';
+    };
+
+    window.cancelBioEdit = function() {
+        const sub = allSubs.find(s => s.id === modalId);
+        document.getElementById('m-bio-edit').value = sub?.message || '';
+        document.getElementById('m-bio').style.display = 'block';
+        document.getElementById('m-bio-edit').style.display = 'none';
+        document.getElementById('m-bio-edit-btn').style.display = 'inline-block';
+        document.getElementById('m-bio-save-btn').style.display = 'none';
+        document.getElementById('m-bio-cancel-btn').style.display = 'none';
+    };
+
+    window.saveBioEdit = async function() {
+        const newBio = document.getElementById('m-bio-edit').value.trim();
+        const sub = allSubs.find(s => s.id === modalId);
+        if (!sub) return;
+        try {
+            // submissions განახლება
+            await updateDoc(doc(db, 'submissions', modalId), { message: newBio });
+            // approved_events განახლება (თუ არსებობს)
+            for (const suffix of ['_rec', '_sat']) {
+                try { await updateDoc(doc(db, 'approved_events', modalId + suffix), { desc: newBio }); } catch(e) {}
+            }
+            sub.message = newBio;
+            document.getElementById('m-bio').textContent = newBio || '—';
+            document.getElementById('m-bio').style.display = 'block';
+            document.getElementById('m-bio-edit').style.display = 'none';
+            document.getElementById('m-bio-edit-btn').style.display = 'inline-block';
+            document.getElementById('m-bio-save-btn').style.display = 'none';
+            document.getElementById('m-bio-cancel-btn').style.display = 'none';
+        } catch(e) {
+            alert('ERROR SAVING BIO: ' + e.message);
+        }
+    };
+
     window.closeModal = function() {
         document.getElementById('editModal').style.display = 'none';
         modalId = null;
@@ -1433,6 +1488,7 @@
         document.getElementById('m-artist-2').textContent = document.getElementById('m-artist').textContent;
         document.getElementById('modalStep1').style.display = 'none';
         document.getElementById('modalStep2').style.display = 'block';
+
 
         // SC avatar-ი თუ ჯერ არ ჩამოვიდა — ახლა await-ით ვიღებთ
         const sub = allSubs.find(s => s.id === modalId);
@@ -1506,6 +1562,7 @@ WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
 
         const recording = document.getElementById('m-recording').value;
         const saturday  = document.getElementById('m-saturday').value;
+        const editedBio = document.getElementById('m-bio-edit').value.trim();
         const resolvedImage = sub.customImage || modalScAvatar || 'assets/tk.jpg';
         sub.status = 'approved';
         sub.scheduleRecording = recording;
@@ -1515,8 +1572,11 @@ WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
             await updateDoc(doc(db, 'submissions', modalId), {
                 status: 'approved',
                 scheduleRecording: recording || null,
-                scheduleSaturday:  saturday  || null
+                scheduleSaturday:  saturday  || null,
+                message: editedBio || sub.message || ''
             });
+            // local sub-ც განვაახლოთ
+            sub.message = editedBio || sub.message || '';
 
             // Recording date → approved_events
             if (recording) {
@@ -1529,7 +1589,7 @@ WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
                     artist: sub.artist || '',
                     type:   'RECORDING',
                     event:  '7TH BLOCK SOCIETY',
-                    desc:   sub.message || '',
+                    desc:   editedBio || sub.message || '',
                     image:  resolvedImage,
                     youtube: '',
                 });
@@ -1548,7 +1608,7 @@ WE WERE UNABLE TO SELECT YOUR MIX FOR OUR PODCAST AT THIS TIME.` })
                     artist: sub.artist || '',
                     type:   'PODCAST',
                     event:  '7TH BLOCK SOCIETY',
-                    desc:   sub.message || '',
+                    desc:   editedBio || sub.message || '',
                     image:  resolvedImage,
                     youtube: '',
                 });
@@ -1898,6 +1958,13 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
         imageInput.value = s.customImage || '';
         imageInput.style.display = 'block';
 
+        // bio
+        document.getElementById('ip-bio').style.display = 'none';
+        document.getElementById('bio-toggle').style.display = 'none';
+        const bioInput = document.getElementById('ip-bio-input');
+        bioInput.value = s.message || '';
+        bioInput.style.display = 'block';
+
         document.getElementById('ip-save-row').style.display = 'flex';
         document.getElementById('ip-status-row').style.display = 'none';
         document.getElementById('ipEditBtn').textContent = '✕ CANCEL';
@@ -1920,6 +1987,11 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
         document.getElementById('ip-image').style.display = '';
         document.getElementById('ip-image-input').style.display = 'none';
 
+        // bio restore
+        document.getElementById('ip-bio').style.display = '';
+        document.getElementById('bio-toggle').style.display = '';
+        document.getElementById('ip-bio-input').style.display = 'none';
+
         document.getElementById('ip-save-row').style.display = 'none';
         document.getElementById('ip-status-row').style.display = '';
         document.getElementById('ipEditBtn').textContent = '✎ EDIT';
@@ -1939,6 +2011,7 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
             social:      document.getElementById('ip-social-input').value.trim(),
             mix_link:    document.getElementById('ip-mix-input').value.trim(),
             customImage: customImage || null,
+            message:     document.getElementById('ip-bio-input').value.trim(),
         };
 
         // save to Firestore
@@ -1959,6 +2032,7 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
                     await updateDoc(doc(db, 'approved_events', eventId), {
                         artist: updates.artist,
                         image:  resolvedImage,
+                        desc:   updates.message || '',
                     });
                 }
             } catch(e) {}
@@ -2119,6 +2193,7 @@ YOUR MIX SUBMISSION HAS BEEN ACCEPTED. OUR REPRESENTATIVE WILL CONTACT YOU SOON.
                 <div class="info-label">BIO</div>
                 <div class="info-bio" id="ip-bio" onclick="toggleBio()"></div>
                 <div class="bio-toggle" id="bio-toggle" onclick="toggleBio()">▼ MORE</div>
+                <textarea id="ip-bio-input" rows="4" style="display:none;width:100%;margin-top:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:'Doto',monospace;font-size:10px;letter-spacing:1px;line-height:1.8;padding:10px 12px;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
             </div>
         </div>
         <div id="ip-save-row" class="ip-save-row" style="display:none">

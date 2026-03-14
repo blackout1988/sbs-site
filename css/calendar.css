@@ -662,6 +662,21 @@
 .cal-carousel__dot.is-active .cal-dot__day { color: #fff; }
 .cal-carousel__dot.is-active .cal-dot__month { color: var(--brand-red); }
 
+/* Released dot — მწვანე */
+.cal-carousel__dot.is-released {
+    border-color: rgba(0,200,100,0.45);
+    background: rgba(0,200,100,0.08);
+}
+.cal-carousel__dot.is-released .cal-dot__day { color: #00c864; }
+.cal-carousel__dot.is-released .cal-dot__month { color: rgba(0,200,100,0.7); }
+/* Released + Active — მწვანე რჩება */
+.cal-carousel__dot.is-released.is-active {
+    border-color: rgba(0,200,100,0.8);
+    background: rgba(0,200,100,0.15);
+    box-shadow: 0 0 10px rgba(0,200,100,0.2);
+}
+.cal-carousel__dot.is-released.is-active .cal-dot__month { color: #00c864; }
+
 /* 5–7 ღილაკი — პატარდება */
 .cal-carousel__dots:has(.cal-carousel__dot:nth-child(5)) .cal-carousel__dot {
     width: 44px;
