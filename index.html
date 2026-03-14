@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="css/style.css?v=2" />
     <link rel="stylesheet" href="css/calendar.css" />
     <link rel="stylesheet" href="css/radio.css?v=4" />
+    <link rel="stylesheet" href="css/youtube.css" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
     <script type="module">
@@ -110,6 +111,7 @@
         <a href="#" class="nav-menu__item doto" id="homeBtn">Home</a>
         <a href="#episodesAnchor" class="nav-menu__item doto">Episodes</a>
         <a href="#upcoming" class="nav-menu__item doto">Events</a>
+        <a href="#ytSection" class="nav-menu__item doto">Videos</a>
         <a href="#" class="nav-menu__item doto" id="mixesBtn">Record Mix</a>
         <a href="#about" class="nav-menu__item doto">About</a>
         <a href="#contact" class="nav-menu__item doto">Contact</a>
@@ -177,6 +179,7 @@
     <a href="#" class="mobile-menu__item doto" id="homeBtnMobile">Home</a>
     <a href="#episodesAnchor" class="mobile-menu__item doto">Episodes</a>
     <a href="#upcoming" class="mobile-menu__item doto">Events</a>
+    <a href="#ytSection" class="mobile-menu__item doto">Videos</a>
     <a href="#" class="mobile-menu__item doto" id="mixesBtnMobile">Record Mix</a>
     <a href="#about" class="mobile-menu__item doto">About</a>
     <a href="#contact" class="mobile-menu__item doto">Contact</a>
@@ -243,12 +246,28 @@
 
     <!-- ===== UPCOMING EVENTS ===== -->
     <section class="upcoming" id="upcoming">
-        <center><h2 class="doto upcoming__title">EVENTS</h2></center>
+        <center><h2 class="doto upcoming__title">UPCOMING EVENTS</h2></center>
         <div class="upcoming__calendar" id="upcomingCalendar">
             <!-- Calendar injected by JS -->
         </div>
 
     </section>
+
+    <!-- ===== YOUTUBE VIDEOS ===== -->
+    <section id="ytSection">
+        <div class="yt-section__head">
+            <center><h2 class="doto upcoming__title">PODCAST VIDEOS</h2></center>
+        </div>
+        <div class="yt-carousel">
+            <button class="yt-carousel__btn yt-carousel__btn--prev" id="ytPrev" type="button">‹</button>
+            <div class="yt-carousel__viewport">
+                <div class="yt-carousel__track" id="ytTrack"></div>
+            </div>
+            <button class="yt-carousel__btn yt-carousel__btn--next" id="ytNext" type="button">›</button>
+        </div>
+        <div id="ytLoader" class="doto">LOADING VIDEOS...</div>
+    </section>
+
 </main>
 
 <!-- Bottom Player (hidden until first play) -->
@@ -321,6 +340,7 @@
 <script src="js/calendar.js?v=2"></script>
 <script src="js/player.js?v=1"></script>
 <script src="js/radio.js"></script>
+<script src="js/youtube.js"></script>
 
 <script>
     // Hamburger menu toggle
@@ -367,6 +387,14 @@
 
 <!-- ===== FOOTER ===== -->
 <footer class="footer">
+
+    <!-- Top divider with tagline -->
+    <div class="footer__tagline" style="display:flex;align-items:center;gap:20px;padding:32px 40px 0;width:100%;box-sizing:border-box;">
+        <div class="footer__tagline-line"></div>
+        <span class="footer__tagline-text doto">MUSIC • SPACE • TALK</span>
+        <div class="footer__tagline-line"></div>
+    </div>
+
     <div class="footer__inner">
 
         <!-- Logo + About -->
@@ -380,6 +408,30 @@
                 <div class="footer__name doto">7TH BLOCK SOCIETY</div>
             </div>
             <p class="footer__about">7TH BLOCK SOCIETY is a Georgian music collective — electronic music beyond clubs, integrated into life, spaces and mindset. We don't stick to one sound. Our space is open to every rhythm, every mood, every frequency that moves people.</p>
+            <!-- Genre tags -->
+            <div class="footer__genres">
+                <span class="footer__genre doto">HOUSE</span>
+                <span class="footer__genre doto">DEEP HOUSE</span>
+                <span class="footer__genre doto">TECHNO</span>
+                <span class="footer__genre doto">MINIMAL</span>
+                <span class="footer__genre doto">ORGANIC</span>
+                <span class="footer__genre doto">MELODIC</span>
+                <span class="footer__genre doto">AMBIENT</span>
+            </div>
+        </div>
+
+        <!-- Nav links -->
+        <div class="footer__nav">
+            <div class="footer__social-label doto">Navigate</div>
+            <div class="footer__nav-links" style="display:flex;flex-direction:column;gap:10px;">
+                <a href="#" class="footer__nav-item doto" id="footerHomeBtn">Home</a>
+                <a href="#episodesAnchor" class="footer__nav-item doto">Episodes</a>
+                <a href="#upcoming" class="footer__nav-item doto">Events</a>
+                <a href="#ytSection" class="footer__nav-item doto">Videos</a>
+                <a href="#" class="footer__nav-item doto" id="footerMixesBtn">Record Mix</a>
+                <a href="#" class="footer__nav-item doto" id="footerAboutBtn">About</a>
+                <a href="#" class="footer__nav-item doto" id="footerContactBtn">Contact</a>
+            </div>
         </div>
 
         <!-- Contact -->
@@ -426,12 +478,83 @@
 
     </div>
 
+    <!-- Subscribe -->
+    <div class="footer__subscribe">
+        <div class="footer__subscribe-inner">
+            <div class="footer__subscribe-left">
+                <div class="footer__social-label doto">JOIN THE COLLECTIVE</div>
+                <p class="footer__subscribe-text doto">GET NOTIFIED ABOUT NEW EPISODES & EVENTS</p>
+            </div>
+            <div class="footer__subscribe-form" id="subscribeForm">
+                <input
+                        type="email"
+                        class="footer__subscribe-input doto"
+                        id="subscribeEmail"
+                        placeholder="YOUR@EMAIL.COM"
+                        autocomplete="off"
+                />
+                <button class="footer__subscribe-btn doto" id="subscribeBtn" type="button">
+                    SUBSCRIBE →
+                </button>
+            </div>
+            <div class="footer__subscribe-success doto" id="subscribeSuccess" style="display:none;">
+                ✓ YOU'RE IN THE COLLECTIVE
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom bar -->
     <div class="footer__bottom">
         <span class="doto">© 2026 7TH BLOCK SOCIETY</span>
-        <span class="footer__bottom-sub">Music • Space • Talk</span>
+        <span class="footer__bottom-sub doto">TBILISI, GEORGIA</span>
+        <span class="footer__bottom-sub doto">Music • Space • Talk</span>
     </div>
 </footer>
+
+<script>
+    document.getElementById("footerHomeBtn")?.addEventListener("click", e => { e.preventDefault(); window.scrollTo({top:0,behavior:"smooth"}); });
+    document.getElementById("footerAboutBtn")?.addEventListener("click", e => { e.preventDefault(); document.getElementById("aboutModal").classList.add("is-open"); document.body.style.overflow="hidden"; });
+    document.getElementById("footerContactBtn")?.addEventListener("click", e => { e.preventDefault(); document.getElementById("contactModal").classList.add("is-open"); document.body.style.overflow="hidden"; });
+    document.getElementById("footerMixesBtn")?.addEventListener("click", e => { e.preventDefault(); document.getElementById("mixesModal").classList.add("is-open"); document.body.style.overflow="hidden"; });
+
+    /* Subscribe */
+    document.getElementById("subscribeBtn")?.addEventListener("click", function() {
+        const input   = document.getElementById("subscribeEmail");
+        const success = document.getElementById("subscribeSuccess");
+        const form    = document.getElementById("subscribeForm");
+        const email   = input?.value.trim();
+        const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email || !emailRx.test(email)) {
+            input.style.borderColor = "rgba(254,0,0,0.8)";
+            input.placeholder = "ENTER A VALID EMAIL";
+            setTimeout(() => {
+                input.style.borderColor = "";
+                input.placeholder = "YOUR@EMAIL.COM";
+            }, 2000);
+            return;
+        }
+
+        /* Firebase-ში შევინახოთ */
+        if (window.__sbsFirebaseDb && window.__sbsFirebaseFns) {
+            const { doc, setDoc } = window.__sbsFirebaseFns;
+            const db = window.__sbsFirebaseDb;
+            import("https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js").then(({ addDoc, collection }) => {
+                addDoc(collection(db, "subscribers"), {
+                    email: email,
+                    createdAt: new Date().toISOString()
+                }).catch(() => {});
+            });
+        }
+
+        form.style.display = "none";
+        success.style.display = "block";
+    });
+
+    document.getElementById("subscribeEmail")?.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") document.getElementById("subscribeBtn")?.click();
+    });
+</script>
 
 <!-- ===== ABOUT MODAL ===== -->
 <div class="about-modal" id="aboutModal">
@@ -667,6 +790,15 @@
                 By checking the agreement box and submitting the form, you confirm that you have read, understood, and agree to these terms.</p>
         </div>
         <button class="mixes-form__submit doto" id="termsAcceptBtn" style="margin-top:24px;">I AGREE →</button>
+    </div>
+</div>
+
+<!-- ===== YOUTUBE MODAL ===== -->
+<div class="yt-modal" id="ytModal">
+    <div class="yt-modal__overlay" id="ytModalOverlay"></div>
+    <div class="yt-modal__box">
+        <button class="yt-modal__close doto" id="ytModalClose">✕ CLOSE</button>
+        <div class="yt-modal__inner" id="ytModalInner"></div>
     </div>
 </div>
 

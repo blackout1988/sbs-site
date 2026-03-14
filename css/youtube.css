@@ -1,0 +1,265 @@
+/* ================================
+   SBS YOUTUBE — youtube.css
+   9:16 Shorts cards, swipe nav
+   ================================ */
+
+/* ── Section ── */
+#ytSection {
+    padding: 60px 0 40px;
+    overflow: hidden;
+}
+
+.yt-section__head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.yt-section__title {
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #fff;
+    margin: 0;
+}
+
+.yt-section__sub {
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.40);
+}
+
+/* ── Carousel wrapper ── */
+.yt-carousel {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.yt-carousel__viewport {
+    overflow: hidden;
+    cursor: grab;
+}
+
+.yt-carousel__viewport:active {
+    cursor: grabbing;
+}
+
+.yt-carousel__track {
+    display: flex;
+    gap: 16px;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    user-select: none;
+}
+
+.yt-carousel__track.is-dragging {
+    transition: none;
+}
+
+/* ── Card — 9:16 portrait ── */
+.yt-card {
+    flex: 0 0 calc(20% - 13px);
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.yt-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(254,0,0,0.50);
+}
+
+/* 9:16 aspect ratio — Shorts ფორმატი */
+.yt-card__thumb {
+    position: relative;
+    aspect-ratio: 9/16;
+    overflow: hidden;
+    background: #0a0a0a;
+}
+
+.yt-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.yt-card:hover .yt-card__thumb img {
+    transform: scale(1.04);
+}
+
+/* play overlay */
+.yt-card__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.30);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.yt-card__play svg {
+    filter: drop-shadow(0 2px 12px rgba(0,0,0,0.9));
+}
+
+.yt-card:hover .yt-card__play {
+    opacity: 1;
+}
+
+/* SHORTS badge */
+.yt-card__shorts-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #FE0000;
+    color: #fff;
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 7px;
+    border-radius: 4px;
+}
+
+/* title */
+.yt-card__title {
+    padding: 10px 12px 12px;
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Nav arrows ── */
+.yt-carousel__btn {
+    position: absolute;
+    top: 45%;
+    transform: translateY(-50%);
+    width: auto;
+    height: auto;
+    border: none;
+    background: none;
+    color: rgba(255,255,255,0.70);
+    font-size: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, opacity 0.2s;
+    z-index: 2;
+    padding: 0 6px;
+}
+
+.yt-carousel__btn:hover {
+    color: #FE0000;
+}
+
+.yt-carousel__btn--prev { left: 2px; }
+.yt-carousel__btn--next { right: 2px; }
+
+
+
+/* ── Loader ── */
+#ytLoader {
+    text-align: center;
+    font-family: "Doto", system-ui, sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.30);
+    padding: 60px 0;
+}
+
+/* ── Modal — 9:16 for Shorts ── */
+.yt-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+}
+
+.yt-modal.is-open {
+    display: flex;
+}
+
+.yt-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+}
+
+.yt-modal__box {
+    position: relative;
+    z-index: 1;
+    width: min(400px, 90vw);
+    aspect-ratio: 9/16;
+    max-height: 90vh;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(0,0,0,0.9);
+}
+
+.yt-modal__close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    font-family: "Doto", system-ui, sans-serif;
+    letter-spacing: 1px;
+    opacity: 0.70;
+    transition: opacity 0.2s;
+    z-index: 2;
+}
+
+.yt-modal__close:hover { opacity: 1; }
+
+.yt-modal__inner {
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+    .yt-card { flex: 0 0 calc(25% - 12px); }
+}
+
+@media (max-width: 900px) {
+    .yt-card { flex: 0 0 calc(33.33% - 11px); }
+    .yt-section__head { padding: 0 16px 24px; }
+    .yt-section__title { font-size: 26px; }
+}
+
+@media (max-width: 600px) {
+    .yt-carousel { padding: 0 8px; }
+    .yt-card { flex: 0 0 calc(50% - 8px); }
+    .yt-carousel__btn { display: none; }
+    #ytSection { padding: 40px 0 60px; }
+}
+
+@media (max-width: 380px) {
+    .yt-card { flex: 0 0 calc(100% - 0px); }
+}

@@ -1,0 +1,45 @@
+<!-- ============================================================
+     1. HEAD-ში დაამატე (calendar.css-ის შემდეგ):
+     ============================================================ -->
+<link rel="stylesheet" href="css/youtube.css" />
+
+
+<!-- ============================================================
+     2. EVENTS section-ის შემდეგ, </main>-ის წინ:
+     ============================================================ -->
+
+<!-- ===== YOUTUBE VIDEOS ===== -->
+<section id="ytSection" style="display:none;">
+    <div class="yt-section__head">
+        <h2 class="yt-section__title doto">EPISODES</h2>
+        <span class="yt-section__sub doto">YOUTUBE</span>
+    </div>
+    <div class="yt-carousel">
+        <button class="yt-carousel__btn yt-carousel__btn--prev" id="ytPrev" type="button">‹</button>
+        <div class="yt-carousel__viewport">
+            <div class="yt-carousel__track" id="ytTrack"></div>
+        </div>
+        <button class="yt-carousel__btn yt-carousel__btn--next" id="ytNext" type="button">›</button>
+    </div>
+    <div id="ytLoader" class="doto">LOADING VIDEOS...</div>
+</section>
+
+
+<!-- ============================================================
+     3. FOOTER-ის წინ (სხვა modal-ების გვერდით):
+     ============================================================ -->
+
+<!-- ===== YOUTUBE MODAL ===== -->
+<div class="yt-modal" id="ytModal">
+    <div class="yt-modal__overlay" id="ytModalOverlay"></div>
+    <div class="yt-modal__box">
+        <button class="yt-modal__close doto" id="ytModalClose">✕ CLOSE</button>
+        <div class="yt-modal__inner" id="ytModalInner"></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     4. radio.js script-ის შემდეგ:
+     ============================================================ -->
+<script src="js/youtube.js"></script>
