@@ -1734,7 +1734,7 @@ body{
 
 /* Social label */
 .footer__social-label {
-    font-size: 10px;
+    font-size: 14px;
     letter-spacing: 2px;
     color: rgba(255,255,255,0.80);
     margin-bottom: 16px;
