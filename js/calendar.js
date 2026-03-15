@@ -228,17 +228,20 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-function getTagHTML(typeStr, isReleased) {
+function getTagHTML(typeStr, isReleased, pushRight) {
+  const s = pushRight
+      ? 'style="margin-bottom:0;margin-left:auto;white-space:nowrap;flex-shrink:0"'
+      : 'style="margin-bottom:0"';
   if (isReleased) {
-    return `<div class="cal-popup__tag cal-popup__tag--released doto" id="popupTag"><i class="bi bi-bookmark-star cal-tag-icon"></i>PODCAST RELEASED</div>`;
+    return `<div class="cal-popup__tag cal-popup__tag--released doto" id="popupTag" ${s}><i class="bi bi-bookmark-star cal-tag-icon"></i>PODCAST RELEASED</div>`;
   }
   if (typeStr === "RECORDING") {
-    return `<div class="cal-popup__tag doto" id="popupTag"><i class="bi bi-record-circle cal-tag-icon cal-tag-icon--rec"></i>PODCAST RECORD</div>`;
+    return `<div class="cal-popup__tag doto" id="popupTag" ${s}><i class="bi bi-record-circle cal-tag-icon cal-tag-icon--rec"></i>PODCAST RECORD</div>`;
   }
   if (typeStr === "PODCAST") {
-    return `<div class="cal-popup__tag doto" id="popupTag"><span class="cal-tag-pulse"></span>NEXT SATURDAY EVENT</div>`;
+    return `<div class="cal-popup__tag doto" id="popupTag" ${s}><span class="cal-tag-pulse"></span>NEXT SATURDAY EVENT</div>`;
   }
-  return `<div class="cal-popup__tag doto" id="popupTag">${typeStr}</div>`;
+  return `<div class="cal-popup__tag doto" id="popupTag" ${s}>${typeStr}</div>`;
 }
 
 function getSocialLabel(url) {
@@ -402,7 +405,7 @@ async function initCalendar() {
       slide.innerHTML = `
         <div class="cal-popup__inner">
           <div class="cal-popup__info">
-            <div class="cal-popup__date doto">${String(event.day).padStart(2,"0")} ${MONTHS[event.month-1]}</div>
+            <div class="cal-popup__date doto" style="${(getEventDateTime(event) - new Date()) <= 0 ? 'color:#00c864' : ''}">${String(event.day).padStart(2,"0")} ${MONTHS[event.month-1]}</div>
             ${event.type ? getTagHTML(event.type, (getEventDateTime(event) - new Date()) <= 0) : ""}
             <div class="cal-popup__title doto">${event.artist || event.title}</div>
 
@@ -700,9 +703,9 @@ async function initCalendar() {
       <div class="cal-popup__inner">
         <div class="cal-popup__info">
           <div class="cal-popup__header">
-            <div class="cal-popup__date doto">${String(event.day).padStart(2, "0")} ${MONTHS[event.month - 1]}</div>
-            ${getTagHTML(tagLabel, isReleased)}
+            <div class="cal-popup__date doto" style="${isReleased ? 'color:#00c864' : ''}">${String(event.day).padStart(2, "0")} ${MONTHS[event.month - 1]}</div>
           </div>
+          ${getTagHTML(tagLabel, isReleased)}
           <div class="cal-popup__title doto">${event.artist || event.title}</div>
           <div class="cal-popup__time doto">
             <span class="cal-popup__dot"></span>

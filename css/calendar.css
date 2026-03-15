@@ -80,7 +80,6 @@
     cursor: pointer;
 }
 
-
 /* ================================
    BOTTOM ROW — picker + popup
    ================================ */
@@ -455,6 +454,17 @@
 
 @media (max-width: 640px) {
 
+    .cal-carousel__slide .cal-popup__date {
+        display: inline;
+        margin-right: 8px;
+    }
+    .cal-carousel__slide .cal-popup__tag {
+        float: right;
+        margin-bottom: 0;
+        position: relative;
+        top: 4px;
+    }
+
     /* Stack everything in column */
     .cal-wrap {
         flex-direction: column;
@@ -577,20 +587,43 @@
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.10);
     border-radius: 12px;
-    padding: 40px 44px;
+    padding: 20px 16px 0;
     box-sizing: border-box;
     min-height: 300px;
 }
+
 .cal-carousel__slide .cal-popup__inner {
-    align-items: flex-start;
-    gap: 24px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
 }
 .cal-carousel__slide .cal-popup__img {
-    flex: 0 0 200px;
-    width: 200px;
+    flex: none;
+    width: 100%;
     height: 280px;
+    border-radius: 0 0 12px 12px;
     border-radius: 8px;
     margin: 0;
+}
+
+@media (min-width: 641px) {
+    .cal-carousel__slide {
+        padding: 32px 36px;
+        position: relative;
+    }
+    .cal-carousel__slide .cal-popup__inner {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 24px;
+    }
+    .cal-carousel__slide .cal-popup__img {
+        flex: 0 0 220px;
+        width: 220px;
+        height: 280px;
+    }
+
+
+
 }
 
 .cal-carousel__btn {

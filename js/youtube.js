@@ -94,8 +94,8 @@ function renderYouTubeCarousel() {
   const modal      = document.getElementById("ytModal");
   const modalInner = document.getElementById("ytModalInner");
   const modalClose = document.getElementById("ytModalClose");
-  const prevBtn    = document.getElementById("ytPrev");
-  const nextBtn    = document.getElementById("ytNext");
+  const prevBtn    = document.getElementById("ytPrevMobile");
+  const nextBtn    = document.getElementById("ytNextMobile");
   const loader     = document.getElementById("ytLoader");
 
   if (!track) return;
@@ -232,6 +232,12 @@ function renderYouTubeCarousel() {
 
   if (prevBtn) prevBtn.addEventListener("click", () => scrollTo(ytCarouselIndex - 1));
   if (nextBtn) nextBtn.addEventListener("click", () => scrollTo(ytCarouselIndex + 1));
+
+  const prevMobile = document.getElementById("ytPrevMobile");
+  const nextMobile = document.getElementById("ytNextMobile");
+  if (prevMobile) prevMobile.addEventListener("click", () => scrollTo(ytCarouselIndex - 1));
+  if (nextMobile) nextMobile.addEventListener("click", () => scrollTo(ytCarouselIndex + 1));
+
   window.addEventListener("resize", () => scrollTo(ytCarouselIndex));
 
   const viewport = document.querySelector(".yt-carousel__viewport");
