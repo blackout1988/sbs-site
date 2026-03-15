@@ -228,6 +228,17 @@ function getYouTubeId(url) {
   return m ? m[1] : null;
 }
 
+function getEventVideoId(event) {
+  // 1. event-ს პირდაპირ youtube URL აქვს
+  const fromUrl = getYouTubeId(event.youtube);
+  if (fromUrl) return fromUrl;
+  // 2. __sbsFullVideoMap-იდან artist სახელით
+  const map = window.__sbsFullVideoMap;
+  if (!map) return null;
+  const key = (event.artist || event.title || "").split("|")[0].trim().toLowerCase();
+  return map[key] || null;
+}
+
 function getTagHTML(typeStr, isReleased, pushRight) {
   const s = pushRight
       ? 'style="margin-bottom:0;margin-left:auto;white-space:nowrap;flex-shrink:0"'
@@ -274,6 +285,49 @@ function openLightbox(src) {
 
 let _rebuildCalendar = null;
 
+// ── Full videos map (40+ წუთი) — artist სახელით ─────────────────
+async function fetchFullVideoMap() {
+  try {
+    const YT_CHANNEL_ID = "UCcvJmv3UOYFmVG2_1tK8aNg";
+
+    // 1. search — ბოლო 50 ვიდეო
+    const searchRes  = await fetch(`${GCAL_WORKER}/yt/search?part=snippet&channelId=${YT_CHANNEL_ID}&maxResults=50&order=date&type=video`);
+    const searchData = await searchRes.json();
+    if (!searchData.items?.length) return;
+
+    const ids = searchData.items.map(i => i.id.videoId).join(",");
+
+    // 2. duration შევამოწმოთ — მხოლოდ 40+ წუთი (full videos)
+    const infoRes  = await fetch(`${GCAL_WORKER}/yt/videos?part=contentDetails,snippet&id=${ids}`);
+    const infoData = await infoRes.json();
+    if (!infoData.items?.length) return;
+
+    const map = {};
+    infoData.items.forEach(item => {
+      const dur = parseDuration(item.contentDetails?.duration || "");
+      if (dur < 2400) return; // shorts გამოვრიცხოთ
+
+      const title = item.snippet?.title || "";
+      // "L.A.S.H.A. | 7TH BLOCK SOCIETY..." → "l.a.s.h.a."
+      const key = (title.includes("|") ? title.split("|")[0] : title).trim().toLowerCase();
+      if (key) map[key] = item.id;
+    });
+
+    window.__sbsFullVideoMap = map;
+    console.log("[SBS] fullVideoMap:", map);
+  } catch(e) {
+    console.warn("[SBS] fetchFullVideoMap failed:", e);
+  }
+}
+
+// ISO 8601 duration parser (თუ youtube.js ჯერ არ ჩატვირთულა)
+function parseDuration(iso) {
+  if (!iso) return 0;
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return 0;
+  return (parseInt(m[1]||0)*3600) + (parseInt(m[2]||0)*60) + parseInt(m[3]||0);
+}
+
 async function initCalendar() {
   const container = document.getElementById("upcomingCalendar");
   if (!container) return;
@@ -294,6 +348,9 @@ async function initCalendar() {
 
   // SC avatar-ები ჩამოვიტანოთ tk.jpg-ის მქონე event-ებისთვის
   await enrichEventsWithAvatars();
+
+  // Full video map — released event-ებისთვის YouTube ვიდეო
+  await fetchFullVideoMap();
 
   const now = new Date();
   let selectedYear = now.getFullYear();
@@ -422,11 +479,11 @@ async function initCalendar() {
             </div>
           </div>
           ${(() => {
-        const videoId = isReleased && getYouTubeId(event.youtube);
+        const videoId = isReleased && getEventVideoId(event);
         if (videoId) {
           return `<div class="cal-popup__img cal-popup__img--video">
                 <iframe
-                  src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                  src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1"
                   allow="autoplay; encrypted-media; fullscreen"
                   allowfullscreen frameborder="0"
                   style="width:100%;height:100%;border-radius:8px;">
@@ -504,13 +561,13 @@ async function initCalendar() {
           // countdown გათავდა — სურათი ვიდეოთი შევცვალოთ
           const slide = cdEl.closest(".cal-carousel__slide");
           if (slide) {
-            const videoId = getYouTubeId(event.youtube);
+            const videoId = getEventVideoId(event);
             if (videoId) {
               const imgEl = slide.querySelector(".cal-popup__img");
               if (imgEl) {
                 imgEl.outerHTML = `<div class="cal-popup__img cal-popup__img--video">
                   <iframe
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1"
                     allow="autoplay; encrypted-media; fullscreen"
                     allowfullscreen frameborder="0"
                     style="width:100%;height:100%;border-radius:8px;">
@@ -544,7 +601,7 @@ async function initCalendar() {
       if (allEvents.length > 1) {
         window._calMobileRotateTimer = setInterval(() => {
           goTo((currentSlide + 1) % allEvents.length);
-        }, 6000);
+        }, 20000);
       }
     };
     const stopMobileRotate = () => {
@@ -554,7 +611,7 @@ async function initCalendar() {
     carousel.addEventListener('mouseenter', stopMobileRotate);
     carousel.addEventListener('mouseleave', startMobileRotate);
 
-    // startMobileRotate(); — გათიშულია
+    startMobileRotate();
   }
 
   _rebuildCalendar = () => applyMobileLayout();
@@ -727,11 +784,11 @@ async function initCalendar() {
           </div>
         </div>
         ${(() => {
-      const videoId = isReleased && getYouTubeId(event.youtube);
+      const videoId = isReleased && getEventVideoId(event);
       if (videoId) {
         return `<div class="cal-popup__img cal-popup__img--video">
               <iframe
-                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1"
                 allow="autoplay; encrypted-media; fullscreen"
                 allowfullscreen frameborder="0"
                 style="width:100%;height:100%;border-radius:8px;">
@@ -786,13 +843,13 @@ async function initCalendar() {
           cdEl && cdEl.after(a);
         }
         // სურათი ვიდეოთი შევცვალოთ
-        const videoId = getYouTubeId(event.youtube);
+        const videoId = getEventVideoId(event);
         if (videoId) {
           const imgEl = popup.querySelector(".cal-popup__img");
           if (imgEl && !imgEl.classList.contains("cal-popup__img--video")) {
             imgEl.outerHTML = `<div class="cal-popup__img cal-popup__img--video">
               <iframe
-                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&modestbranding=1"
                 allow="autoplay; encrypted-media; fullscreen"
                 allowfullscreen frameborder="0"
                 style="width:100%;height:100%;border-radius:8px;">

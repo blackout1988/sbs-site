@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBS Lineup</title>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@100;400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Doto', monospace; }
+
+  .controls {
+    display: flex; gap: 10px; padding: 16px; background: #111;
+    border-bottom: 1px solid #222; flex-wrap: wrap; align-items: center;
+    width: 100%; justify-content: center; margin-bottom: 24px;
+  }
+  .ctrl-btn {
+    background: transparent; border: 1px solid #333; color: #aaa;
+    font-family: 'Doto', monospace; font-size: 10px; letter-spacing: 2px;
+    padding: 8px 14px; cursor: pointer; transition: all 0.2s;
+  }
+  .ctrl-btn:hover, .ctrl-btn.active { border-color: #fe0000; color: #fe0000; }
+  .ctrl-label { font-size: 9px; letter-spacing: 2px; color: #555; }
+
+  .frame {
+    background: #07070a; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .frame.post { width: 500px; height: 500px; }
+  .frame.story { width: 281px; height: 500px; }
+
+  .frame-noise {
+    position: absolute; inset: 0; z-index: 0;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px
+    );
+  }
+
+  .frame-header {
+    position: relative; z-index: 2;
+    padding: 22px 24px 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+
+  .logo-wrap { display: flex; gap: 5px; align-items: center; }
+  .logo-box {
+    width: 32px; height: 32px; background: #fe0000; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Doto', monospace; font-size: 16px; font-weight: 700; color: #fff;
+  }
+  .frame.story .logo-box { width: 24px; height: 24px; font-size: 12px; border-radius: 5px; }
+
+  .brand-sub {
+    font-family: 'Doto', monospace; font-size: 9px; letter-spacing: 2px; color: #888; margin-top: 7px;
+  }
+  .frame.story .brand-sub { font-size: 6px; letter-spacing: 1px; margin-top: 5px; }
+
+  .frame-title {
+    font-family: 'Doto', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; color: #fe0000; text-align: right; line-height: 1.5;
+  }
+  .frame.story .frame-title { font-size: 9px; letter-spacing: 2px; }
+
+  .artists-list {
+    position: relative; z-index: 2; padding: 0 24px; flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .artist-row {
+    display: flex; align-items: center; gap: 12px; padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .artist-row.visible { opacity: 1; transform: translateX(0); }
+  .artist-row:last-child { border-bottom: none; }
+
+  .artist-date {
+    font-family: 'Doto', monospace; font-size: 12px; letter-spacing: 1.5px; color: #888;
+    min-width: 62px; flex-shrink: 0;
+  }
+  .artist-dot { width: 4px; height: 4px; background: #fe0000; border-radius: 50%; flex-shrink: 0; }
+  .artist-name {
+    font-family: 'Doto', monospace; font-size: 15px; letter-spacing: 2px; color: #fff; font-weight: 700;
+  }
+
+  .frame-footer {
+    position: relative; z-index: 2; padding: 0 24px 20px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .footer-left { font-family: 'Doto', monospace; font-size: 11px; letter-spacing: 2px; color: #888; }
+  .footer-url { font-family: 'Doto', monospace; font-size: 11px; letter-spacing: 2px; color: #fe0000; }
+
+  .red-line {
+    position: absolute; bottom: 0; left: 0; height: 2px; background: #fe0000;
+    width: 0; z-index: 3; transition: width 1s linear;
+  }
+  .scan-line {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, rgba(254,0,0,0.25), transparent);
+    z-index: 4; animation: scan 3s linear infinite;
+  }
+  @keyframes scan {
+    0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <span class="ctrl-label">FORMAT</span>
+  <button class="ctrl-btn active" id="btnPost" onclick="setFormat('post')">POST 1:1</button>
+  <button class="ctrl-btn" id="btnStory" onclick="setFormat('story')">STORY 9:16</button>
+  <span class="ctrl-label" style="margin-left:8px">ANIM</span>
+  <button class="ctrl-btn" onclick="restart()">RESTART ↺</button>
+</div>
+
+<div class="frame post" id="frame">
+  <div class="frame-noise"></div>
+  <div class="scan-line"></div>
+
+  <div class="frame-header">
+    <div>
+      <div class="logo-wrap">
+        <div class="logo-box">S</div>
+        <div class="logo-box">B</div>
+        <div class="logo-box">S</div>
+      </div>
+      <div class="brand-sub">7TH BLOCK SOCIETY</div>
+    </div>
+    <div class="frame-title">UPCOMING<br>STREAMS</div>
+  </div>
+
+  <div class="artists-list" id="artistsList"></div>
+
+  <div class="frame-footer">
+    <div class="footer-left">TBILISI, GEORGIA</div>
+    <div class="footer-url">7BS.GE</div>
+  </div>
+  <div class="red-line" id="redLine"></div>
+</div>
+
+<script>
+const months = {'01':'JAN','02':'FEB','03':'MAR','04':'APR','05':'MAY','06':'JUN','07':'JUL','08':'AUG','09':'SEP','10':'OCT','11':'NOV','12':'DEC'};
+const lineup = [
+  { date: "21.03", name: "TOBAKO TWEEN" },
+  { date: "28.03", name: "SALLY KIPA" },
+  { date: "04.04", name: "ZKX" },
+  { date: "11.04", name: "TORNIKE" },
+  { date: "18.04", name: "TSKHRA" },
+  { date: "25.04", name: "ARUKU" },
+  { date: "04.04", name: "BUTA.P" },
+  { date: "11.04", name: "WORMHOLE" },
+];
+
+function formatDate(d) {
+  const [day, mon] = d.split('.');
+  return day + ' ' + (months[mon] || mon);
+}
+
+function render() {
+  const list = document.getElementById('artistsList');
+  list.innerHTML = '';
+  lineup.forEach((a, i) => {
+    const row = document.createElement('div');
+    row.className = 'artist-row';
+    row.id = 'row-' + i;
+    row.innerHTML = `
+      <div class="artist-date">${formatDate(a.date)}</div>
+      <div class="artist-dot"></div>
+      <div class="artist-name">${a.name}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function animate() {
+  lineup.forEach((_, i) => {
+    setTimeout(() => {
+      const row = document.getElementById('row-' + i);
+      if (row) row.classList.add('visible');
+    }, 300 + i * 180);
+  });
+  setTimeout(() => {
+    const line = document.getElementById('redLine');
+    if (line) line.style.width = '100%';
+  }, 300 + lineup.length * 180);
+}
+
+function restart() {
+  document.querySelectorAll('.artist-row').forEach(r => r.classList.remove('visible'));
+  const line = document.getElementById('redLine');
+  if (line) { line.style.transition = 'none'; line.style.width = '0'; }
+  setTimeout(() => {
+    if (line) line.style.transition = 'width 1s linear';
+    animate();
+  }, 150);
+}
+
+function setFormat(fmt) {
+  const frame = document.getElementById('frame');
+  frame.className = 'frame ' + fmt;
+  document.getElementById('btnPost').classList.toggle('active', fmt === 'post');
+  document.getElementById('btnStory').classList.toggle('active', fmt === 'story');
+  const isStory = fmt === 'story';
+  document.querySelectorAll('.artist-name').forEach(el => el.style.fontSize = isStory ? '12px' : '15px');
+  document.querySelectorAll('.artist-date').forEach(el => el.style.fontSize = isStory ? '10px' : '12px');
+  restart();
+}
+
+render();
+animate();
+</script>
+</body>
+</html>

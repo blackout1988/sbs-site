@@ -561,7 +561,7 @@
     .cal-popup__date      { font-size: 26px; }
     .cal-popup__title     { font-size: 14px; }
     .cal-popup__countdown { font-size: 16px; letter-spacing: 2px; }
-    .cal-popup__bio       { font-size: 11px; -webkit-line-clamp: 3; }
+    .cal-popup__bio       { font-size: 11px; max-height: 80px; overflow-y: auto; }
     .cal-popup__links     { gap: 5px; margin-top: 8px; }
     .cal-popup__link      { font-size: 7px; padding: 3px 8px; }
 }
@@ -621,9 +621,12 @@
         width: 220px;
         height: 280px;
     }
-
-
-
+    .cal-carousel__slide .cal-popup__img--video {
+        flex: 0 0 550px;
+        width: 550px;
+        height: 309px;
+        align-self: center;
+    }
 }
 
 .cal-carousel__btn {
@@ -734,10 +737,22 @@
     color: rgba(255,255,255,0.55);
     line-height: 1.9;
     margin-top: 14px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    max-height: 100px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+    padding-right: 4px;
+}
+
+.cal-popup__bio::-webkit-scrollbar {
+    width: 3px;
+}
+.cal-popup__bio::-webkit-scrollbar-track {
+    background: transparent;
+}
+.cal-popup__bio::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
 }
 
 .cal-popup__img--video {
