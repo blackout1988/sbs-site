@@ -491,7 +491,7 @@ async function initCalendar() {
               </div>`;
         }
         return event.image
-            ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>`
+            ? `<div class="cal-popup__img${isReleased ? ' cal-popup__img--released' : ''}" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>`
             : "";
       })()}
         </div>
@@ -796,7 +796,7 @@ async function initCalendar() {
             </div>`;
       }
       return event.image
-          ? `<div class="cal-popup__img" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>`
+          ? `<div class="cal-popup__img${isReleased ? ' cal-popup__img--released' : ''}" onclick="openLightbox('${event.image}')" title="Click to enlarge"><img src="${event.image}" alt="" /></div>`
           : "";
     })()}
       </div>
