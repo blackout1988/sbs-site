@@ -639,9 +639,9 @@
         gap: 24px;
     }
     .cal-carousel__slide .cal-popup__img {
-        flex: 0 0 220px;
-        width: 220px;
-        height: 280px;
+        flex: 0 0 270px;
+        width: 270px;
+        height: 340px;
     }
     .cal-carousel__slide .cal-popup__img--video {
         flex: 0 0 550px;

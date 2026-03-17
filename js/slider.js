@@ -5,9 +5,9 @@
 
 (()=>{
   const SLIDES = [
-    { src: "assets/slider/slide1.jpg", alt: "7TH BLOCK SOCIETY – BTS 1" },
-    { src: "assets/slider/slide2.jpg", alt: "7TH BLOCK SOCIETY – BTS 2" },
-    { src: "assets/slider/slide3.jpg", alt: "7TH BLOCK SOCIETY – BTS 2" },
+    { src: "assets/slider/slide1.webp", alt: "7TH BLOCK SOCIETY – BTS 1" },
+    { src: "assets/slider/slide2.webp", alt: "7TH BLOCK SOCIETY – BTS 2" },
+    { src: "assets/slider/slide3.webp", alt: "7TH BLOCK SOCIETY – BTS 3" },
   ];
 
   const viewport = document.getElementById("topSliderViewport");

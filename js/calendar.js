@@ -332,8 +332,11 @@ async function initCalendar() {
   const container = document.getElementById("upcomingCalendar");
   if (!container) return;
 
-  await fetchGoogleCalendarEvents();
-  const fsEvents = await fetchFirestoreEvents();
+  // 1. gcal + firestore პარალელურად
+  const [_, fsEvents] = await Promise.all([
+    fetchGoogleCalendarEvents(),
+    fetchFirestoreEvents()
+  ]);
   SBS_EVENTS = [...SBS_EVENTS, ...fsEvents];
   // მხოლოდ RELEASE DATE (_sat) ვაჩვენებთ — _rec ივენთები ამოვიღეთ
   SBS_EVENTS = SBS_EVENTS.filter(e => !e._isRec);
@@ -345,12 +348,6 @@ async function initCalendar() {
     seen.add(key);
     return true;
   });
-
-  // SC avatar-ები ჩამოვიტანოთ tk.jpg-ის მქონე event-ებისთვის
-  await enrichEventsWithAvatars();
-
-  // Full video map — released event-ებისთვის YouTube ვიდეო
-  await fetchFullVideoMap();
 
   const now = new Date();
   let selectedYear = now.getFullYear();
@@ -957,6 +954,12 @@ async function initCalendar() {
 
   buildMonthPicker();
   applyMobileLayout();
+
+  // 2. ფონში — UI უკვე ჩანს, avatars + youtube განახლება
+  enrichEventsWithAvatars().then(() => {
+    if (_rebuildCalendar) _rebuildCalendar();
+  });
+  fetchFullVideoMap();
 }
 
 if (document.readyState === "loading") {
